@@ -3,7 +3,8 @@ title ProPay Studio - Real-Time Fraud & Quishing Agent
 cls
 echo =====================================================================
 echo   ProPay Studio - Real-Time Banking Fraud & Quishing Agent
-echo   Pirate Wires x pleasecallmechamp.com Design Crossover
+echo   WeBank-Inspired Modern Fintech Interface
+echo   Sub-38ms Fast-Path & On-Premise Ollama Quishing Defense
 echo =====================================================================
 echo.
 echo Launching ProPay Studio on http://localhost:5055 ...
