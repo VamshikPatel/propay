@@ -19,10 +19,6 @@ orchestrator = RiskOrchestrator()
 def index():
     return send_from_directory(FRONTEND_DIR, "index.html")
 
-@app.route("/<path:path>")
-def static_proxy(path):
-    return send_from_directory(FRONTEND_DIR, path)
-
 @app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({
@@ -107,6 +103,12 @@ def email_history():
         except Exception:
             pass
     return jsonify({"total": len(items), "recent_dispatches": list(reversed(items))})
+
+@app.route("/<path:path>")
+def static_proxy(path):
+    if path.startswith("api/"):
+        return jsonify({"error": "Endpoint not found"}), 404
+    return send_from_directory(FRONTEND_DIR, path)
 
 def start_server():
     port = 5055
