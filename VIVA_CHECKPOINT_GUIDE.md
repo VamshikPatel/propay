@@ -42,7 +42,19 @@ Open `frontend/index.html` in Chrome/Edge or run `server.py` (`http://localhost:
 4. **Demonstrate Preset 3 (Unsolicited Smishing Link)**:
    - Click `PRESET 3` $\rightarrow$ Click `Run Threat Pipeline ➔`.
    - **Show the Evaluator:** Shortened `bit.ly` link is unrolled $\rightarrow$ resolves to lookalike domain `.xyz` $\rightarrow$ Ollama detects social engineering urgency and halts reverse collect-request trap.
-5. **Open C4 Level 2 HLD Architecture Modal**:
+5. **Showcase Multi-Agent Swarm Orchestration & Automated Email Alerts**:
+   - Walk the panel through the **Multi-Agent Swarm Orchestration section** highlighting all 5 agents:
+     - `Agent 01: Ingress & Decoding Agent` (WASM Edge, <5ms)
+     - `Agent 02: Fast-Path Rule Agent` (Drools + LightGBM, <38ms)
+     - `Agent 03: Ollama Cognitive Agent` (Private Llama 3 On-Premise, ~1.2s Async)
+     - `Agent 04: Adaptive Enforcement Agent` (Dynamic Glass Interception & Freeze)
+     - `Agent 05: Ollama Email Alert Agent` (Contextual Customer Alerts & SOC Escalations)
+   - Click `✉️ View Generated Email Alert ↗` to demonstrate the live synthesized banking email:
+     - Customer View: Clear notification of payment block, claimed vs actual payee discrepancy, and "Not Me / Freeze Account" CTA.
+     - Bank SOC View: Full incident report, Drools trigger rule, Ollama dossier, and FinCEN SAR filing.
+6. **Demonstrate Iridescent Theme Switcher**:
+   - Click the floating **3D Iridescent Theme Orb** on the bottom-left (or top navbar button) to toggle smoothly between **WeBank Crisp Light Mode** and **Dark Cyber Studio Mode**.
+7. **Open C4 Level 2 HLD Architecture Modal**:
    - Click `C4 HLD Architecture` in the top bar to walk the panel through the complete 6-tier architecture and the **Strict Ollama Boundary Table**.
 
 ---
