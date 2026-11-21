@@ -19,9 +19,10 @@ class OllamaEmailAgent:
         self.model = model
         self.api_key = api_key or os.environ.get('OLLAMA_API_KEY')
         
-        # Base directory for logging dispatched emails
+        # Base directory for logging dispatched emails and configuration
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.log_file = os.path.join(self.base_dir, "dispatched_emails.jsonl")
+        self.config_file = os.path.join(self.base_dir, "smtp_config.json")
 
     def _headers(self) -> dict:
         h = {"Content-Type": "application/json"}
@@ -37,15 +38,117 @@ class OllamaEmailAgent:
             return False
 
     def get_smtp_config(self) -> dict:
-        return {
+        """
+        Loads SMTP settings from smtp_config.json file if present,
+        falling back to environment variables.
+        """
+        cfg = {
             "host": os.environ.get("SMTP_HOST", ""),
             "port": int(os.environ.get("SMTP_PORT", 587)),
             "user": os.environ.get("SMTP_USER", ""),
             "password": os.environ.get("SMTP_PASSWORD", ""),
-            "from_email": os.environ.get("SMTP_FROM", "alerts@security.propay.bank"),
+            "from_email": os.environ.get("SMTP_FROM", ""),
             "use_tls": os.environ.get("SMTP_TLS", "true").lower() == "true",
-            "is_configured": bool(os.environ.get("SMTP_HOST"))
+            "provider": os.environ.get("SMTP_PROVIDER", "custom")
         }
+
+        if os.path.exists(self.config_file):
+            try:
+                with open(self.config_file, "r", encoding="utf-8") as f:
+                    file_cfg = json.load(f)
+                    for k, v in file_cfg.items():
+                        if v is not None:
+                            cfg[k] = v
+            except Exception:
+                pass
+
+        if not cfg["from_email"]:
+            cfg["from_email"] = cfg["user"] if cfg["user"] else "alerts@security.propay.bank"
+
+        cfg["is_configured"] = bool(cfg["host"] and cfg["user"])
+        return cfg
+
+    def save_smtp_config(self, new_cfg: dict) -> dict:
+        """
+        Saves updated SMTP configuration to smtp_config.json
+        """
+        current = self.get_smtp_config()
+        for k in ["host", "port", "user", "password", "from_email", "use_tls", "provider"]:
+            if k in new_cfg:
+                if k == "port":
+                    try:
+                        current[k] = int(new_cfg[k])
+                    except (ValueError, TypeError):
+                        pass
+                elif k == "use_tls":
+                    current[k] = bool(new_cfg[k])
+                elif k == "password":
+                    val = str(new_cfg[k]).strip()
+                    # Only update password if a real new password was provided
+                    if val and not val.startswith("••••"):
+                        current[k] = val
+                else:
+                    current[k] = str(new_cfg[k]).strip()
+
+        if not current.get("from_email") and current.get("user"):
+            current["from_email"] = current["user"]
+
+        try:
+            with open(self.config_file, "w", encoding="utf-8") as f:
+                json.dump({
+                    "host": current["host"],
+                    "port": current["port"],
+                    "user": current["user"],
+                    "password": current["password"],
+                    "from_email": current["from_email"],
+                    "use_tls": current["use_tls"],
+                    "provider": current.get("provider", "custom")
+                }, f, indent=2)
+        except Exception as e:
+            return {"success": False, "error": f"Failed to save config: {str(e)}"}
+
+        current["is_configured"] = bool(current["host"] and current["user"])
+        return {"success": True, "config": self.get_safe_smtp_config()}
+
+    def get_safe_smtp_config(self) -> dict:
+        """Returns config with masked password for frontend safety"""
+        cfg = self.get_smtp_config()
+        safe_copy = dict(cfg)
+        if safe_copy.get("password"):
+            safe_copy["password_masked"] = True
+            safe_copy["password"] = "••••••••••••"
+        else:
+            safe_copy["password_masked"] = False
+        return safe_copy
+
+    def test_smtp_connection(self, recipient: str = None) -> dict:
+        """Tests live SMTP connection with current configuration"""
+        cfg = self.get_smtp_config()
+        if not cfg["is_configured"]:
+            return {
+                "success": False,
+                "delivered": False,
+                "status": "NOT_CONFIGURED",
+                "error": "SMTP server not configured. Please enter your SMTP Host, Username/Email, and App Password in SMTP Settings."
+            }
+
+        test_to = (recipient or "").strip() or cfg.get("user") or cfg.get("from_email")
+        subject = "ProPay SMTP Connectivity Verification"
+        html = f"""<div style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding:24px; border:1px solid #E2E8F0; border-radius:12px; max-width:540px; background:#FFFFFF;">
+          <h2 style="color:#0F172A; margin-top:0;">ProPay SMTP Test Clearance</h2>
+          <p style="color:#334155; font-size:14px; line-height:1.6;">This test confirms that your outbound SMTP TLS connection from <strong>ProPay Real-Time Banking Fraud & Quishing Agent</strong> is live and functional.</p>
+          <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:12px 16px; border-radius:8px; font-family:monospace; font-size:12px; color:#475569;">
+            Host: {cfg['host']}:{cfg['port']}<br/>
+            Account: {cfg['user']}<br/>
+            Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S UTC')}
+          </div>
+          <p style="color:#10B981; font-weight:700; font-size:13px; margin-top:16px;">✓ Outbound email channel verified. Ready for live payment receipts and security interception alerts.</p>
+        </div>"""
+        text = f"ProPay SMTP Verification - Outbound SMTP relay ({cfg['host']}) is active."
+
+        res = self.send_smtp(test_to, subject, html, text)
+        res["success"] = res.get("delivered", False)
+        return res
 
     def _build_html_email(self, title: str, headline: str, body_intro: str, discrepancy_note: str, action_required: str, tx_id: str, timestamp: str, worm_hash: str, is_safe: bool, amount: str, payee: str) -> str:
         status_color = "#10B981" if is_safe else "#EF4444"
@@ -126,16 +229,38 @@ class OllamaEmailAgent:
 
     def send_smtp(self, recipient: str, subject: str, html_body: str, text_body: str = None) -> dict:
         """
-        Attempts SMTP network delivery if host is configured, and logs to immutable JSONL archive.
+        Attempts real SMTP delivery across the network if credentials are configured.
+        Returns explicit success or exact failure reason to prevent false positives.
         """
         cfg = self.get_smtp_config()
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S UTC")
         tx_id = f"TX-MAIL-{int(time.time() * 1000) % 900000 + 100000}"
         
+        # Guard: Check if SMTP is configured
+        if not cfg["is_configured"]:
+            unconfigured_result = {
+                "tx_id": tx_id,
+                "timestamp": timestamp,
+                "recipient": recipient,
+                "subject": subject,
+                "delivered": False,
+                "status": "NOT_CONFIGURED",
+                "mode": "LOCAL_ARCHIVE_ONLY",
+                "error": "SMTP server not configured. Please enter your SMTP host and login credentials in SMTP Settings.",
+                "details": "No external SMTP_HOST specified. Message archived to local audit log."
+            }
+            self._log_dispatch(unconfigured_result)
+            return unconfigured_result
+
+        # Sender configuration
+        envelope_from = cfg.get("user") if cfg.get("user") else (cfg.get("from_email") or "alerts@security.propay.bank")
+        from_display = f"ProPay Institutional Security <{envelope_from}>"
+
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
-        msg["From"] = cfg["from_email"]
+        msg["From"] = from_display
         msg["To"] = recipient
+        msg["Reply-To"] = envelope_from
         msg["Date"] = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         msg["X-ProPay-WORM-Seal"] = f"WORM-{int(time.time()*1000)}"
 
@@ -148,54 +273,60 @@ class OllamaEmailAgent:
             "timestamp": timestamp,
             "recipient": recipient,
             "subject": subject,
-            "status": "DISPATCH_REGISTERED",
-            "delivered": True,
-            "mode": "ARCHIVE_SIMULATED",
-            "details": "Archived to local regulatory dispatch ledger."
+            "status": "PENDING",
+            "delivered": False,
+            "mode": "LIVE_SMTP"
         }
 
-        # Attempt live SMTP if host is provided
-        if cfg["is_configured"]:
-            try:
-                server = smtplib.SMTP(cfg["host"], cfg["port"], timeout=6.0)
-                if cfg["use_tls"]:
-                    server.starttls()
-                if cfg["user"] and cfg["password"]:
-                    server.login(cfg["user"], cfg["password"])
-                server.sendmail(cfg["from_email"], [recipient], msg.as_string())
-                server.quit()
-                delivery_result["status"] = "SENT_SMTP_TLS"
-                delivery_result["delivered"] = True
-                delivery_result["mode"] = "LIVE_SMTP"
-                delivery_result["details"] = f"Delivered via live SMTP TLS relay {cfg['host']}:{cfg['port']}"
-            except Exception as e:
-                delivery_result["status"] = "FALLBACK_ARCHIVED"
-                delivery_result["delivered"] = True
-                delivery_result["mode"] = "SMTP_FALLBACK"
-                delivery_result["details"] = f"SMTP connection error ({str(e)}). Secured in immutable ledger."
-        else:
-            delivery_result["details"] = "No external SMTP_HOST specified. Simulated TLS dispatch sealed in audit log."
+        # Attempt live SMTP network delivery
+        try:
+            port = int(cfg["port"])
+            use_ssl = port == 465
 
-        # Write to immutable audit log file
+            if use_ssl:
+                server = smtplib.SMTP_SSL(cfg["host"], port, timeout=10.0)
+            else:
+                server = smtplib.SMTP(cfg["host"], port, timeout=10.0)
+                if cfg.get("use_tls", True):
+                    server.starttls()
+
+            if cfg.get("user") and cfg.get("password"):
+                server.login(cfg["user"], cfg["password"])
+
+            server.sendmail(envelope_from, [recipient], msg.as_string())
+            server.quit()
+
+            delivery_result["status"] = "SENT_LIVE_SMTP"
+            delivery_result["delivered"] = True
+            delivery_result["details"] = f"Delivered via live SMTP TLS relay {cfg['host']}:{cfg['port']} to {recipient}"
+        except smtplib.SMTPAuthenticationError as auth_err:
+            delivery_result["status"] = "SMTP_AUTH_FAILED"
+            delivery_result["delivered"] = False
+            delivery_result["error"] = f"Authentication rejected by {cfg['host']}: Invalid username or app password. Note: For Gmail, a 16-character Google App Password is required."
+            delivery_result["details"] = str(auth_err)
+        except Exception as e:
+            delivery_result["status"] = "SMTP_CONNECTION_ERROR"
+            delivery_result["delivered"] = False
+            err_msg = str(e)
+            if "getaddrinfo" in err_msg:
+                err_msg = f"Cannot reach {cfg['host']} (DNS/network unreachable). Please verify internet connection or host spelling."
+            delivery_result["error"] = f"Failed to connect to SMTP relay {cfg['host']}:{cfg['port']} ({err_msg})"
+            delivery_result["details"] = str(e)
+
+        self._log_dispatch(delivery_result)
+        return delivery_result
+
+    def _log_dispatch(self, record: dict):
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps({
-                    "tx_id": tx_id,
-                    "timestamp": timestamp,
-                    "recipient": recipient,
-                    "subject": subject,
-                    "mode": delivery_result["mode"],
-                    "status": delivery_result["status"]
-                }) + "\n")
+                f.write(json.dumps(record) + "\n")
         except Exception:
             pass
-
-        return delivery_result
 
     def generate_email_alert(self, payload_data: dict, inline_eval: dict, ollama_eval: dict, action_eval: dict, recipient_email: str = None) -> dict:
         """
         Synthesizes both a Customer Security Alert Email and a Bank SOC Escalation Email,
-        and triggers instant SMTP dispatch if a recipient email is provided.
+        and triggers SMTP dispatch if a recipient email is provided.
         """
         start_time = time.perf_counter()
         threat_type = payload_data.get("threat_type", "clean")
@@ -279,7 +410,7 @@ class OllamaEmailAgent:
 
         customer_email = {
             "recipient": target_recipient,
-            "sender": "ProPay Security & Clearance <alerts@security.propay.bank>",
+            "sender": self.get_smtp_config().get("from_email", "alerts@security.propay.bank"),
             "subject": subject,
             "headline": headline,
             "severity": severity,
@@ -320,7 +451,7 @@ class OllamaEmailAgent:
 
         return {
             "agent_id": "AGENT-05-EMAIL-DISPATCHER",
-            "status": "SENT",
+            "status": "SENT" if smtp_res.get("delivered") else "UNCONFIGURED_OR_FAILED",
             "dispatch_ms": dispatch_ms,
             "customer_email": customer_email,
             "soc_email": soc_email,

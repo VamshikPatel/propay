@@ -27,6 +27,7 @@ class ProPayApp {
     this.startFeedTicker();
     this.bindEvents();
     this.checkBackendHealth();
+    this.checkSmtpStatus();
   }
 
   initTheme() {
@@ -99,6 +100,270 @@ class ProPayApp {
       }
     } catch (e) {
       console.log('Running in Standalone Client Mode (Offline Zero-Setup)');
+    }
+  }
+
+  async checkSmtpStatus() {
+    const badge = document.getElementById('smtp-live-status-badge');
+    const badgeText = document.getElementById('smtp-badge-text');
+    try {
+      const res = await fetch('/api/email/config');
+      if (res.ok) {
+        const cfg = await res.json();
+        this.smtpConfig = cfg;
+        if (cfg.is_configured) {
+          if (badge) {
+            badge.classList.remove('unconfigured');
+            badge.setAttribute('title', `SMTP Connected (${cfg.user} on ${cfg.host}) — Click to change`);
+          }
+          if (badgeText) {
+            badgeText.textContent = `SMTP: READY (${cfg.host}:${cfg.port})`;
+          }
+        } else {
+          if (badge) {
+            badge.classList.add('unconfigured');
+            badge.setAttribute('title', 'SMTP Not Configured — Click to enter Gmail/App Password');
+          }
+          if (badgeText) {
+            badgeText.textContent = 'SMTP: NOT CONFIGURED (CLICK TO SETUP)';
+          }
+        }
+        return cfg;
+      }
+    } catch (e) {
+      if (badgeText) badgeText.textContent = 'SMTP: LOCAL DEMO MODE';
+    }
+    return null;
+  }
+
+  async loadSmtpConfigToModal() {
+    try {
+      const res = await fetch('/api/email/config');
+      if (res.ok) {
+        const cfg = await res.json();
+        this.smtpConfig = cfg;
+        const hostEl = document.getElementById('cfg-smtp-host');
+        const portEl = document.getElementById('cfg-smtp-port');
+        const tlsEl = document.getElementById('cfg-smtp-tls');
+        const userEl = document.getElementById('cfg-smtp-user');
+        const passEl = document.getElementById('cfg-smtp-password');
+        const fromEl = document.getElementById('cfg-smtp-from');
+
+        if (hostEl && cfg.host) hostEl.value = cfg.host;
+        if (portEl && cfg.port) portEl.value = cfg.port;
+        if (tlsEl) tlsEl.value = cfg.use_tls !== false ? 'true' : 'false';
+        if (userEl && cfg.user) userEl.value = cfg.user;
+        if (passEl) {
+          if (cfg.password_masked) {
+            passEl.value = '';
+            passEl.placeholder = '•••••••••••• (Saved — leave blank to keep)';
+          } else {
+            passEl.placeholder = '16-character Google App Password or SMTP secret';
+          }
+        }
+        if (fromEl && cfg.from_email) fromEl.value = cfg.from_email;
+
+        // Auto-select provider button
+        const prov = cfg.provider || (cfg.host && cfg.host.includes('gmail') ? 'gmail' : (cfg.host && cfg.host.includes('office365') ? 'outlook' : 'custom'));
+        this.selectSmtpProvider(prov, false);
+      }
+    } catch (e) {
+      console.log('Error loading SMTP config:', e);
+    }
+  }
+
+  selectSmtpProvider(provider, updateInputs = true) {
+    const provs = ['gmail', 'outlook', 'brevo', 'mailtrap', 'custom'];
+    provs.forEach(p => {
+      const btn = document.getElementById(`prov-${p}`);
+      if (btn) btn.classList.toggle('active', p === provider);
+    });
+
+    const hostEl = document.getElementById('cfg-smtp-host');
+    const portEl = document.getElementById('cfg-smtp-port');
+    const tlsEl = document.getElementById('cfg-smtp-tls');
+    const tipEl = document.getElementById('smtp-provider-tip');
+
+    if (updateInputs) {
+      if (provider === 'gmail') {
+        if (hostEl) hostEl.value = 'smtp.gmail.com';
+        if (portEl) portEl.value = '587';
+        if (tlsEl) tlsEl.value = 'true';
+      } else if (provider === 'outlook') {
+        if (hostEl) hostEl.value = 'smtp.office365.com';
+        if (portEl) portEl.value = '587';
+        if (tlsEl) tlsEl.value = 'true';
+      } else if (provider === 'brevo') {
+        if (hostEl) hostEl.value = 'smtp-relay.brevo.com';
+        if (portEl) portEl.value = '587';
+        if (tlsEl) tlsEl.value = 'true';
+      } else if (provider === 'mailtrap') {
+        if (hostEl) hostEl.value = 'sandbox.smtp.mailtrap.io';
+        if (portEl) portEl.value = '2525';
+        if (tlsEl) tlsEl.value = 'true';
+      }
+    }
+
+    if (tipEl) {
+      if (provider === 'gmail') {
+        tipEl.innerHTML = `
+          <strong>Gmail Setup:</strong> Regular Google account passwords will not work.<br/>
+          1. Visit <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color:var(--accent-primary); font-weight:700; text-decoration:underline;">Google App Passwords</a> (ensure 2FA is enabled).<br/>
+          2. Type "ProPay" under app name and click <strong>Create</strong>.<br/>
+          3. Paste the generated 16-character code into the password field above.
+        `;
+      } else if (provider === 'outlook') {
+        tipEl.innerHTML = `
+          <strong>Outlook / Microsoft 365:</strong> Uses host <code>smtp.office365.com:587</code> with STARTTLS. Use your Microsoft account email and an App Password if 2FA is active.
+        `;
+      } else if (provider === 'brevo') {
+        tipEl.innerHTML = `
+          <strong>Brevo (Sendinblue):</strong> Free 300 emails/day. Use your Brevo SMTP Master Key found under SMTP &amp; API keys.
+        `;
+      } else if (provider === 'mailtrap') {
+        tipEl.innerHTML = `
+          <strong>Mailtrap Safe Testing:</strong> Safe sandbox environment. Copy your API / SMTP credentials from your Mailtrap testing inbox.
+        `;
+      } else {
+        tipEl.innerHTML = `
+          <strong>Custom SMTP Relay:</strong> Specify your institutional or corporate SMTP server hostname and credentials.
+        `;
+      }
+    }
+  }
+
+  async saveSmtpSettings() {
+    const hostEl = document.getElementById('cfg-smtp-host');
+    const portEl = document.getElementById('cfg-smtp-port');
+    const tlsEl = document.getElementById('cfg-smtp-tls');
+    const userEl = document.getElementById('cfg-smtp-user');
+    const passEl = document.getElementById('cfg-smtp-password');
+    const fromEl = document.getElementById('cfg-smtp-from');
+    const btnSave = document.getElementById('btn-save-smtp');
+
+    const host = hostEl ? hostEl.value.trim() : '';
+    const port = portEl ? parseInt(portEl.value.trim(), 10) : 587;
+    const use_tls = tlsEl ? tlsEl.value === 'true' : true;
+    const user = userEl ? userEl.value.trim() : '';
+    const password = passEl ? passEl.value.trim() : '';
+    const from_email = fromEl ? fromEl.value.trim() : '';
+
+    let activeProv = 'custom';
+    document.querySelectorAll('.smtp-prov-btn.active').forEach(b => {
+      activeProv = b.id.replace('prov-', '');
+    });
+
+    if (!host || !user) {
+      this.showToast('Please provide both SMTP Host and Account Email/Username.');
+      return;
+    }
+
+    if (btnSave) {
+      btnSave.textContent = 'Saving & Verifying...';
+      btnSave.disabled = true;
+    }
+
+    try {
+      const payload = {
+        host,
+        port,
+        use_tls,
+        user,
+        from_email: from_email || user,
+        provider: activeProv
+      };
+      if (password) {
+        payload.password = password;
+      }
+
+      const res = await fetch('/api/email/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        this.showToast(`✓ SMTP credentials saved for ${user}!`);
+        await this.checkSmtpStatus();
+
+        // Also populate simulator email input if currently blank
+        const simEmailInput = document.getElementById('sim-email-input');
+        if (simEmailInput && !simEmailInput.value) {
+          simEmailInput.value = user;
+          this.simState.recipientEmail = user;
+        }
+
+        // Test sending a verification email
+        this.showToast(`Testing live connection to ${host}:${port}...`);
+        const testRes = await fetch('/api/email/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipient: user })
+        });
+        const testData = await testRes.json();
+        if (testData.delivered || testData.success) {
+          this.showToast(`✓ Verification email sent to ${user}!`);
+          this.closeModal('modal-smtp-config');
+        } else {
+          this.showToast(`Warning: ${testData.error || 'Check username and app password.'}`);
+        }
+      } else {
+        this.showToast(`Error saving configuration: ${data.error || 'Failed'}`);
+      }
+    } catch (e) {
+      this.showToast(`Failed to connect to backend: ${e.message}`);
+    } finally {
+      if (btnSave) {
+        btnSave.textContent = 'Save & Verify Connection ➔';
+        btnSave.disabled = false;
+      }
+    }
+  }
+
+  async testSmtpFromModal() {
+    const userEl = document.getElementById('cfg-smtp-user');
+    let email = userEl ? userEl.value.trim() : '';
+    if (!email) {
+      email = prompt('Enter recipient email address to send test message:', 'yourname@example.com');
+      if (!email) return;
+    }
+
+    this.showToast(`Sending test alert to ${email}...`);
+
+    try {
+      const hostEl = document.getElementById('cfg-smtp-host');
+      const portEl = document.getElementById('cfg-smtp-port');
+      const tlsEl = document.getElementById('cfg-smtp-tls');
+      const passEl = document.getElementById('cfg-smtp-password');
+      const fromEl = document.getElementById('cfg-smtp-from');
+
+      const bodyData = {
+        recipient: email,
+        host: hostEl ? hostEl.value.trim() : undefined,
+        port: portEl ? portEl.value.trim() : undefined,
+        use_tls: tlsEl ? tlsEl.value === 'true' : undefined,
+        user: email,
+        password: passEl && passEl.value ? passEl.value.trim() : undefined,
+        from_email: fromEl && fromEl.value ? fromEl.value.trim() : undefined
+      };
+
+      const res = await fetch('/api/email/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+      });
+      const data = await res.json();
+
+      if (data.delivered || data.success) {
+        this.showToast(`✓ Test email delivered to ${email}! Check your inbox.`);
+        await this.checkSmtpStatus();
+      } else {
+        const errMsg = data.error || data.details || 'Connection failed';
+        this.showToast(`SMTP Error: ${errMsg}`);
+      }
+    } catch (e) {
+      this.showToast(`Test request failed: ${e.message}`);
     }
   }
 
@@ -203,8 +468,19 @@ class ProPayApp {
           btn.innerHTML = '<span>Run Threat Pipeline ➔</span>';
           btn.style.opacity = '1';
         }
-        const sentTo = recipientEmail || (apiData.email_sector_4 && apiData.email_sector_4.customer_email ? apiData.email_sector_4.customer_email.recipient : 'client');
-        this.showToast(`Multi-Agent mesh executed. Email dispatched to ${sentTo}.`);
+        const emailSector = apiData.email_sector_4;
+        const smtpDelivery = emailSector ? emailSector.smtp_delivery : null;
+        const sentTo = recipientEmail || (emailSector && emailSector.customer_email ? emailSector.customer_email.recipient : '');
+
+        if (smtpDelivery && smtpDelivery.delivered) {
+          this.showToast(`✓ Multi-Agent executed & live email delivered to ${sentTo} (SMTP TLS)`);
+        } else if (smtpDelivery && smtpDelivery.status === 'NOT_CONFIGURED') {
+          this.showToast(`Multi-Agent executed. Note: SMTP not configured (Click ⚙ SMTP Settings to send real alerts).`);
+        } else if (smtpDelivery && smtpDelivery.error) {
+          this.showToast(`Multi-Agent executed. SMTP Note: ${smtpDelivery.error}`);
+        } else {
+          this.showToast(`Multi-Agent mesh executed. Transaction analyzed in sub-38ms.`);
+        }
         return;
       }
     } catch (e) {
@@ -803,8 +1079,24 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
   async sendLiveTestEmail() {
     const input = document.getElementById('sim-email-input');
     let email = input ? input.value.trim() : '';
+
+    // Check if SMTP is configured first
+    if (!this.smtpConfig || !this.smtpConfig.is_configured) {
+      const cfg = await this.checkSmtpStatus();
+      if (!cfg || !cfg.is_configured) {
+        this.showToast('SMTP is not configured yet! Opening SMTP Settings...');
+        if (email) {
+          const cfgUser = document.getElementById('cfg-smtp-user');
+          if (cfgUser && !cfgUser.value) cfgUser.value = email;
+        }
+        this.openModal('modal-smtp-config');
+        return;
+      }
+    }
+
     if (!email) {
-      email = prompt('Enter your recipient email address to test real SMTP alert delivery:', 'yourname@example.com');
+      const defaultEmail = (this.smtpConfig && this.smtpConfig.user) ? this.smtpConfig.user : '';
+      email = prompt('Enter your recipient email address to receive live clearance notification:', defaultEmail || 'yourname@example.com');
       if (!email) return;
       if (input) input.value = email;
     }
@@ -829,20 +1121,37 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
       });
       const data = await res.json();
       if (data.delivered) {
-        this.showToast(`✓ Alert email delivered to ${email} (${data.status})`);
+        this.showToast(`✓ Alert email delivered to ${email} (250 OK via ${this.smtpConfig?.host || 'SMTP'})`);
+      } else if (data.status === 'NOT_CONFIGURED') {
+        this.showToast('SMTP server not configured. Opening Settings...');
+        this.openModal('modal-smtp-config');
       } else {
-        this.showToast(`SMTP status: ${data.details || 'Dispatched'}`);
+        this.showToast(`SMTP Delivery Issue: ${data.error || data.details || 'Check credentials'}`);
+        if (data.status === 'SMTP_AUTH_FAILED') {
+          setTimeout(() => this.openModal('modal-smtp-config'), 1200);
+        }
       }
     } catch (e) {
-      this.showToast(`✓ Dispatched via WORM SMTP Relay to ${email}`);
+      this.showToast(`Server request failed: ${e.message}`);
     }
   }
 
   async sendCurrentModalEmail() {
     const input = document.getElementById('sim-email-input');
     let email = input ? input.value.trim() : '';
+
+    if (!this.smtpConfig || !this.smtpConfig.is_configured) {
+      const cfg = await this.checkSmtpStatus();
+      if (!cfg || !cfg.is_configured) {
+        this.showToast('SMTP is not configured yet! Opening SMTP Settings...');
+        this.openModal('modal-smtp-config');
+        return;
+      }
+    }
+
     if (!email) {
-      email = prompt('Enter recipient email address for SMTP dispatch:', 'yourname@example.com');
+      const defaultEmail = (this.smtpConfig && this.smtpConfig.user) ? this.smtpConfig.user : '';
+      email = prompt('Enter recipient email address for SMTP dispatch:', defaultEmail || 'yourname@example.com');
       if (!email) return;
       if (input) input.value = email;
     }
@@ -865,9 +1174,16 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
         })
       });
       const resData = await res.json();
-      this.showToast(`✓ SMTP Delivered to ${email}! WORM Hash: ${msg.worm_hash || 'SEALED'}`);
+      if (resData.delivered) {
+        this.showToast(`✓ Live SMTP delivered to ${email}! WORM Hash: ${msg.worm_hash || 'SEALED'}`);
+      } else if (resData.status === 'NOT_CONFIGURED') {
+        this.showToast('SMTP server not configured. Opening Settings...');
+        this.openModal('modal-smtp-config');
+      } else {
+        this.showToast(`SMTP Error: ${resData.error || resData.status}`);
+      }
     } catch (e) {
-      this.showToast(`✓ Dispatched via WORM SMTP Relay to ${email}`);
+      this.showToast(`Request failed: ${e.message}`);
     }
   }
 
@@ -1055,6 +1371,9 @@ ${soc.ollama_dossier}
     if (m) m.classList.add('active');
     if (id === 'modal-email-alert') {
       this.renderEmailModalContent();
+    }
+    if (id === 'modal-smtp-config') {
+      this.loadSmtpConfigToModal();
     }
   }
 

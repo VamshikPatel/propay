@@ -60,9 +60,23 @@ def simulate():
     result = orchestrator.process_transaction(payload, recipient_email=recipient_email or None)
     return jsonify(result)
 
-@app.route("/api/email/config", methods=["GET"])
+@app.route("/api/email/config", methods=["GET", "POST"])
 def email_config():
-    return jsonify(orchestrator.email_agent.get_smtp_config())
+    if request.method == "POST":
+        data = request.get_json(force=True, silent=True) or {}
+        save_res = orchestrator.email_agent.save_smtp_config(data)
+        return jsonify(save_res)
+    return jsonify(orchestrator.email_agent.get_safe_smtp_config())
+
+@app.route("/api/email/test", methods=["POST"])
+def test_email():
+    data = request.get_json(force=True, silent=True) or {}
+    recipient = (data.get("recipient") or data.get("email") or "").strip()
+    # If custom config passed in test request, save it first
+    if data.get("host") and data.get("user"):
+        orchestrator.email_agent.save_smtp_config(data)
+    res = orchestrator.email_agent.test_smtp_connection(recipient=recipient)
+    return jsonify(res)
 
 @app.route("/api/email/send", methods=["POST"])
 def send_email_api():
