@@ -1,49 +1,49 @@
 # ProPay — 3:30 PM Checkpoint Submission & Viva Defense Guide
 **Real-Time Banking Fraud & Cognitive Quishing Defense Agent**  
-**Design Direction:** *Pirate Wires* × *pleasecallmechamp.com* × Motion.dev Editorial Studio  
+**Design Direction:** WeBank Modern Fintech Header (Line-art illustrations, lime accents, doodle squiggle underline)  
 **Checkpoint Date & Time:** 21st November 2026, 3:30 PM
 
 ---
 
 ## 1. 60-Second Opening Pitch to the Panel / Guide
 
-> *"Good afternoon Sir/Madam. Our project is **ProPay**, an enterprise Real-Time Banking Fraud & Quishing Defense Agent.*
+> *"Good afternoon Sir/Madam. Our project is **ProPay**, an enterprise Real-Time Banking Fraud & Quishing Defense Agent.
 >
-> *Traditional fraud detection systems focus on historical database thresholds, leaving banks completely vulnerable to emerging zero-day digital fraud: specifically **Quishing (tampered physical QR stickers on point-of-sale terminals)** and **unsolicited smishing links** distributed via SMS and messaging channels.*
+> Traditional fraud detection systems focus on historical database thresholds, leaving banks completely vulnerable to emerging zero-day digital fraud: specifically **Quishing (tampered physical QR stickers on point-of-sale terminals)** and **unsolicited smishing links** distributed via SMS and messaging channels.
 >
-> *ProPay introduces a **Dual-Speed Architecture** across **3 Threat Sectors**:*
-> 1. *Our synchronous inline fast-path clears legitimate payments in **under 38 milliseconds** using lightweight rule engines and LightGBM models.*
-> 2. *Ambiguous anomalies and deceptive payloads are dispatched **asynchronously to a private, on-premise Ollama LLM cluster (Llama 3)**.*
+> ProPay introduces a **Dual-Speed Architecture** across **3 Threat Sectors**:
+> 1. Our synchronous inline fast-path clears legitimate payments in **under 38 milliseconds** using lightweight rule engines and LightGBM models.
+> 2. Ambiguous anomalies and deceptive payloads are dispatched **asynchronously to a private, on-premise Ollama LLM cluster (Llama 3)**.
 >
-> *Crucially, **Ollama is strictly scoped to where it excels**: semantic phishing text analysis, QR merchant-vs-payee mismatch heuristics, and generating human-readable forensic case dossiers—guaranteeing 100% banking data sovereignty without slowing down sub-second transaction throughput.*
+> Crucially, **Ollama is strictly scoped to where it excels**: semantic phishing text analysis, QR merchant-vs-payee mismatch heuristics, and generating human-readable forensic case dossiers—guaranteeing 100% banking data sovereignty without slowing down sub-second transaction throughput.
 >
-> *Our design fuses the towering architectural typography and lead story layout of **Pirate Wires** with the iconic character badges and brutalist editorial feel of **pleasecallmechamp.com**."*
+> Our user interface adopts modern fintech aesthetics inspired by **WeBank**, featuring crisp high-contrast cards, hand-drawn vector line-art with electric lime accents, a playful purple doodle squiggle underline, and a dual-speed telemetry simulator."*
 
 ---
 
 ## 2. Live Demonstration Flow for the 3:30 PM Checkpoint
 
-Open `index.html` in Chrome/Edge or run `server.py` (`http://localhost:5055`):
+Open `frontend/index.html` in Chrome/Edge or run `server.py` (`http://localhost:5055`):
 
-1. **Showcase the Pirate Wires × Champ Design Crossover**:
-   - Point out the towering architectural **`PROPAY`** wordmark with the embedded shield character badge inside the `P`.
-   - Point out the lead story editorial split grid: headline on the left, real-time risk radar HUD on the right.
-   - Point out the "November 21, 2026 From the ProPay Threat Intelligence Desk" date banner with 3-column newspaper cards.
+1. **Showcase the WeBank Modern Fintech Design**:
+   - Point out the clean ivory/white canvas, high-impact headline *"Intercept, verify, protect your cash with a single agent"*, and the purple hand-drawn doodle squiggle underline.
+   - Point out the custom hand-drawn vector illustrations: POS terminal with electric lime fill on the left, and laptop with AI shield and flying alert envelopes on the right.
+   - Point out the pill-shaped payload input bar with instant CTA *"Analyze Threat"*.
 2. **Demonstrate Preset 1 (Clean Bank Wire / Clearance QR)**:
-   - Click `PRESET 1` $\rightarrow$ Click `RUN THREAT PIPELINE ➔`.
+   - Click `PRESET 1` $\rightarrow$ Click `Run Threat Pipeline ➔`.
    - **Show the Evaluator:** Evaluated in **$18.0\text{ms}$**. Drools institutional whitelist matched. Ollama is **bypassed** to keep wire speed instant. `ALLOW TRANSACTION`.
 3. **Demonstrate Preset 2 (Quishing Attack / Tampered QR Sticker)**:
-   - Click `PRESET 2` $\rightarrow$ Click `RUN THREAT PIPELINE ➔`.
+   - Click `PRESET 2` $\rightarrow$ Click `Run Threat Pipeline ➔`.
    - **Show the Evaluator:** 
      - Sector 1 extracts the payload: Display name claims `HDFC Official Merchant`, but payee settlement VPA is `scammer_wallet@paytm`.
      - Sector 2 (Ollama on-prem) detects the entity discrepancy in $1.24\text{s}$ async and generates the **Forensic Case Dossier**:
        *"🚨 CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy. The QR display metadata explicitly claims 'HDFC Official Merchant', but the underlying settlement address resolves to an unverified individual wallet ('scammer_wallet@paytm'). Strongly indicates physical QR sticker replacement attack on campus/POS terminals."*
      - Sector 3 triggers: `⚠️ DYNAMIC IN-APP INTERCEPTION: Transfer Frozen & FinCEN SAR Auto-Drafted`.
 4. **Demonstrate Preset 3 (Unsolicited Smishing Link)**:
-   - Click `PRESET 3` $\rightarrow$ Click `RUN THREAT PIPELINE ➔`.
+   - Click `PRESET 3` $\rightarrow$ Click `Run Threat Pipeline ➔`.
    - **Show the Evaluator:** Shortened `bit.ly` link is unrolled $\rightarrow$ resolves to lookalike domain `.xyz` $\rightarrow$ Ollama detects social engineering urgency and halts reverse collect-request trap.
 5. **Open C4 Level 2 HLD Architecture Modal**:
-   - Click `05 // ARCHITECTURE ↗` in the top bar to walk the panel through the complete 6-tier architecture and the **Strict Ollama Boundary Table**.
+   - Click `C4 HLD Architecture` in the top bar to walk the panel through the complete 6-tier architecture and the **Strict Ollama Boundary Table**.
 
 ---
 
