@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ProPay — Real-Time Banking Fraud & Cognitive Quishing Defense</title>
-  <link rel="stylesheet" href="css/styles.css?v=4.0" />
+  <title>ProPay — Real-Time Banking Fraud &amp; Multi-Agent Quishing Defense</title>
+  <link rel="stylesheet" href="css/styles.css?v=5.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,12 +14,12 @@
   <!-- Top Announcement Bar -->
   <div class="announcement-bar">
     <div class="announcement-content">
-      <span class="badge-pill lime">NEW</span>
-      <span>On-Premise Ollama Engine Armed for Quishing &amp; Unsolicited Link Defense</span>
+      <span class="badge-pill lime">MULTI-AGENT MESH</span>
+      <span>5 Autonomous Agents Armed for Real-Time Quishing &amp; Automated Email Alerts</span>
       <span class="announcement-link" onclick="window.proPayApp.openModal('modal-ollama')">Learn about the strict Ollama boundary ➔</span>
     </div>
     <div class="announcement-checkpoint" onclick="window.proPayApp.openModal('modal-viva')">
-      <span>CHECKPOINT 3:30 PM VIVA GUIDE</span> ↗
+      <span>CHECKPOINT VIVA GUIDE</span> ↗
     </div>
   </div>
 
@@ -27,12 +27,13 @@
   <header class="webank-header">
     <div class="header-inner">
       
-      <!-- Brand Logo -->
+      <!-- Minimalist Brand Logo (Zero checkmarks) -->
       <div class="brand-logo" onclick="window.proPayApp.resetView()">
         <div class="logo-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 4h8a5 5 0 0 1 5 5v0a5 5 0 0 1-5 5H5V4z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 14h6a4 4 0 0 1 4 4v0a4 4 0 0 1-4 4H5v-8z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            <circle cx="11.5" cy="9" r="1.5" fill="currentColor"/>
           </svg>
         </div>
         <span class="logo-text">ProPay</span>
@@ -40,6 +41,10 @@
 
       <!-- Navigation Links -->
       <nav class="nav-menu">
+        <div class="nav-item-dropdown" onclick="window.proPayApp.scrollTo('orchestration')">
+          <span>Multi-Agent Swarm</span>
+          <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+        </div>
         <div class="nav-item-dropdown" onclick="window.proPayApp.scrollTo('sectors')">
           <span>Threat Sectors</span>
           <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
@@ -48,13 +53,19 @@
           <span>Live Simulator</span>
           <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
         </div>
+        <span class="nav-link" onclick="window.proPayApp.openModal('modal-email-alert')">Email Alerts</span>
         <span class="nav-link" onclick="window.proPayApp.openModal('modal-hld')">C4 HLD Architecture</span>
-        <span class="nav-link" onclick="window.proPayApp.openModal('modal-ollama')">Ollama Boundary</span>
         <span class="nav-link" onclick="window.proPayApp.scrollTo('feed')">Kafka Feed</span>
       </nav>
 
-      <!-- Action Group -->
+      <!-- Action Group with Theme Toggler -->
       <div class="header-actions">
+        <!-- Interactive Theme Switcher Button -->
+        <button class="theme-toggle-nav-btn" id="nav-theme-btn" onclick="window.proPayApp.toggleTheme()" title="Toggle Light / Dark Theme">
+          <span class="theme-orb-nav-glyph"></span>
+          <span class="theme-nav-label" id="theme-nav-label">Dark Mode</span>
+        </button>
+
         <span class="text-login" onclick="window.proPayApp.openModal('modal-viva')">Viva Cheatsheet</span>
         <button class="btn-signup" onclick="window.proPayApp.scrollTo('simulator')">
           <span>Try Simulator</span>
@@ -63,6 +74,15 @@
 
     </div>
   </header>
+
+  <!-- Floating 3D Iridescent Theme Switcher Orb (Inspired by Champ Studio) -->
+  <div class="floating-theme-orb-wrapper" id="floating-theme-orb" onclick="window.proPayApp.toggleTheme()" title="Click to Switch Theme (Light WeBank / Dark Cyber Studio)">
+    <div class="theme-orb-sphere">
+      <div class="orb-specular-light"></div>
+      <span class="orb-mode-text" id="orb-indicator-text">2</span>
+    </div>
+    <div class="orb-tooltip">SWITCH THEME</div>
+  </div>
 
   <!-- Main Canvas Container -->
   <main class="main-body">
@@ -97,7 +117,7 @@
             <path d="M20 100 C 40 85, 65 90, 80 102" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
             <rect x="52" y="55" width="46" height="28" rx="4" transform="rotate(-20 52 55)" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>
             <!-- Radio Scan Waves -->
-            <path d="M140 45 C 150 50, 155 62, 150 72" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 4"/>
+            <path d="M140 45 C 150 50, 155 62, 150 72" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 4"/>
           </svg>
         </div>
 
@@ -105,23 +125,23 @@
         <div class="hero-center-content">
           <h1 class="hero-headline">
             Intercept, verify, protect your<br/>
-            cash with a <span class="highlight-underline">single agent<svg class="doodle-squiggle" viewBox="0 0 200 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 14C50 3, 140 2, 197 12C150 6, 80 8, 30 15" stroke="#6366F1" stroke-width="4.5" stroke-linecap="round"/></svg></span>
+            cash with a <span class="highlight-underline">single agent<svg class="doodle-squiggle" viewBox="0 0 200 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 14C50 3, 140 2, 197 12C150 6, 80 8, 30 15" stroke="#7C3AED" stroke-width="4.5" stroke-linecap="round"/></svg></span>
           </h1>
 
           <p class="hero-subtitle">
-            ProPay gives banks and fintechs real-time cognitive defense against physical QR code tampering (Quishing) and unsolicited smishing links using an on-premises Ollama agent.
+            ProPay orchestrates a multi-agent swarm for real-time Quishing defense, sub-38ms wire clearance, and automated Ollama-synthesized email alerts for customers and banking SOCs.
           </p>
 
-          <!-- Input CTA Group (WeBank style) -->
+          <!-- Input CTA Group (WeBank style with Purplish Gradient Button) -->
           <div class="hero-input-group">
             <input type="text" class="hero-search-input" id="hero-quick-input" placeholder="Paste UPI QR string (upi://pay?pa=...) or suspicious link..." value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" />
-            <button class="hero-cta-btn" onclick="window.proPayApp.quickAnalyzeFromHero()">
+            <button class="hero-cta-btn purplish-gradient" onclick="window.proPayApp.quickAnalyzeFromHero()">
               <span>Analyze Threat</span>
             </button>
           </div>
 
           <div class="hero-micro-copy">
-            <span>Inline clearance &lt; 38ms</span> · <span>Zero cloud PII leakage</span> · <span>50,000 TPS Apache Kafka backbone</span>
+            <span>Inline clearance &lt; 38ms</span> · <span>Multi-Agent Swarm</span> · <span>Automated Email Alerts</span> · <span>Private Ollama VPC</span>
           </div>
         </div>
 
@@ -135,15 +155,15 @@
             <!-- Internal Graph Screen Fill with Lime -->
             <rect x="60" y="78" width="100" height="68" rx="4" fill="#F8FAFC"/>
             <!-- Line Chart on Laptop -->
-            <path d="M66 130 L85 115 L105 125 L125 95 L145 100 L155 88" stroke="#6366F1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M66 130 L85 115 L105 125 L125 95 L145 100 L155 88" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             <!-- Floating Flying Envelope 1 with Lime Accent -->
             <rect x="145" y="30" width="36" height="24" rx="4" fill="#D4F862" stroke="#0F172A" stroke-width="2.2" transform="rotate(15 145 30)"/>
             <path d="M148 35 L163 46 L178 39" stroke="#0F172A" stroke-width="2" transform="rotate(15 145 30)"/>
             <!-- Floating Shield Alert 2 with Purple Accent -->
-            <rect x="25" y="45" width="34" height="24" rx="4" fill="#EDE9FE" stroke="#6366F1" stroke-width="2.2" transform="rotate(-12 25 45)"/>
-            <path d="M36 50 L42 56 L49 48" stroke="#6366F1" stroke-width="2" transform="rotate(-12 25 45)"/>
+            <rect x="25" y="45" width="34" height="24" rx="4" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2.2" transform="rotate(-12 25 45)"/>
+            <path d="M36 50 L42 56 L49 48" stroke="#7C3AED" stroke-width="2" transform="rotate(-12 25 45)"/>
             <!-- Sparkles -->
-            <path d="M190 85 L193 92 L200 95 L193 98 L190 105 L187 98 L180 95 L187 92 Z" fill="#6366F1"/>
+            <path d="M190 85 L193 92 L200 95 L193 98 L190 105 L187 98 L180 95 L187 92 Z" fill="#7C3AED"/>
           </svg>
         </div>
 
@@ -164,7 +184,114 @@
     </section>
 
     <!-- ====================================================================
-         SECTION 2: THE 3 THREAT SECTORS (WeBank Modern Fintech Cards)
+         SECTION 1B: MULTI-AGENT SWARM ORCHESTRATION (5 Specialized Agents)
+         ==================================================================== -->
+    <section class="orchestration-section" id="section-orchestration">
+      <div class="section-heading-wrap">
+        <span class="pill-badge-indigo">MULTI-AGENT MESH ARCHITECTURE</span>
+        <h2 class="section-headline">5 Autonomous Agents Operating at Wire Speed</h2>
+        <p class="section-deck">
+          ProPay deploys a decoupled multi-agent swarm where deterministic rules clear transactions in sub-38ms, while on-premise Ollama agents synthesize cognitive forensics and real-time security email alerts.
+        </p>
+      </div>
+
+      <div class="agents-mesh-grid">
+        
+        <!-- Agent 1 -->
+        <div class="agent-mesh-card">
+          <div class="agent-card-header">
+            <span class="agent-pill-id">AGENT 01</span>
+            <span class="agent-status-badge active">● SYNC</span>
+          </div>
+          <div class="agent-icon-box">🔍</div>
+          <h4 class="agent-name">Ingress &amp; Decoding Agent</h4>
+          <span class="agent-tech-tag">WASM Edge · Envoy Proxy</span>
+          <p class="agent-summary">
+            Extracts UPI payment parameters (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links, and eliminates Punycode spoofing in &lt; 5ms.
+          </p>
+          <div class="agent-footer-metric">
+            <span>SLA: &lt; 5.0ms</span>
+            <span class="metric-val">100% Edge</span>
+          </div>
+        </div>
+
+        <!-- Agent 2 -->
+        <div class="agent-mesh-card">
+          <div class="agent-card-header">
+            <span class="agent-pill-id">AGENT 02</span>
+            <span class="agent-status-badge active">● SYNC</span>
+          </div>
+          <div class="agent-icon-box">⚡</div>
+          <h4 class="agent-name">Fast-Path Rule Agent</h4>
+          <span class="agent-tech-tag">Drools Engine · LightGBM</span>
+          <p class="agent-summary">
+            Validates institutional whitelists, sanction lists, and sliding-window velocity rules to authorize clean payments in &lt; 38ms.
+          </p>
+          <div class="agent-footer-metric">
+            <span>SLA: &lt; 38.0ms</span>
+            <span class="metric-val">Instant Wire</span>
+          </div>
+        </div>
+
+        <!-- Agent 3 -->
+        <div class="agent-mesh-card featured-ollama">
+          <div class="agent-card-header">
+            <span class="agent-pill-id purple">AGENT 03 // OLLAMA</span>
+            <span class="agent-status-badge purple">● ASYNC</span>
+          </div>
+          <div class="agent-icon-box purple">🦙</div>
+          <h4 class="agent-name">Cognitive Reasoning Agent</h4>
+          <span class="agent-tech-tag purple">Private Ollama (Llama 3)</span>
+          <p class="agent-summary">
+            Performs semantic text analysis, detects physical QR merchant-vs-payee mismatches, and compiles plain-English forensic case dossiers.
+          </p>
+          <div class="agent-footer-metric">
+            <span>SLA: ~1.2s (Async)</span>
+            <span class="metric-val purple">Zero Cloud PII</span>
+          </div>
+        </div>
+
+        <!-- Agent 4 -->
+        <div class="agent-mesh-card">
+          <div class="agent-card-header">
+            <span class="agent-pill-id">AGENT 04</span>
+            <span class="agent-status-badge active">● REAL-TIME</span>
+          </div>
+          <div class="agent-icon-box">🛡️</div>
+          <h4 class="agent-name">Adaptive Enforcement Agent</h4>
+          <span class="agent-tech-tag">Friction Arbiter · Auto-SAR</span>
+          <p class="agent-summary">
+            Dynamically injects in-app glass warnings on customer devices, freezes tampered transfers, and drafts FinCEN SAR filings for AML compliance.
+          </p>
+          <div class="agent-footer-metric">
+            <span>Action: Dynamic Glass</span>
+            <span class="metric-val">WORM Logged</span>
+          </div>
+        </div>
+
+        <!-- Agent 5 -->
+        <div class="agent-mesh-card featured-email">
+          <div class="agent-card-header">
+            <span class="agent-pill-id lime">AGENT 05 // NOTIFY</span>
+            <span class="agent-status-badge lime">● REAL-TIME</span>
+          </div>
+          <div class="agent-icon-box lime">✉️</div>
+          <h4 class="agent-name">Ollama Email Alert Agent</h4>
+          <span class="agent-tech-tag lime">Ollama Mailer · SMTP TLS</span>
+          <p class="agent-summary">
+            Synthesizes personalized customer security alerts (tampered QR warnings or transaction receipts) and dispatches automated bank SOC escalation tickets.
+          </p>
+          <div class="agent-footer-metric">
+            <span>SLA: ~15ms Dispatch</span>
+            <span class="metric-val lime">Auto-Dispatched</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 2: THE 3 THREAT SECTORS
          ==================================================================== -->
     <section class="sectors-section" id="section-sectors">
       <div class="section-heading-wrap">
@@ -255,12 +382,15 @@
         <div class="sim-header">
           <div>
             <span class="pill-badge-indigo">INTERACTIVE WORKBENCH</span>
-            <h2 class="sim-title">Live Threat Execution Pipeline</h2>
+            <h2 class="sim-title">Live Threat &amp; Multi-Agent Pipeline</h2>
             <p class="sim-deck">
-              Inject live payloads into the ProPay risk mesh. Observe sub-38ms inline fast-path clearance, asynchronous Ollama cognitive deep-dives, and automated enforcement actions.
+              Inject live payloads into the ProPay risk mesh. Observe sub-38ms inline fast-path clearance, asynchronous Ollama cognitive deep-dives, and automated security email alert synthesis.
             </p>
           </div>
           <div class="sim-header-actions">
+            <button class="btn-email-alert-trigger" onclick="window.proPayApp.openModal('modal-email-alert')">
+              <span>✉️ View Generated Email Alert ↗</span>
+            </button>
             <button class="btn-outline" onclick="window.proPayApp.openModal('modal-hld')">
               <span>View C4 Architecture ↗</span>
             </button>
@@ -280,10 +410,10 @@
           </button>
         </div>
 
-        <!-- Search Input Bar -->
+        <!-- Search Input Bar with Purplish Gradient Button -->
         <div class="sim-search-bar">
           <input type="text" class="sim-search-input" id="sim-input" value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" placeholder="Paste any UPI URI, QR intent string, or payment link..." />
-          <button class="btn-execute" id="btn-run-sim" onclick="window.proPayApp.executeSimulation()">
+          <button class="btn-execute purplish-gradient" id="btn-run-sim" onclick="window.proPayApp.executeSimulation()">
             <span>Run Threat Pipeline ➔</span>
           </button>
         </div>
@@ -319,6 +449,7 @@
               <th>PAYEE / URI TARGET</th>
               <th>INLINE SLA</th>
               <th>OLLAMA REASONING</th>
+              <th>EMAIL DISPATCH</th>
               <th>ENFORCEMENT</th>
             </tr>
           </thead>
@@ -366,10 +497,10 @@
             <h4>Friction-Adaptive Interceptor</h4>
             <p>Allows safe payments, triggers 2FA/biometric challenges, and freezes confirmed fraud with in-app warnings.</p>
           </div>
-          <div class="hld-cell">
-            <span class="cell-tag slate">TIER 5: ANALYST WORKBENCH</span>
-            <h4>Human-in-the-Loop (HITL)</h4>
-            <p>Presents pre-compiled Ollama evidence dossiers to fraud analysts, slashing triage from 15m to &lt; 2m.</p>
+          <div class="hld-cell highlight-lime">
+            <span class="cell-tag lime">TIER 5: OLLAMA ALERTS</span>
+            <h4>Contextual Email Dispatcher</h4>
+            <p>Synthesizes human-readable customer fraud alerts and automated SOC escalation emails with FinCEN SAR proof.</p>
           </div>
           <div class="hld-cell">
             <span class="cell-tag blue">TIER 6: COMPLIANCE</span>
@@ -436,9 +567,9 @@
               <td>Cross-references merchant metadata vs settlement address to catch physical QR sticker fraud.</td>
             </tr>
             <tr>
-              <td><strong>Forensic Case Dossier Synthesis</strong></td>
+              <td><strong>Automated Email Alert Synthesis</strong></td>
               <td class="badge-yes">✅ YES (Ollama)</td>
-              <td>Translates multi-dimensional anomaly scores into clear human-readable evidence for analysts.</td>
+              <td>Synthesizes personalized, plain-English fraud alerts for customers and bank SOC analysts.</td>
             </tr>
             <tr>
               <td><strong>Data Sovereignty &amp; PCI-DSS</strong></td>
@@ -472,15 +603,16 @@
         <div class="pitch-highlight-box">
           <span class="pitch-tag">60-SECOND OPENING PITCH:</span>
           <p>
-            "Good afternoon. Our project is <strong>ProPay</strong>, an enterprise Real-Time Banking Fraud &amp; Quishing Defense Agent. We specifically target the modern 'Now Issues'—physical QR code tampering (Quishing) and unsolicited smishing links. We built a dual-speed architecture: sub-38ms deterministic wire clearance, paired with an on-premises Ollama cluster for cognitive reasoning. Crucially, Ollama is strictly scoped to semantic link analysis, payee mismatch heuristics, and forensic case dossiers—guaranteeing 100% data privacy with zero latency bottlenecks on payment clearance."
+            "Good afternoon Sir/Madam. Our project is <strong>ProPay</strong>, an enterprise Real-Time Banking Fraud &amp; Quishing Defense Agent. We specifically target the modern 'Now Issues'—physical QR code tampering (Quishing) and unsolicited smishing links. We built a dual-speed multi-agent architecture: sub-38ms deterministic wire clearance, paired with an on-premises Ollama cluster for cognitive reasoning. Crucially, Ollama is strictly scoped to semantic link analysis, payee mismatch heuristics, and automated email alert dispatch—guaranteeing 100% data privacy with zero latency bottlenecks on payment clearance."
           </p>
         </div>
 
         <span class="section-subhead">KEY ARCHITECTURAL HIGHLIGHTS:</span>
         <ul class="highlight-bullet-list">
-          <li><strong>WeBank Modern Fintech Design:</strong> Clean ivory canvas, high-contrast typography, hand-drawn vector line-art, and fluid pill micro-interactions.</li>
-          <li><strong>3 Threat Sectors:</strong> Edge extraction ($&lt;5\text{ms}$), Ollama cognitive analysis ($1.2\text{s}$ async), and dynamic in-app glass warnings.</li>
-          <li><strong>Strict Ollama Boundary:</strong> On-premise deployment ensuring zero customer PII leaves the bank's secure perimeter.</li>
+          <li><strong>Multi-Agent Swarm:</strong> 5 cooperating autonomous agents covering Ingress, Inline Fast-Path, Ollama Cognitive, Enforcement, and Email Dispatch.</li>
+          <li><strong>Automated Email Alerts:</strong> Instant contextual email notifications synthesized for customers and bank SOC analysts with WORM audit hashes.</li>
+          <li><strong>Theme Switcher:</strong> Seamless switching between Light WeBank Fintech Mode and Dark Cyber Studio Mode with floating iridescent orb widget.</li>
+          <li><strong>Strict Ollama Boundary:</strong> On-premise private deployment ensuring zero customer PII leaves the bank's secure perimeter.</li>
         </ul>
       </div>
 
@@ -490,10 +622,46 @@
     </div>
   </div>
 
+  <!-- ====================================================================
+       MODAL 4: GENERATED EMAIL ALERT VIEWER
+       ==================================================================== -->
+  <div class="modal-backdrop" id="modal-email-alert">
+    <div class="modal-dialog modal-wide">
+      <div class="modal-header">
+        <div>
+          <span class="pill-badge-indigo">AGENT 05 // OLLAMA EMAIL DISPATCHER</span>
+          <h3 class="modal-title">Real-Time Contextual Email Alert Preview</h3>
+        </div>
+        <button class="modal-close-btn" onclick="window.proPayApp.closeModal('modal-email-alert')">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Dual Email Type Tabs -->
+        <div class="email-tabs-row">
+          <button class="email-tab-btn active" id="btn-email-customer" onclick="window.proPayApp.switchEmailView('customer')">
+            <span>👤 Customer Security Notification</span>
+          </button>
+          <button class="email-tab-btn" id="btn-email-soc" onclick="window.proPayApp.switchEmailView('soc')">
+            <span>🛡️ Bank SOC Security Incident Escalation</span>
+          </button>
+        </div>
+
+        <!-- Rendered Email Envelope Client Mockup -->
+        <div class="email-client-wrapper" id="email-client-container">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-close" onclick="window.proPayApp.closeModal('modal-email-alert')">Close Preview</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Shelf -->
   <div class="toast-shelf" id="toast-shelf"></div>
 
   <!-- Script -->
-  <script src="js/app.js?v=4.0"></script>
+  <script src="js/app.js?v=5.0"></script>
 </body>
 </html>
