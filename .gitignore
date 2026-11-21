@@ -3,3 +3,7 @@ __pycache__/
 *.jsonl
 *.log
 .DS_Store
+backend/smtp_config.json
+smtp_config.json
+.env
+*.env
