@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ProPay — Real-Time Banking Fraud &amp; Multi-Agent Quishing Defense</title>
-  <link rel="stylesheet" href="css/styles.css?v=5.0" />
+  <link rel="stylesheet" href="css/styles.css?v=6.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -58,13 +58,24 @@
         <span class="nav-link" onclick="window.proPayApp.scrollTo('feed')">Kafka Feed</span>
       </nav>
 
-      <!-- Action Group with Theme Toggler -->
+      <!-- Action Group with shadcn-style Theme Toggle -->
       <div class="header-actions">
-        <!-- Interactive Theme Switcher Button -->
-        <button class="theme-toggle-nav-btn" id="nav-theme-btn" onclick="window.proPayApp.toggleTheme()" title="Toggle Light / Dark Theme">
-          <span class="theme-orb-nav-glyph"></span>
-          <span class="theme-nav-label" id="theme-nav-label">Dark Mode</span>
-        </button>
+        
+        <!-- shadcn-style Minimal Toggle Switch -->
+        <div class="shadcn-theme-toggle" id="shadcn-theme-toggle" onclick="window.proPayApp.toggleTheme()" role="switch" aria-checked="false" title="Toggle Theme (Light / Dark)">
+          <div class="shadcn-switch-track">
+            <div class="shadcn-switch-thumb">
+              <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+              </svg>
+              <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+              </svg>
+            </div>
+          </div>
+          <span class="shadcn-toggle-label" id="theme-nav-label">Dark</span>
+        </div>
 
         <span class="text-login" onclick="window.proPayApp.openModal('modal-viva')">Viva Cheatsheet</span>
         <button class="btn-signup" onclick="window.proPayApp.scrollTo('simulator')">
@@ -74,15 +85,6 @@
 
     </div>
   </header>
-
-  <!-- Floating 3D Iridescent Theme Switcher Orb (Inspired by Champ Studio) -->
-  <div class="floating-theme-orb-wrapper" id="floating-theme-orb" onclick="window.proPayApp.toggleTheme()" title="Click to Switch Theme (Light WeBank / Dark Cyber Studio)">
-    <div class="theme-orb-sphere">
-      <div class="orb-specular-light"></div>
-      <span class="orb-mode-text" id="orb-indicator-text">2</span>
-    </div>
-    <div class="orb-tooltip">SWITCH THEME</div>
-  </div>
 
   <!-- Main Canvas Container -->
   <main class="main-body">
@@ -96,27 +98,21 @@
         <!-- Left Vector Line-Art: Hand Scanning QR / POS Terminal (WeBank style) -->
         <div class="vector-illustration-left">
           <svg class="illustration-svg" viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Terminal Base with Lime Accent Fill -->
             <rect x="80" y="80" width="100" height="95" rx="16" fill="#D4F862" stroke="#0F172A" stroke-width="3"/>
-            <!-- Keypad Screen -->
             <rect x="95" y="95" width="70" height="34" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>
-            <!-- QR Pattern on Terminal Screen -->
             <rect x="102" y="102" width="8" height="8" fill="#0F172A"/>
             <rect x="149" y="102" width="8" height="8" fill="#0F172A"/>
             <rect x="102" y="113" width="8" height="8" fill="#0F172A"/>
             <line x1="116" y1="104" x2="140" y2="104" stroke="#0F172A" stroke-width="2"/>
             <line x1="116" y1="114" x2="145" y2="114" stroke="#0F172A" stroke-width="2"/>
-            <!-- Number Buttons Grid -->
             <circle cx="108" cy="144" r="4" fill="#0F172A"/>
             <circle cx="130" cy="144" r="4" fill="#0F172A"/>
             <circle cx="152" cy="144" r="4" fill="#0F172A"/>
             <circle cx="108" cy="160" r="4" fill="#0F172A"/>
             <circle cx="130" cy="160" r="4" fill="#0F172A"/>
             <circle cx="152" cy="160" r="4" fill="#0F172A"/>
-            <!-- Human Hand Tapping Card -->
             <path d="M20 100 C 40 85, 65 90, 80 102" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
             <rect x="52" y="55" width="46" height="28" rx="4" transform="rotate(-20 52 55)" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>
-            <!-- Radio Scan Waves -->
             <path d="M140 45 C 150 50, 155 62, 150 72" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 4"/>
           </svg>
         </div>
@@ -148,21 +144,14 @@
         <!-- Right Vector Line-Art: Laptop with AI Shield & Alerts (WeBank style) -->
         <div class="vector-illustration-right">
           <svg class="illustration-svg" viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Laptop Base -->
             <path d="M40 160 L180 160 L195 170 L25 170 Z" fill="#0F172A" stroke="#0F172A" stroke-width="2"/>
-            <!-- Laptop Screen -->
             <rect x="52" y="70" width="116" height="85" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
-            <!-- Internal Graph Screen Fill with Lime -->
             <rect x="60" y="78" width="100" height="68" rx="4" fill="#F8FAFC"/>
-            <!-- Line Chart on Laptop -->
             <path d="M66 130 L85 115 L105 125 L125 95 L145 100 L155 88" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Floating Flying Envelope 1 with Lime Accent -->
             <rect x="145" y="30" width="36" height="24" rx="4" fill="#D4F862" stroke="#0F172A" stroke-width="2.2" transform="rotate(15 145 30)"/>
             <path d="M148 35 L163 46 L178 39" stroke="#0F172A" stroke-width="2" transform="rotate(15 145 30)"/>
-            <!-- Floating Shield Alert 2 with Purple Accent -->
             <rect x="25" y="45" width="34" height="24" rx="4" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2.2" transform="rotate(-12 25 45)"/>
             <path d="M36 50 L42 56 L49 48" stroke="#7C3AED" stroke-width="2" transform="rotate(-12 25 45)"/>
-            <!-- Sparkles -->
             <path d="M190 85 L193 92 L200 95 L193 98 L190 105 L187 98 L180 95 L187 92 Z" fill="#7C3AED"/>
           </svg>
         </div>
@@ -184,7 +173,7 @@
     </section>
 
     <!-- ====================================================================
-         SECTION 1B: MULTI-AGENT SWARM ORCHESTRATION (5 Specialized Agents)
+         SECTION 1B: MULTI-AGENT SWARM ORCHESTRATION (Zero Emojis, Clean SVGs)
          ==================================================================== -->
     <section class="orchestration-section" id="section-orchestration">
       <div class="section-heading-wrap">
@@ -203,7 +192,12 @@
             <span class="agent-pill-id">AGENT 01</span>
             <span class="agent-status-badge active">● SYNC</span>
           </div>
-          <div class="agent-icon-box">🔍</div>
+          <div class="agent-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7V4h3M20 7V4h-3M4 17v3h3M20 17v3h-3"/>
+              <line x1="4" y1="12" x2="20" y2="12"/>
+            </svg>
+          </div>
           <h4 class="agent-name">Ingress &amp; Decoding Agent</h4>
           <span class="agent-tech-tag">WASM Edge · Envoy Proxy</span>
           <p class="agent-summary">
@@ -221,7 +215,11 @@
             <span class="agent-pill-id">AGENT 02</span>
             <span class="agent-status-badge active">● SYNC</span>
           </div>
-          <div class="agent-icon-box">⚡</div>
+          <div class="agent-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
           <h4 class="agent-name">Fast-Path Rule Agent</h4>
           <span class="agent-tech-tag">Drools Engine · LightGBM</span>
           <p class="agent-summary">
@@ -239,7 +237,13 @@
             <span class="agent-pill-id purple">AGENT 03 // OLLAMA</span>
             <span class="agent-status-badge purple">● ASYNC</span>
           </div>
-          <div class="agent-icon-box purple">🦙</div>
+          <div class="agent-icon-box purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+              <rect x="9" y="9" width="6" height="6"/>
+              <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>
+            </svg>
+          </div>
           <h4 class="agent-name">Cognitive Reasoning Agent</h4>
           <span class="agent-tech-tag purple">Private Ollama (Llama 3)</span>
           <p class="agent-summary">
@@ -257,7 +261,11 @@
             <span class="agent-pill-id">AGENT 04</span>
             <span class="agent-status-badge active">● REAL-TIME</span>
           </div>
-          <div class="agent-icon-box">🛡️</div>
+          <div class="agent-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
           <h4 class="agent-name">Adaptive Enforcement Agent</h4>
           <span class="agent-tech-tag">Friction Arbiter · Auto-SAR</span>
           <p class="agent-summary">
@@ -275,7 +283,12 @@
             <span class="agent-pill-id lime">AGENT 05 // NOTIFY</span>
             <span class="agent-status-badge lime">● REAL-TIME</span>
           </div>
-          <div class="agent-icon-box lime">✉️</div>
+          <div class="agent-icon-box lime">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </div>
           <h4 class="agent-name">Ollama Email Alert Agent</h4>
           <span class="agent-tech-tag lime">Ollama Mailer · SMTP TLS</span>
           <p class="agent-summary">
@@ -374,7 +387,7 @@
     </section>
 
     <!-- ====================================================================
-         SECTION 3: LIVE INTERACTIVE THREAT SIMULATOR
+         SECTION 3: LIVE INTERACTIVE THREAT SIMULATOR & JUSPAY FLOW
          ==================================================================== -->
     <section class="simulator-section" id="section-simulator">
       <div class="simulator-card">
@@ -384,12 +397,13 @@
             <span class="pill-badge-indigo">INTERACTIVE WORKBENCH</span>
             <h2 class="sim-title">Live Threat &amp; Multi-Agent Pipeline</h2>
             <p class="sim-deck">
-              Inject live payloads into the ProPay risk mesh. Observe sub-38ms inline fast-path clearance, asynchronous Ollama cognitive deep-dives, and automated security email alert synthesis.
+              Simulate full payment aggregation lifecycles. Observe sub-38ms inline fast-path clearance, asynchronous Ollama cognitive deep-dives, and automated security email alert synthesis.
             </p>
           </div>
           <div class="sim-header-actions">
             <button class="btn-email-alert-trigger" onclick="window.proPayApp.openModal('modal-email-alert')">
-              <span>✉️ View Generated Email Alert ↗</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <span>View Generated Email Alert ↗</span>
             </button>
             <button class="btn-outline" onclick="window.proPayApp.openModal('modal-hld')">
               <span>View C4 Architecture ↗</span>
@@ -418,7 +432,7 @@
           </button>
         </div>
 
-        <!-- Telemetry Results Box -->
+        <!-- Telemetry & Juspay-style Flow Results Box -->
         <div class="telemetry-box" id="telemetry-output">
           <!-- Rendered dynamically by app.js -->
         </div>
@@ -436,7 +450,7 @@
           <h2 class="feed-title">Real-Time Omnichannel Ingress Ticker</h2>
         </div>
         <div class="live-status-pill">
-          <span class="live-pulse-green">●</span> STREAMING PARTITIONED TOPIC
+          <span class="live-pulse-green">●</span> STREAMING PARTITIONED TOPIC (12 PARTITIONS)
         </div>
       </div>
 
@@ -485,7 +499,7 @@
           <div class="hld-cell">
             <span class="cell-tag green">TIER 2: STREAM &amp; FEAT</span>
             <h4>Kafka &amp; Redis Feature Store</h4>
-            <p>Apache Kafka (50k TPS) + Flink sliding velocity aggregations and impossible travel calculations in &lt; 15ms.</p>
+            <p>Apache Kafka (50k TPS, 12 partitions) + Flink sliding velocity aggregations and impossible travel in &lt; 15ms.</p>
           </div>
           <div class="hld-cell highlight-purple">
             <span class="cell-tag purple">TIER 3: HYBRID ENGINE</span>
@@ -548,32 +562,32 @@
           <tbody>
             <tr>
               <td><strong>Inline Wire Clearance (&lt;50ms)</strong></td>
-              <td class="badge-no">❌ NO</td>
+              <td><span class="badge-pill danger">NO</span></td>
               <td>LLMs add 1-2s latency. Sub-50ms wire speed is handled by Drools + LightGBM.</td>
             </tr>
             <tr>
               <td><strong>Event Routing &amp; Feature Counts</strong></td>
-              <td class="badge-no">❌ NO</td>
+              <td><span class="badge-pill danger">NO</span></td>
               <td>Deterministic Kafka streaming processes 50,000 TPS with zero model overhead.</td>
             </tr>
             <tr>
               <td><strong>Semantic Phishing &amp; Link Intent</strong></td>
-              <td class="badge-yes">✅ YES (Ollama)</td>
+              <td><span class="badge-pill lime">YES (OLLAMA)</span></td>
               <td>Parses deceptive social engineering language and urgency without sending PII to cloud APIs.</td>
             </tr>
             <tr>
               <td><strong>QR Payee VPA Mismatch Heuristic</strong></td>
-              <td class="badge-yes">✅ YES (Ollama)</td>
+              <td><span class="badge-pill lime">YES (OLLAMA)</span></td>
               <td>Cross-references merchant metadata vs settlement address to catch physical QR sticker fraud.</td>
             </tr>
             <tr>
               <td><strong>Automated Email Alert Synthesis</strong></td>
-              <td class="badge-yes">✅ YES (Ollama)</td>
+              <td><span class="badge-pill lime">YES (OLLAMA)</span></td>
               <td>Synthesizes personalized, plain-English fraud alerts for customers and bank SOC analysts.</td>
             </tr>
             <tr>
               <td><strong>Data Sovereignty &amp; PCI-DSS</strong></td>
-              <td class="badge-yes">✅ YES (Ollama)</td>
+              <td><span class="badge-pill lime">YES (OLLAMA)</span></td>
               <td>Hosted on-premises. Zero banking customer data ever touches third-party cloud infrastructure.</td>
             </tr>
           </tbody>
@@ -611,7 +625,8 @@
         <ul class="highlight-bullet-list">
           <li><strong>Multi-Agent Swarm:</strong> 5 cooperating autonomous agents covering Ingress, Inline Fast-Path, Ollama Cognitive, Enforcement, and Email Dispatch.</li>
           <li><strong>Automated Email Alerts:</strong> Instant contextual email notifications synthesized for customers and bank SOC analysts with WORM audit hashes.</li>
-          <li><strong>Theme Switcher:</strong> Seamless switching between Light WeBank Fintech Mode and Dark Cyber Studio Mode with floating iridescent orb widget.</li>
+          <li><strong>shadcn/ui Design &amp; Theme Toggle:</strong> Minimalist modern fintech interface with clean SVG icons and seamless light/dark mode switching.</li>
+          <li><strong>Juspay-Style Payment Lifecycle:</strong> End-to-end payment aggregation visualization with Kafka stream topology and sub-38ms wire clearance.</li>
           <li><strong>Strict Ollama Boundary:</strong> On-premise private deployment ensuring zero customer PII leaves the bank's secure perimeter.</li>
         </ul>
       </div>
@@ -639,10 +654,12 @@
         <!-- Dual Email Type Tabs -->
         <div class="email-tabs-row">
           <button class="email-tab-btn active" id="btn-email-customer" onclick="window.proPayApp.switchEmailView('customer')">
-            <span>👤 Customer Security Notification</span>
+            <svg class="email-tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Customer Security Notification</span>
           </button>
           <button class="email-tab-btn" id="btn-email-soc" onclick="window.proPayApp.switchEmailView('soc')">
-            <span>🛡️ Bank SOC Security Incident Escalation</span>
+            <svg class="email-tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Bank SOC Security Incident Escalation</span>
           </button>
         </div>
 
@@ -662,6 +679,6 @@
   <div class="toast-shelf" id="toast-shelf"></div>
 
   <!-- Script -->
-  <script src="js/app.js?v=5.0"></script>
+  <script src="js/app.js?v=6.0"></script>
 </body>
 </html>

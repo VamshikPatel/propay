@@ -1,6 +1,7 @@
 /**
  * PROPAY Frontend Engine — Multi-Agent Orchestration & Email Alert Swarm
- * WeBank Modern Fintech Design System × Champ Studio Theme Engine
+ * WeBank Modern Fintech Design System × shadcn/ui Theme Engine
+ * Juspay-Style Payment Aggregation Lifecycle Pipeline
  */
 
 class ProPayApp {
@@ -11,7 +12,8 @@ class ProPayApp {
       resultType: 'quishing',
       isAnalyzing: false,
       activeEmailTab: 'customer',
-      emailData: null
+      emailData: null,
+      lastApiData: null
     };
 
     this.txCounter = 8402;
@@ -30,9 +32,9 @@ class ProPayApp {
     const savedTheme = localStorage.getItem('propay-theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     const navLabel = document.getElementById('theme-nav-label');
-    const orbText = document.getElementById('orb-indicator-text');
-    if (navLabel) navLabel.textContent = savedTheme === 'light' ? 'Dark Mode' : 'Light Mode';
-    if (orbText) orbText.textContent = savedTheme === 'light' ? '2' : '1';
+    const toggle = document.getElementById('shadcn-theme-toggle');
+    if (navLabel) navLabel.textContent = savedTheme === 'light' ? 'Dark' : 'Light';
+    if (toggle) toggle.setAttribute('aria-checked', savedTheme === 'dark');
   }
 
   toggleTheme() {
@@ -42,11 +44,11 @@ class ProPayApp {
     localStorage.setItem('propay-theme', next);
 
     const navLabel = document.getElementById('theme-nav-label');
-    const orbText = document.getElementById('orb-indicator-text');
-    if (navLabel) navLabel.textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
-    if (orbText) orbText.textContent = next === 'light' ? '2' : '1';
+    const toggle = document.getElementById('shadcn-theme-toggle');
+    if (navLabel) navLabel.textContent = next === 'light' ? 'Dark' : 'Light';
+    if (toggle) toggle.setAttribute('aria-checked', next === 'dark');
 
-    this.showToast(`Switched to ${next === 'dark' ? 'Dark Cyber Studio' : 'Light WeBank'} Theme`);
+    this.showToast(`Switched to ${next === 'dark' ? 'Dark Cyber' : 'Light WeBank'} Theme`);
   }
 
   bindEvents() {
@@ -84,10 +86,11 @@ class ProPayApp {
     try {
       const res = await fetch('/api/health');
       if (res.ok) {
-        console.log('⚡ ProPay Flask Backend Connected on Port 5055');
+        const data = await res.json();
+        console.log('ProPay Flask Backend Connected on Port 5055 | Kafka:', data.kafka_cluster);
       }
     } catch (e) {
-      console.log('ℹ️ Running in Standalone Client Mode (Offline Zero-Setup)');
+      console.log('Running in Standalone Client Mode (Offline Zero-Setup)');
     }
   }
 
@@ -154,7 +157,7 @@ class ProPayApp {
     this.simState.isAnalyzing = true;
 
     if (btn) {
-      btn.innerHTML = '<span>⚡ Multi-Agent Swarm Orchestrating...</span>';
+      btn.innerHTML = '<span>Multi-Agent Swarm Orchestrating...</span>';
       btn.style.opacity = '0.75';
     }
 
@@ -163,8 +166,8 @@ class ProPayApp {
       container.innerHTML = `
         <div style="padding: 32px; text-align: center; color: var(--accent-primary); font-family: var(--font-mono);">
           <div style="font-size: 24px; margin-bottom: 12px; animation: pulse 1s infinite;">●</div>
-          <div style="font-weight: 700;">ORCHESTRATING 5 AUTONOMOUS AGENTS // DISPATCHING OLLAMA REASONING...</div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Zero Cloud PII · Sub-38ms Fast-Path · Automated Email Synthesizer Active</div>
+          <div style="font-weight: 700; letter-spacing: 0.05em;">ORCHESTRATING 5 AUTONOMOUS AGENTS // DISPATCHING OLLAMA REASONING...</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Zero Cloud PII · Sub-38ms Fast-Path · Automated Email Synthesizer Active · Kafka Partitioned Stream</div>
         </div>
       `;
     }
@@ -178,6 +181,7 @@ class ProPayApp {
       });
       if (res.ok) {
         const apiData = await res.json();
+        this.simState.lastApiData = apiData;
         this.simState.emailData = apiData.email_sector_4 || null;
         this.renderApiTelemetry(apiData);
         this.simState.isAnalyzing = false;
@@ -225,7 +229,7 @@ class ProPayApp {
         customer_email: {
           recipient: 'corp.treasury@enterprise-client.com',
           sender: 'ProPay Security & Clearance <alerts@security.propay.bank>',
-          subject: `✓ Payment Cleared: ₹50,000 to HDFC Bank Treasury (${txId})`,
+          subject: `Payment Cleared: ₹50,000 to HDFC Bank Treasury (${txId})`,
           headline: 'Transaction Finalized & Cleared via FedNow Rail',
           severity: 'SAFE',
           badge_color: '#10B981',
@@ -258,7 +262,7 @@ class ProPayApp {
         customer_email: {
           recipient: 'victim.user@corp-client.com',
           sender: 'ProPay Security Defense <alerts@security.propay.bank>',
-          subject: `🚨 URGENT: Payment Attempt Blocked — Tampered QR Detected (${txId})`,
+          subject: `URGENT: Payment Attempt Blocked - Tampered QR Detected (${txId})`,
           headline: 'Unauthorized Payment Intercepted at Edge',
           severity: 'CRITICAL',
           badge_color: '#EF4444',
@@ -278,7 +282,7 @@ class ProPayApp {
           timestamp: now,
           threat_type: 'PHYSICAL_QUISHING_ATTACK',
           inline_rule: 'PAYEE_AUTHORITY_MISMATCH',
-          ollama_dossier: '🚨 CRITICAL QUISHING THREAT: Display metadata claims HDFC Official Merchant, but underlying settlement resolves to scammer_wallet@paytm.',
+          ollama_dossier: 'CRITICAL QUISHING THREAT: Display metadata claims HDFC Official Merchant, but underlying settlement resolves to scammer_wallet@paytm.',
           sar_status: 'AUTO-FILED (FINCEN SAR READY)',
           dispatch_status: 'DISPATCHED_SMTP_TLS'
         }
@@ -291,7 +295,7 @@ class ProPayApp {
         customer_email: {
           recipient: 'targeted.employee@corp-client.com',
           sender: 'ProPay Security Defense <alerts@security.propay.bank>',
-          subject: `🛑 SECURITY ALERT: Deceptive Link Intercepted (${txId})`,
+          subject: `SECURITY ALERT: Deceptive Link Intercepted (${txId})`,
           headline: 'Deceptive Phishing Link Quarantined',
           severity: 'HIGH',
           badge_color: '#F59E0B',
@@ -319,6 +323,108 @@ class ProPayApp {
     }
   }
 
+  buildJuspaySheetHTML(orderData) {
+    const isSafe = orderData.isSafe;
+    return `
+      <div class="juspay-sheet-card">
+        <div class="juspay-sheet-header">
+          <div class="juspay-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+            <span>PROPAY HYPERSWITCH // PAYMENT AGGREGATION INTENT</span>
+          </div>
+          <div class="juspay-amount-pill">
+            ${orderData.amount ? '₹' + orderData.amount : 'N/A'}
+          </div>
+        </div>
+
+        <div class="juspay-sheet-body">
+          <div class="juspay-info-item">
+            <span class="juspay-label">Order Identifier</span>
+            <span class="juspay-value">${orderData.orderId}</span>
+          </div>
+          <div class="juspay-info-item">
+            <span class="juspay-label">Claimed Merchant</span>
+            <span class="juspay-value">${orderData.merchantName || 'Direct Intent'}</span>
+          </div>
+          <div class="juspay-info-item">
+            <span class="juspay-label">Target Settlement VPA / URI</span>
+            <span class="juspay-value ${isSafe ? 'safe' : 'danger'}"><code>${orderData.payee}</code></span>
+          </div>
+          <div class="juspay-info-item">
+            <span class="juspay-label">Ingress Channel</span>
+            <span class="juspay-value">${orderData.channel}</span>
+          </div>
+          <div class="juspay-info-item">
+            <span class="juspay-label">Payee Verification</span>
+            <span class="juspay-value ${isSafe ? 'safe' : 'danger'}">
+              ${isSafe ? '✓ Institutional Rail Match' : 'MISMATCH: Physical QR Sticker Tampering'}
+            </span>
+          </div>
+          <div class="juspay-info-item">
+            <span class="juspay-label">Aggregator Verdict</span>
+            <span class="juspay-value ${isSafe ? 'safe' : 'danger'}">
+              ${isSafe ? 'CLEARED & SETTLED (<38ms)' : 'INTERCEPTED & FROZEN AT EDGE'}
+            </span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  buildPaymentPipelineHTML(stages) {
+    if (!stages || !stages.length) return '';
+
+    const stageCards = stages.map((s, idx) => {
+      let cardClass = 'stage-pass';
+      let badgeClass = 'ok';
+
+      if (s.status === 'FLAGGED') {
+        cardClass = 'stage-held';
+        badgeClass = 'flagged';
+      } else if (s.status === 'THREAT' || s.status === 'FROZEN' || s.status === 'INTERCEPT_AND_BLOCK' || s.status === 'FREEZE_AND_WARN' || s.status === 'HELD') {
+        cardClass = 'stage-threat';
+        badgeClass = 'threat';
+      } else if (s.channel === 'OLLAMA_ON_PREM') {
+        cardClass = 'stage-purple';
+        badgeClass = 'purple';
+      }
+
+      return `
+        <div class="flow-stage-card ${cardClass}">
+          <div class="stage-top-row">
+            <span class="stage-name">${idx + 1}. ${s.stage}</span>
+            <span class="stage-status-badge ${badgeClass}">${s.status}</span>
+          </div>
+          <div class="stage-details">${s.details}</div>
+          <div class="stage-footer-row">
+            <span>${s.channel}</span>
+            <span>${typeof s.latency_ms === 'number' ? s.latency_ms.toFixed(1) + 'ms' : s.latency_ms}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="payment-pipeline-wrap">
+        <div class="pipeline-header">
+          <div class="pipeline-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--accent-primary);">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span>Juspay-Style Payment Lifecycle Pipeline (End-to-End Orchestration)</span>
+          </div>
+          <div class="badge-pill lime">9 REAL-TIME STAGES</div>
+        </div>
+        <div class="pipeline-grid">
+          ${stageCards}
+        </div>
+      </div>
+    `;
+  }
+
   renderApiTelemetry(data) {
     const container = document.getElementById('telemetry-output');
     if (!container) return;
@@ -331,8 +437,22 @@ class ProPayApp {
     this.simState.emailData = email;
 
     const isSafe = !action.is_fraud;
+    const orderData = {
+      orderId: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+      merchantName: edge.pn || (isSafe ? 'HDFC Bank Treasury' : 'HDFC Official Merchant'),
+      payee: edge.pa || edge.resolved_url || edge.raw,
+      amount: edge.am || (isSafe ? '50,000' : '3,500'),
+      channel: edge.threat_type ? edge.threat_type.toUpperCase() : 'UPI_QR',
+      isSafe: isSafe
+    };
+
+    const juspaySheetHTML = this.buildJuspaySheetHTML(orderData);
+    const pipelineHTML = this.buildPaymentPipelineHTML(data.payment_flow_stages);
 
     container.innerHTML = `
+      ${juspaySheetHTML}
+      ${pipelineHTML}
+
       <div class="telemetry-step-card">
         <span class="step-tag red">AGENT 01 [INGRESS]</span>
         <span>Extracted: <code>${edge.pa || edge.resolved_url || edge.raw}</code> | Name: <code>${edge.pn || 'N/A'}</code></span>
@@ -357,20 +477,20 @@ class ProPayApp {
         <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
         <span>Contextual Dispatch: <code>${email.customer_email.subject}</code></span>
         <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-          ✉️ View Generated Email ↗
+          View Generated Email ↗
         </button>
       </div>
 
       <div class="dossier-card">
         <div class="dossier-title-bar">
-          <span class="step-tag purple">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
+          <span class="step-tag purple">OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
           <span class="step-tag ${isSafe ? 'green' : 'red'}">CONFIDENCE: ${(ollama.confidence * 100).toFixed(1)}%</span>
         </div>
         <div class="dossier-text-body">${ollama.forensic_dossier}</div>
       </div>
 
       <div class="verdict-banner-card ${isSafe ? 'safe' : 'danger'}">
-        <span>${isSafe ? '✓ TRANSACTION AUTHORIZED: Institutional settlement rail verified.' : '⚠️ THREAT INTERCEPTED: Malicious payload neutralized at edge. Transfer frozen.'}</span>
+        <span>${isSafe ? 'TRANSACTION AUTHORIZED: Institutional settlement rail verified.' : 'THREAT INTERCEPTED: Malicious payload neutralized at edge. Transfer frozen.'}</span>
         <span class="badge-pill ${isSafe ? 'lime' : 'danger'}">${isSafe ? 'TOTAL SLA: ' + inline.latency_ms + 'ms' : 'FinCEN SAR Auto-Drafted'}</span>
       </div>
     `;
@@ -384,8 +504,90 @@ class ProPayApp {
     const email = this.generateFallbackEmailData(type);
     this.simState.emailData = email;
 
+    const isSafe = type === 'clean';
+    const orderData = {
+      orderId: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+      merchantName: type === 'clean' ? 'HDFC Bank Treasury' : (type === 'quishing' ? 'HDFC Official Merchant' : 'Urgent Security Desk'),
+      payee: type === 'clean' ? 'hdfc.corporate@hdfcbank' : (type === 'quishing' ? 'scammer_wallet@paytm' : 'http://hdfc-security-refund.xyz/auth'),
+      amount: type === 'clean' ? '50,000' : (type === 'quishing' ? '3,500' : '9,999'),
+      channel: type === 'clean' ? 'FEDNOW_WIRE' : (type === 'quishing' ? 'UPI_QR_INTENT' : 'SMS_DEEP_LINK'),
+      isSafe: isSafe
+    };
+
+    const fallbackStages = [
+      {
+        stage: "PAYMENT_INITIATED",
+        status: "OK",
+        latency_ms: 0.3,
+        details: `Customer intent received: ${orderData.merchantName} | Amount: ₹${orderData.amount}`,
+        channel: orderData.channel
+      },
+      {
+        stage: "KAFKA_INGESTED",
+        status: "OK",
+        latency_ms: 1.2,
+        details: "Topic: fraud-ingress-topic | Partition: 4 | Offset: 582103",
+        channel: "KAFKA_CLUSTER"
+      },
+      {
+        stage: "GATEWAY_ROUTED",
+        status: "OK",
+        latency_ms: 2.1,
+        details: `Decoded via Envoy WASM Edge. Payee=${orderData.payee}`,
+        channel: "ENVOY_PROXY"
+      },
+      {
+        stage: "RISK_SCORED",
+        status: isSafe ? "PASS" : "FLAGGED",
+        latency_ms: isSafe ? 16.2 : 22.4,
+        details: isSafe ? "Drools: INSTITUTIONAL_WHITELIST_MATCH (Score: 0.01)" : "Drools: PAYEE_AUTHORITY_MISMATCH (Score: 0.98)",
+        channel: "DROOLS_LIGHTGBM"
+      },
+      {
+        stage: isSafe ? "OLLAMA_BYPASSED" : "OLLAMA_ANALYZED",
+        status: isSafe ? "CLEAN" : "THREAT",
+        latency_ms: isSafe ? 0.0 : 1240.0,
+        details: isSafe ? "Bypassed for wire speed (<38ms)" : "Llama 3: Quishing sticker overlay signature detected (99.4%)",
+        channel: "OLLAMA_ON_PREM"
+      },
+      {
+        stage: isSafe ? "BANK_SWITCH_CLEARED" : "BANK_SWITCH_HELD",
+        status: isSafe ? "CLEARED" : "HELD",
+        latency_ms: 1.1,
+        details: isSafe ? "Settlement switch: FedNow verified" : "Settlement: FROZEN -- Payee VPA quarantined",
+        channel: "SETTLEMENT_SWITCH"
+      },
+      {
+        stage: "ENFORCEMENT_ACTION",
+        status: isSafe ? "ALLOW" : "FREEZE_AND_WARN",
+        latency_ms: 1.2,
+        details: isSafe ? "Zero customer friction. Funds released." : "Dynamic in-app glass warning injected on mobile glass",
+        channel: "POLICY_ARBITER"
+      },
+      {
+        stage: "EMAIL_DISPATCHED",
+        status: "SENT",
+        latency_ms: 14.8,
+        details: `Dispatched to: ${email.customer_email.recipient}`,
+        channel: "SMTP_TLS"
+      },
+      {
+        stage: isSafe ? "SETTLEMENT_COMPLETE" : "TRANSACTION_FROZEN",
+        status: isSafe ? "SETTLED" : "FROZEN",
+        latency_ms: 0.5,
+        details: isSafe ? "Institutional rail settlement completed. WORM audit sealed." : "FinCEN SAR auto-drafted. Zero customer debit.",
+        channel: "LEDGER_WORM"
+      }
+    ];
+
+    const juspaySheetHTML = this.buildJuspaySheetHTML(orderData);
+    const pipelineHTML = this.buildPaymentPipelineHTML(fallbackStages);
+
     if (type === 'clean') {
       container.innerHTML = `
+        ${juspaySheetHTML}
+        ${pipelineHTML}
+
         <div class="telemetry-step-card">
           <span class="step-tag red">AGENT 01 [INGRESS]</span>
           <span>QR URI Decoded: <code>pa=hdfc.corporate@hdfcbank</code> | Display Name: <code>HDFC Bank Treasury</code></span>
@@ -398,7 +600,7 @@ class ProPayApp {
         </div>
         <div class="telemetry-step-card">
           <span class="step-tag purple">AGENT 03 [OLLAMA]</span>
-          <span>LLM Cognitive Reasoning: <code>BYPASSED (Trusted Payee in Whitelist — sub-38ms wire speed preserved)</code></span>
+          <span>LLM Cognitive Reasoning: <code>BYPASSED (Trusted Payee in Whitelist -- sub-38ms wire speed preserved)</code></span>
           <span class="step-tag slate" style="font-size: 11px;">0.0ms</span>
         </div>
         <div class="telemetry-step-card">
@@ -410,12 +612,12 @@ class ProPayApp {
           <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
           <span>Confirmation Dispatched: <code>Payment Cleared: ₹50,000 to HDFC Bank Treasury</code></span>
           <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-            ✉️ View Generated Email ↗
+            View Generated Email ↗
           </button>
         </div>
 
         <div class="verdict-banner-card safe">
-          <span>✓ TRANSACTION AUTHORIZED: Verified Tier-1 Institutional Settlement Rail. Zero threat detected.</span>
+          <span>TRANSACTION AUTHORIZED: Verified Tier-1 Institutional Settlement Rail. Zero threat detected.</span>
           <span class="badge-pill lime">TOTAL SLA: 18.0ms</span>
         </div>
       `;
@@ -424,6 +626,9 @@ class ProPayApp {
 
     if (type === 'quishing') {
       container.innerHTML = `
+        ${juspaySheetHTML}
+        ${pipelineHTML}
+
         <div class="telemetry-step-card">
           <span class="step-tag red">AGENT 01 [INGRESS]</span>
           <span>QR Intent Extracted: <code>pa=scammer_wallet@paytm</code> | Claimed Display Name: <code>HDFC Official Merchant</code></span>
@@ -446,18 +651,18 @@ class ProPayApp {
         </div>
         <div class="telemetry-step-card" style="border-left: 3px solid #84CC16; padding-left: 12px;">
           <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
-          <span>Urgent Alert Dispatched: <code>Payment Attempt Blocked — Tampered QR Detected</code></span>
+          <span>Urgent Alert Dispatched: <code>Payment Attempt Blocked -- Tampered QR Detected</code></span>
           <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-            ✉️ View Generated Email ↗
+            View Generated Email ↗
           </button>
         </div>
 
         <div class="dossier-card">
           <div class="dossier-title-bar">
-            <span class="step-tag purple">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
+            <span class="step-tag purple">OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
             <span class="step-tag red">CONFIDENCE: 99.4%</span>
           </div>
-          <div class="dossier-text-body">🚨 CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy.
+          <div class="dossier-text-body">CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy.
 The QR display metadata explicitly claims 'HDFC Official Merchant', but the underlying settlement address resolves to an unverified individual wallet ('scammer_wallet@paytm') with 0 prior corporate history.
 
 This signature strongly matches a physical QR sticker replacement attack on point-of-sale terminals.
@@ -465,7 +670,7 @@ RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on custom
         </div>
 
         <div class="verdict-banner-card danger">
-          <span>⚠️ DYNAMIC IN-APP INTERCEPTION: Customer presented with warning overlay. Payment stopped at edge.</span>
+          <span>DYNAMIC IN-APP INTERCEPTION: Customer presented with warning overlay. Payment stopped at edge.</span>
           <span class="badge-pill danger">FinCEN SAR Auto-Drafted</span>
         </div>
       `;
@@ -474,6 +679,9 @@ RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on custom
 
     if (type === 'smishing') {
       container.innerHTML = `
+        ${juspaySheetHTML}
+        ${pipelineHTML}
+
         <div class="telemetry-step-card">
           <span class="step-tag red">AGENT 01 [INGRESS]</span>
           <span>Short Link Unrolled: <code>bit.ly/bank-urgent-security-refund</code> ➔ Resolves to <code>http://hdfc-security-refund.xyz/auth</code></span>
@@ -498,16 +706,16 @@ RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on custom
           <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
           <span>Security Alert Dispatched: <code>Deceptive Link Intercepted &amp; Quarantined</code></span>
           <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-            ✉️ View Generated Email ↗
+            View Generated Email ↗
           </button>
         </div>
 
         <div class="dossier-card">
           <div class="dossier-title-bar">
-            <span class="step-tag purple">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
+            <span class="step-tag purple">OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
             <span class="step-tag red">CONFIDENCE: 98.7%</span>
           </div>
-          <div class="dossier-text-body">🚨 SOCIAL ENGINEERING &amp; REVERSE-COLLECT TRAP DETECTED:
+          <div class="dossier-text-body">SOCIAL ENGINEERING &amp; REVERSE-COLLECT TRAP DETECTED:
 The unsolicited link incorporates deceptive urgency ('Urgent security refund') combined with a lookalike domain simulating bank infrastructure ('hdfc-security-refund.xyz').
 
 Ollama semantic analysis classifies this payload as a phishing credential harvester designed to trick users into approving reverse UPI collect requests.
@@ -515,7 +723,7 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
         </div>
 
         <div class="verdict-banner-card danger">
-          <span>🛑 UNSOLICITED LINK INTERCEPTED: Link quarantined. Zero customer credentials compromised.</span>
+          <span>UNSOLICITED LINK INTERCEPTED: Link quarantined. Zero customer credentials compromised.</span>
           <span class="badge-pill danger">Zero Cloud PII Leakage</span>
         </div>
       `;
@@ -561,7 +769,7 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
         </div>
         <div class="email-body-sheet">
           <div class="email-brand-title">
-            <span style="font-weight:800; font-size:16px;">🛡️ PROPAY BANKING SECURITY</span>
+            <span style="font-weight:800; font-size:16px;">PROPAY BANKING SECURITY</span>
             <span class="email-badge-status" style="background:${em.badge_color}22; color:${em.badge_color}; border:1px solid ${em.badge_color};">
               ${em.severity} PRIORITY
             </span>
@@ -596,7 +804,7 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
         </div>
         <div class="email-body-sheet">
           <div class="email-brand-title">
-            <span style="font-weight:800; font-size:16px;">⚠️ BANK SOC INCIDENT ESCALATION TICKET</span>
+            <span style="font-weight:800; font-size:16px;">BANK SOC INCIDENT ESCALATION TICKET</span>
             <span class="email-badge-status" style="background:#EF444422; color:#EF4444; border:1px solid #EF4444;">
               ${soc.sar_status}
             </span>
@@ -633,11 +841,11 @@ ${soc.ollama_dossier}
     if (!tbody) return;
 
     const initialFeed = [
-      { id: 'TX-84021', channel: 'Mobile QR Scan', payee: 'amazon.pay@axisbank', sla: '19.4ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED ✉', action: 'ALLOW', safe: true },
-      { id: 'TX-84022', channel: 'FedNow Wire', payee: 'jpmorgan.corp@fednow', sla: '24.1ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED ✉', action: 'ALLOW', safe: true },
-      { id: 'TX-84023', channel: 'POS Terminal QR', payee: 'tampered_qr4@paytm', sla: '38.2ms', ollama: 'Ollama Flaggable', email: 'ALERT SENT 🚨', action: 'BLOCK & WARN', safe: false },
-      { id: 'TX-84024', channel: 'SMS Link Ingress', payee: 'bit.ly/kyc-urgent-update', sla: '31.5ms', ollama: 'Ollama Intercept', email: 'ALERT SENT 🚨', action: 'INTERCEPTED', safe: false },
-      { id: 'TX-84025', channel: 'Card Rails (SWIFT)', payee: 'apple.store@chase', sla: '17.8ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED ✉', action: 'ALLOW', safe: true }
+      { id: 'TX-84021', channel: 'Mobile QR Scan', payee: 'amazon.pay@axisbank', sla: '19.4ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true },
+      { id: 'TX-84022', channel: 'FedNow Wire', payee: 'jpmorgan.corp@fednow', sla: '24.1ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true },
+      { id: 'TX-84023', channel: 'POS Terminal QR', payee: 'tampered_qr4@paytm', sla: '38.2ms', ollama: 'Ollama Flaggable', email: 'ALERT SENT', action: 'BLOCK & WARN', safe: false },
+      { id: 'TX-84024', channel: 'SMS Link Ingress', payee: 'bit.ly/kyc-urgent-update', sla: '31.5ms', ollama: 'Ollama Intercept', email: 'ALERT SENT', action: 'INTERCEPTED', safe: false },
+      { id: 'TX-84025', channel: 'Card Rails (SWIFT)', payee: 'apple.store@chase', sla: '17.8ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true }
     ];
 
     tbody.innerHTML = initialFeed.map(r => this.buildFeedRowHTML(r)).join('');
@@ -655,7 +863,7 @@ ${soc.ollama_dossier}
       const sla = `${(15 + Math.random() * 20).toFixed(1)}ms`;
       const ollama = isRisk ? 'Ollama Flagged' : 'Bypassed (Safe)';
       const action = isRisk ? 'BLOCK & WARN' : 'ALLOW';
-      const email = isRisk ? 'ALERT SENT 🚨' : 'DISPATCHED ✉';
+      const email = isRisk ? 'ALERT SENT' : 'DISPATCHED';
 
       const row = {
         id: `TX-${this.txCounter}`,

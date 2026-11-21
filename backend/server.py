@@ -30,7 +30,8 @@ def health():
         "service": "ProPay Risk & Quishing Engine",
         "port": 5055,
         "inline_sla_target_ms": 38.0,
-        "ollama_ready": True
+        "ollama_ready": True,
+        "kafka_cluster": orchestrator.kafka_sim.get_cluster_status()["status"]
     })
 
 @app.route("/api/ollama/status", methods=["GET"])
@@ -40,8 +41,13 @@ def ollama_status():
         "on_prem_live": live,
         "host": orchestrator.ollama_agent.ollama_url,
         "model": orchestrator.ollama_agent.model,
-        "scoped_scope": ["semantic_phishing", "qr_vpa_mismatch", "forensic_dossier"]
+        "api_key_configured": bool(orchestrator.ollama_agent.api_key),
+        "scoped_scope": ["semantic_phishing", "qr_vpa_mismatch", "forensic_dossier", "email_synthesis"]
     })
+
+@app.route("/api/kafka/status", methods=["GET"])
+def kafka_status():
+    return jsonify(orchestrator.kafka_sim.get_cluster_status())
 
 @app.route("/api/simulate", methods=["POST"])
 def simulate():
@@ -57,10 +63,10 @@ def start_server():
     port = 5055
     url = f"http://localhost:{port}"
     print("=" * 70)
-    print("  ⚡ PROPAY STUDIO SERVER ONLINE")
+    print("  PROPAY STUDIO SERVER ONLINE")
     print(f"  URL: {url}")
-    print("  Design: Pirate Wires × pleasecallmechamp.com × Motion.dev")
-    print("  Engine: 3-Sector Risk Orchestrator with On-Premise Ollama Agent")
+    print("  Engine: 5-Agent Multi-Agent Swarm with On-Premise Ollama")
+    print("  Kafka: Simulated 12-partition fraud-ingress-topic")
     print("=" * 70)
     webbrowser.open(url)
     app.run(host="0.0.0.0", port=port, debug=False)

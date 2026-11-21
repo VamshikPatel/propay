@@ -2,19 +2,28 @@
 ProPay Backend — Ollama Email Alert & Dispatcher Agent (Agent 5)
 Synthesizes contextual transaction confirmation and fraud prevention emails
 using on-premise Ollama reasoning for privacy and compliance.
+Supports optional API key for custom Ollama proxy configurations.
 """
 
+import os
 import time
 import requests
 
 class OllamaEmailAgent:
-    def __init__(self, ollama_url="http://localhost:11434", model="llama3"):
+    def __init__(self, ollama_url="http://localhost:11434", model="llama3", api_key=None):
         self.ollama_url = ollama_url
         self.model = model
+        self.api_key = api_key or os.environ.get('OLLAMA_API_KEY')
+
+    def _headers(self) -> dict:
+        h = {"Content-Type": "application/json"}
+        if self.api_key:
+            h["Authorization"] = f"Bearer {self.api_key}"
+        return h
 
     def is_ollama_live(self) -> bool:
         try:
-            r = requests.get(f"{self.ollama_url}/api/tags", timeout=0.8)
+            r = requests.get(f"{self.ollama_url}/api/tags", headers=self._headers(), timeout=0.8)
             return r.status_code == 200
         except Exception:
             return False
@@ -35,12 +44,12 @@ class OllamaEmailAgent:
         # Customer Email Synthesis
         if is_fraud:
             if threat_type == "quishing":
-                subject = f"🚨 URGENT: Payment Attempt Blocked — Tampered QR Detected ({tx_id})"
+                subject = f"URGENT: Payment Attempt Blocked - Tampered QR Detected ({tx_id})"
                 headline = "Unauthorized Payment Intercepted"
                 severity = "CRITICAL"
                 badge_color = "#EF4444"
                 body_intro = (
-                    f"Our real-time AI defense agent intercepted a payment attempt of ₹{am or '3,500'} "
+                    f"Our real-time AI defense agent intercepted a payment attempt of Rs.{am or '3,500'} "
                     f"because physical QR code tampering was detected at your point of sale."
                 )
                 discrepancy_note = (
@@ -51,7 +60,7 @@ class OllamaEmailAgent:
                 action_required = "No funds have been debited from your bank account. Your account remains secure."
                 cta_label = "Review Security Log & Confirm Safety"
             else:  # smishing
-                subject = f"🛑 SECURITY ALERT: Malicious Link Neutralized ({tx_id})"
+                subject = f"SECURITY ALERT: Malicious Link Neutralized ({tx_id})"
                 headline = "Deceptive Phishing Link Intercepted"
                 severity = "HIGH"
                 badge_color = "#F59E0B"
@@ -68,12 +77,12 @@ class OllamaEmailAgent:
                 cta_label = "Quarantine Details"
         else:
             # Clean payment alert
-            subject = f"✓ Payment Cleared: ₹{am or '50,000'} to {pn or pa}"
+            subject = f"Payment Cleared: Rs.{am or '50,000'} to {pn or pa}"
             headline = "Transaction Cleared via Tier-1 Rail"
             severity = "SAFE"
             badge_color = "#10B981"
             body_intro = (
-                f"Your payment instruction of ₹{am or '50,000'} to {pn or pa} was verified and "
+                f"Your payment instruction of Rs.{am or '50,000'} to {pn or pa} was verified and "
                 f"cleared in {inline_eval.get('latency_ms', 18.0)}ms through institutional banking settlement."
             )
             discrepancy_note = (

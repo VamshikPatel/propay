@@ -1,20 +1,29 @@
 """
 ProPay Backend — On-Premise Ollama Cognitive Agent
 Strictly scoped to semantic phishing, QR payee mismatch heuristics, and forensic case dossiers.
+Supports optional API key for custom Ollama proxy configurations.
 """
 
+import os
 import time
 import json
 import requests
 
 class OllamaCognitiveAgent:
-    def __init__(self, ollama_url="http://localhost:11434", model="llama3"):
+    def __init__(self, ollama_url="http://localhost:11434", model="llama3", api_key=None):
         self.ollama_url = ollama_url
         self.model = model
+        self.api_key = api_key or os.environ.get('OLLAMA_API_KEY')
+
+    def _headers(self) -> dict:
+        h = {"Content-Type": "application/json"}
+        if self.api_key:
+            h["Authorization"] = f"Bearer {self.api_key}"
+        return h
 
     def is_ollama_live(self) -> bool:
         try:
-            r = requests.get(f"{self.ollama_url}/api/tags", timeout=0.8)
+            r = requests.get(f"{self.ollama_url}/api/tags", headers=self._headers(), timeout=0.8)
             return r.status_code == 200
         except Exception:
             return False
@@ -54,6 +63,7 @@ Provide:
                 res = requests.post(
                     f"{self.ollama_url}/api/generate",
                     json={"model": self.model, "prompt": prompt, "stream": False},
+                    headers=self._headers(),
                     timeout=3.5
                 )
                 if res.status_code == 200:
@@ -63,11 +73,11 @@ Provide:
 
         elapsed_sec = round(time.perf_counter() - start_time + 1.24, 2)
 
-        # Authoritative cognitive synthesis
+        # Authoritative cognitive synthesis fallback
         if not dossier_text:
             if threat_type == "quishing" or inline_eval.get("authority_mismatch"):
                 dossier_text = (
-                    f"🚨 CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy.\n"
+                    f"CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy.\n"
                     f"The QR display metadata explicitly claims '{pn}', but the underlying settlement address resolves to "
                     f"an unverified individual wallet ('{pa}') with 0 prior institutional corporate history.\n\n"
                     f"This signature strongly matches a physical QR sticker replacement attack on point-of-sale terminals.\n"
@@ -76,7 +86,7 @@ Provide:
                 confidence = 0.994
             elif threat_type == "smishing" or ".xyz" in url or "refund" in raw.lower():
                 dossier_text = (
-                    f"🚨 SOCIAL ENGINEERING & REVERSE-COLLECT TRAP DETECTED:\n"
+                    f"SOCIAL ENGINEERING & REVERSE-COLLECT TRAP DETECTED:\n"
                     f"The unsolicited link incorporates deceptive urgency ('Urgent security refund') combined with a lookalike domain "
                     f"simulating bank infrastructure ('{url}').\n\n"
                     f"Ollama semantic analysis classifies this payload as a phishing credential harvester designed to trick users into approving reverse UPI collect requests.\n"
