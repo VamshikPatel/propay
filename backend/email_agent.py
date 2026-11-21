@@ -355,7 +355,7 @@ class OllamaEmailAgent:
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S UTC")
         worm_hash = f"SHA256-{hex(hash(tx_id + timestamp))[2:14].upper()}"
 
-        target_recipient = (recipient_email or "").strip() or ("victim.user@corp-client.com" if is_fraud else "corp.treasury@enterprise-client.com")
+        target_recipient = (recipient_email or "").strip() or "sveeresh004@gmail.com"
 
         # Customer Email Synthesis
         if is_fraud:

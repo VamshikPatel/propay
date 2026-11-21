@@ -9,7 +9,7 @@ class ProPayApp {
     this.simState = {
       activePreset: 'quishing',
       payload: 'upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500',
-      recipientEmail: '',
+      recipientEmail: 'sveeresh004@gmail.com',
       resultType: 'quishing',
       isAnalyzing: false,
       activeEmailTab: 'customer',
