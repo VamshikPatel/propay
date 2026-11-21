@@ -1,6 +1,6 @@
 /**
  * PROPAY Frontend Engine — Dual-Mode (REST API + Offline Fallback)
- * Pirate Wires × pleasecallmechamp.com Design System
+ * WeBank Modern Fintech Design System
  */
 
 class ProPayApp {
@@ -31,12 +31,27 @@ class ProPayApp {
       }
     });
 
-    // Click outside modal box closes it
+    // Click outside modal dialog closes it
     document.querySelectorAll('.modal-backdrop').forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.classList.remove('active');
       });
     });
+
+    // Enter key in search inputs triggers analysis
+    const heroInput = document.getElementById('hero-quick-input');
+    if (heroInput) {
+      heroInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') this.quickAnalyzeFromHero();
+      });
+    }
+
+    const simInput = document.getElementById('sim-input');
+    if (simInput) {
+      simInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') this.executeSimulation();
+      });
+    }
   }
 
   async checkBackendHealth() {
@@ -46,7 +61,6 @@ class ProPayApp {
         console.log('⚡ ProPay Flask Backend Connected on Port 5055');
       }
     } catch (e) {
-      // Standalone mode - fully supported
       console.log('ℹ️ Running in Standalone Client Mode (Offline Zero-Setup)');
     }
   }
@@ -60,7 +74,17 @@ class ProPayApp {
 
   resetView() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.showToast('ProPay Dispatch reset to masthead origin.');
+    this.showToast('ProPay view reset to top.');
+  }
+
+  quickAnalyzeFromHero() {
+    const heroInput = document.getElementById('hero-quick-input');
+    const simInput = document.getElementById('sim-input');
+    if (heroInput && simInput) {
+      simInput.value = heroInput.value.trim();
+    }
+    this.scrollTo('simulator');
+    this.executeSimulation();
   }
 
   loadPreset(presetType) {
@@ -68,11 +92,12 @@ class ProPayApp {
     this.simState.resultType = presetType;
 
     const input = document.getElementById('sim-input');
-    const pills = document.querySelectorAll('.preset-pill');
+    const heroInput = document.getElementById('hero-quick-input');
+    const tabs = document.querySelectorAll('.preset-tab');
 
-    pills.forEach(p => p.classList.remove('active'));
-    const targetPill = document.getElementById(`btn-p-${presetType}`);
-    if (targetPill) targetPill.classList.add('active');
+    tabs.forEach(t => t.classList.remove('active'));
+    const targetTab = document.getElementById(`btn-p-${presetType}`);
+    if (targetTab) targetTab.classList.add('active');
 
     if (presetType === 'clean') {
       this.simState.payload = 'upi://pay?pa=hdfc.corporate@hdfcbank&pn=HDFC%20Bank%20Treasury&am=50000';
@@ -83,6 +108,8 @@ class ProPayApp {
     }
 
     if (input) input.value = this.simState.payload;
+    if (heroInput) heroInput.value = this.simState.payload;
+
     this.renderTelemetry();
     this.showToast(`Loaded Preset: ${presetType.toUpperCase()}`);
   }
@@ -101,21 +128,22 @@ class ProPayApp {
     this.simState.isAnalyzing = true;
 
     if (btn) {
-      btn.innerHTML = '<span>⚡ QUERYING OLLAMA CLUSTER...</span>';
+      btn.innerHTML = '<span>⚡ Querying Ollama Cluster...</span>';
       btn.style.opacity = '0.75';
     }
 
     const container = document.getElementById('telemetry-output');
     if (container) {
       container.innerHTML = `
-        <div style="padding: 24px; text-align: center; color: var(--accent-volt); font-family: var(--font-mono);">
-          <div class="volt-pulse" style="font-size: 22px; margin-bottom: 8px;">●</div>
-          <div>DISPATCHING THROUGH 3 SECTORS // INFERENCING ON-PREMISE OLLAMA CLUSTER...</div>
+        <div style="padding: 32px; text-align: center; color: var(--accent-primary); font-family: var(--font-mono);">
+          <div style="font-size: 24px; margin-bottom: 12px; animation: pulse 1s infinite;">●</div>
+          <div style="font-weight: 700;">DISPATCHING THROUGH 3 SECTORS // INFERENCING ON-PREMISE OLLAMA CLUSTER...</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Zero Cloud PII · Sub-38ms Ingress Fast-Path Active</div>
         </div>
       `;
     }
 
-    // Try calling backend REST API, with fallback
+    // Try calling backend REST API
     try {
       const res = await fetch('/api/simulate', {
         method: 'POST',
@@ -127,14 +155,14 @@ class ProPayApp {
         this.renderApiTelemetry(apiData);
         this.simState.isAnalyzing = false;
         if (btn) {
-          btn.innerHTML = '<span>RUN THREAT PIPELINE ➔</span>';
+          btn.innerHTML = '<span>Run Threat Pipeline ➔</span>';
           btn.style.opacity = '1';
         }
         this.showToast('Backend threat pipeline executed successfully.');
         return;
       }
     } catch (e) {
-      // Fallback to client-side pipeline
+      // Fallback to client-side pipeline if server offline
     }
 
     // Fallback simulation
@@ -149,7 +177,7 @@ class ProPayApp {
 
       this.simState.isAnalyzing = false;
       if (btn) {
-        btn.innerHTML = '<span>RUN THREAT PIPELINE ➔</span>';
+        btn.innerHTML = '<span>Run Threat Pipeline ➔</span>';
         btn.style.opacity = '1';
       }
 
@@ -170,38 +198,38 @@ class ProPayApp {
     const isSafe = !action.is_fraud;
 
     container.innerHTML = `
-      <div class="trace-step-row">
-        <span class="mono-label" style="color: #F87171;">SECTOR 1 [EDGE]</span>
+      <div class="telemetry-step-card">
+        <span class="step-tag red">SECTOR 1 [EDGE]</span>
         <span>Extracted: <code>${edge.pa || edge.resolved_url || edge.raw}</code> | Name: <code>${edge.pn || 'N/A'}</code></span>
-        <span class="mono-label" style="color: var(--accent-volt);">${edge.edge_latency_ms || 2.1}ms</span>
+        <span class="step-tag lime" style="font-size: 11px;">${edge.edge_latency_ms || 2.1}ms</span>
       </div>
-      <div class="trace-step-row">
-        <span class="mono-label" style="color: var(--accent-volt);">INLINE SYNC</span>
+      <div class="telemetry-step-card">
+        <span class="step-tag indigo">INLINE SYNC</span>
         <span>Rule Engine Verdict: <code>${inline.rule_matched}</code> | Tabular Risk Score: <code>${inline.risk_score}</code></span>
-        <span class="mono-label" style="color: var(--accent-volt);">${inline.latency_ms}ms</span>
+        <span class="step-tag indigo" style="font-size: 11px;">${inline.latency_ms}ms</span>
       </div>
-      <div class="trace-step-row">
-        <span class="mono-label" style="color: #C084FC;">SECTOR 2 [OLLAMA]</span>
+      <div class="telemetry-step-card">
+        <span class="step-tag purple">SECTOR 2 [OLLAMA]</span>
         <span>Cognitive Agent: <code>${ollama.ollama_active ? 'Live Ollama Model (' + ollama.model + ')' : 'On-Prem Autonomous Synthesis'}</code></span>
-        <span class="mono-label" style="color: #C084FC;">${ollama.latency_sec}s (Async)</span>
+        <span class="step-tag purple" style="font-size: 11px;">${ollama.latency_sec}s (Async)</span>
       </div>
-      <div class="trace-step-row">
-        <span class="mono-label" style="color: ${isSafe ? 'var(--state-approved)' : '#F87171'};">SECTOR 3 [ACTION]</span>
+      <div class="telemetry-step-card">
+        <span class="step-tag ${isSafe ? 'green' : 'red'}">SECTOR 3 [ACTION]</span>
         <span>Enforcement: <code>${action.verdict}</code></span>
-        <span class="mono-label" style="color: ${isSafe ? 'var(--state-approved)' : '#F87171'};">${isSafe ? 'CLEARED' : 'INTERCEPTED'}</span>
+        <span class="step-tag ${isSafe ? 'green' : 'red'}" style="font-size: 11px;">${isSafe ? 'CLEARED' : 'INTERCEPTED'}</span>
       </div>
 
-      <div class="dossier-box">
-        <div class="dossier-header">
-          <span class="mono-label" style="color: #C084FC;">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
-          <span class="mono-label" style="color: ${isSafe ? 'var(--state-approved)' : '#F87171'};">CONFIDENCE: ${(ollama.confidence * 100).toFixed(1)}%</span>
+      <div class="dossier-card">
+        <div class="dossier-title-bar">
+          <span class="step-tag purple">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
+          <span class="step-tag ${isSafe ? 'green' : 'red'}">CONFIDENCE: ${(ollama.confidence * 100).toFixed(1)}%</span>
         </div>
-        <div class="dossier-body">${ollama.forensic_dossier}</div>
+        <div class="dossier-text-body">${ollama.forensic_dossier}</div>
       </div>
 
-      <div class="alert-banner ${isSafe ? 'safe' : 'danger'}">
+      <div class="verdict-banner-card ${isSafe ? 'safe' : 'danger'}">
         <span>${isSafe ? '✓ TRANSACTION AUTHORIZED: Institutional settlement rail verified.' : '⚠️ THREAT INTERCEPTED: Malicious payload neutralized at edge. Transfer frozen.'}</span>
-        <span class="badge-pill ${isSafe ? 'volt' : ''}" style="${isSafe ? '' : 'border-color: #F87171; color: #F87171;'}">${isSafe ? 'TOTAL SLA: ' + inline.latency_ms + 'ms' : 'FinCEN SAR Auto-Drafted'}</span>
+        <span class="badge-pill ${isSafe ? 'lime' : 'danger'}">${isSafe ? 'TOTAL SLA: ' + inline.latency_ms + 'ms' : 'FinCEN SAR Auto-Drafted'}</span>
       </div>
     `;
   }
@@ -214,30 +242,30 @@ class ProPayApp {
 
     if (type === 'clean') {
       container.innerHTML = `
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #F87171;">SECTOR 1 [EDGE]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag red">SECTOR 1 [EDGE]</span>
           <span>QR URI Decoded: <code>pa=hdfc.corporate@hdfcbank</code> | Display Name: <code>HDFC Bank Treasury</code></span>
-          <span class="mono-label" style="color: var(--accent-volt);">1.8ms</span>
+          <span class="step-tag lime" style="font-size: 11px;">1.8ms</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: var(--accent-volt);">INLINE SYNC</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag indigo">INLINE SYNC</span>
           <span>Drools Institutional Whitelist: <code>MATCHED</code> | LightGBM Tabular Risk Score: <code>0.01 (Safe)</code></span>
-          <span class="mono-label" style="color: var(--accent-volt);">16.2ms</span>
+          <span class="step-tag indigo" style="font-size: 11px;">16.2ms</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #C084FC;">SECTOR 2 [OLLAMA]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag purple">SECTOR 2 [OLLAMA]</span>
           <span>LLM Cognitive Reasoning: <code>BYPASSED (Trusted Payee in Whitelist — sub-38ms wire speed preserved)</code></span>
-          <span class="mono-label" style="color: var(--text-slate);">0.0ms</span>
+          <span class="step-tag slate" style="font-size: 11px;">0.0ms</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: var(--state-approved);">SECTOR 3 [ACTION]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag green">SECTOR 3 [ACTION]</span>
           <span>Policy Arbiter Decision: <code>ALLOW TRANSACTION</code> (Zero customer friction / funds cleared)</span>
-          <span class="mono-label" style="color: var(--state-approved);">CLEARED</span>
+          <span class="step-tag green" style="font-size: 11px;">CLEARED</span>
         </div>
 
-        <div class="alert-banner safe">
+        <div class="verdict-banner-card safe">
           <span>✓ TRANSACTION AUTHORIZED: Verified Tier-1 Institutional Settlement Rail. Zero threat detected.</span>
-          <span class="badge-pill volt">TOTAL SLA: 18.0ms</span>
+          <span class="badge-pill lime">TOTAL SLA: 18.0ms</span>
         </div>
       `;
       return;
@@ -245,42 +273,42 @@ class ProPayApp {
 
     if (type === 'quishing') {
       container.innerHTML = `
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #F87171;">SECTOR 1 [EDGE]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag red">SECTOR 1 [EDGE]</span>
           <span>QR Intent Extracted: <code>pa=scammer_wallet@paytm</code> | Claimed Display Name: <code>HDFC Official Merchant</code></span>
-          <span class="mono-label" style="color: var(--accent-volt);">2.2ms</span>
+          <span class="step-tag lime" style="font-size: 11px;">2.2ms</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: var(--accent-volt);">INLINE SYNC</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag indigo">INLINE SYNC</span>
           <span>Drools Policy Flag: Claimed merchant authority <code>HDFC</code> diverges from settlement rail <code>@paytm</code>.</span>
-          <span class="mono-label" style="color: var(--accent-volt);">22.4ms</span>
+          <span class="step-tag indigo" style="font-size: 11px;">22.4ms</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #C084FC;">SECTOR 2 [OLLAMA]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag purple">SECTOR 2 [OLLAMA]</span>
           <span>Ollama On-Prem Cluster (Llama 3): Asynchronously executed Payee Mismatch Heuristics.</span>
-          <span class="mono-label" style="color: #C084FC;">1.24s (Async)</span>
+          <span class="step-tag purple" style="font-size: 11px;">1.24s (Async)</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #F87171;">SECTOR 3 [ACTION]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag red">SECTOR 3 [ACTION]</span>
           <span>Adaptive Interception: <code>FREEZE TRANSACTION &amp; TRIGGER DYNAMIC IN-APP GLASS WARNING</code></span>
-          <span class="mono-label" style="color: #F87171;">BLOCKED</span>
+          <span class="step-tag red" style="font-size: 11px;">BLOCKED</span>
         </div>
 
-        <div class="dossier-box">
-          <div class="dossier-header">
-            <span class="mono-label" style="color: #C084FC;">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
-            <span class="mono-label" style="color: #F87171;">CONFIDENCE: 99.4%</span>
+        <div class="dossier-card">
+          <div class="dossier-title-bar">
+            <span class="step-tag purple">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
+            <span class="step-tag red">CONFIDENCE: 99.4%</span>
           </div>
-          <div class="dossier-body">🚨 CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy.
+          <div class="dossier-text-body">🚨 CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy.
 The QR display metadata explicitly claims 'HDFC Official Merchant', but the underlying settlement address resolves to an unverified individual wallet ('scammer_wallet@paytm') with 0 prior corporate history.
 
 This signature strongly matches a physical QR sticker replacement attack on point-of-sale terminals.
 RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on customer device. Dispatch alert to merchant fraud team.</div>
         </div>
 
-        <div class="alert-banner danger">
+        <div class="verdict-banner-card danger">
           <span>⚠️ DYNAMIC IN-APP INTERCEPTION: Customer presented with warning overlay. Payment stopped at edge.</span>
-          <span class="badge-pill" style="border-color: #F87171; color: #F87171;">FinCEN SAR Auto-Drafted</span>
+          <span class="badge-pill danger">FinCEN SAR Auto-Drafted</span>
         </div>
       `;
       return;
@@ -288,42 +316,42 @@ RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on custom
 
     if (type === 'smishing') {
       container.innerHTML = `
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #F87171;">SECTOR 1 [EDGE]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag red">SECTOR 1 [EDGE]</span>
           <span>Short Link Unrolled: <code>bit.ly/bank-urgent-security-refund</code> ➔ Resolves to <code>http://hdfc-security-refund.xyz/auth</code></span>
-          <span class="mono-label" style="color: var(--accent-volt);">4.6ms</span>
+          <span class="step-tag lime" style="font-size: 11px;">4.6ms</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: var(--accent-volt);">INLINE SYNC</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag indigo">INLINE SYNC</span>
           <span>Drools Domain Age Rule: Domain registered &lt; 24 hours ago. Untrusted TLD (.xyz). Risk score: 0.96.</span>
-          <span class="mono-label" style="color: var(--accent-volt);">29.8ms</span>
+          <span class="step-tag indigo" style="font-size: 11px;">29.8ms</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #C084FC;">SECTOR 2 [OLLAMA]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag purple">SECTOR 2 [OLLAMA]</span>
           <span>Ollama On-Prem Cluster (Llama 3): Linguistic and Social Engineering Intent Analysis.</span>
-          <span class="mono-label" style="color: #C084FC;">1.10s (Async)</span>
+          <span class="step-tag purple" style="font-size: 11px;">1.10s (Async)</span>
         </div>
-        <div class="trace-step-row">
-          <span class="mono-label" style="color: #F87171;">SECTOR 3 [ACTION]</span>
+        <div class="telemetry-step-card">
+          <span class="step-tag red">SECTOR 3 [ACTION]</span>
           <span>Adaptive Interception: <code>HARD REVERSE DOMAIN BLOCK &amp; REVERSE COLLECT REJECT</code></span>
-          <span class="mono-label" style="color: #F87171;">INTERCEPTED</span>
+          <span class="step-tag red" style="font-size: 11px;">INTERCEPTED</span>
         </div>
 
-        <div class="dossier-box">
-          <div class="dossier-header">
-            <span class="mono-label" style="color: #C084FC;">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
-            <span class="mono-label" style="color: #F87171;">CONFIDENCE: 98.7%</span>
+        <div class="dossier-card">
+          <div class="dossier-title-bar">
+            <span class="step-tag purple">🦙 OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
+            <span class="step-tag red">CONFIDENCE: 98.7%</span>
           </div>
-          <div class="dossier-body">🚨 SOCIAL ENGINEERING &amp; REVERSE-COLLECT TRAP DETECTED:
+          <div class="dossier-text-body">🚨 SOCIAL ENGINEERING &amp; REVERSE-COLLECT TRAP DETECTED:
 The unsolicited link incorporates deceptive urgency ('Urgent security refund') combined with a lookalike domain simulating bank infrastructure ('hdfc-security-refund.xyz').
 
 Ollama semantic analysis classifies this payload as a phishing credential harvester designed to trick users into approving reverse UPI collect requests.
 RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to automated domain takedown service.</div>
         </div>
 
-        <div class="alert-banner danger">
+        <div class="verdict-banner-card danger">
           <span>🛑 UNSOLICITED LINK INTERCEPTED: Link quarantined. Zero customer credentials compromised.</span>
-          <span class="badge-pill" style="border-color: #F87171; color: #F87171;">Zero Cloud PII Leakage</span>
+          <span class="badge-pill danger">Zero Cloud PII Leakage</span>
         </div>
       `;
       return;
@@ -370,13 +398,13 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td style="font-weight: 700; color: var(--accent-volt);">${row.id}</td>
+        <td style="font-weight: 700; color: #0F172A;">${row.id}</td>
         <td>${row.channel}</td>
         <td><code>${row.payee}</code></td>
-        <td style="color: var(--accent-volt);">${row.sla}</td>
-        <td style="color: ${row.safe ? 'var(--text-slate)' : '#C084FC'};">${row.ollama}</td>
+        <td style="font-weight: 600; color: var(--accent-primary);">${row.sla}</td>
+        <td style="color: ${row.safe ? 'var(--text-muted)' : 'var(--accent-purple)'}; font-weight: 600;">${row.ollama}</td>
         <td>
-          <span class="badge-pill ${row.safe ? 'volt' : ''}" style="${row.safe ? '' : 'border-color: #F87171; color: #F87171;'}">
+          <span class="badge-pill ${row.safe ? 'lime' : 'danger'}">
             ${row.action}
           </span>
         </td>
@@ -397,13 +425,13 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
   buildFeedRowHTML(row) {
     return `
       <tr>
-        <td style="font-weight: 700; color: var(--accent-volt);">${row.id}</td>
+        <td style="font-weight: 700; color: #0F172A;">${row.id}</td>
         <td>${row.channel}</td>
         <td><code>${row.payee}</code></td>
-        <td style="color: var(--accent-volt);">${row.sla}</td>
-        <td style="color: ${row.safe ? 'var(--text-slate)' : '#C084FC'};">${row.ollama}</td>
+        <td style="font-weight: 600; color: var(--accent-primary);">${row.sla}</td>
+        <td style="color: ${row.safe ? 'var(--text-muted)' : 'var(--accent-purple)'}; font-weight: 600;">${row.ollama}</td>
         <td>
-          <span class="badge-pill ${row.safe ? 'volt' : ''}" style="${row.safe ? '' : 'border-color: #F87171; color: #F87171;'}">
+          <span class="badge-pill ${row.safe ? 'lime' : 'danger'}">
             ${row.action}
           </span>
         </td>

@@ -3,213 +3,245 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PROPAY — Real-Time Banking Fraud & Cognitive Quishing Defense</title>
-  <link rel="stylesheet" href="css/styles.css?v=3.0" />
+  <title>ProPay — Real-Time Banking Fraud & Cognitive Quishing Defense</title>
+  <link rel="stylesheet" href="css/styles.css?v=4.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Film Grain Overlay -->
-  <div class="film-grain"></div>
-
-  <!-- Hairline Architectural Grid -->
-  <div class="bg-grid-overlay"></div>
-
-  <!-- Top Categorical Dispatch Bar (Pirate Wires Style) -->
-  <div class="top-dispatch-strip">
-    <div class="dispatch-links">
-      <span class="active">ProPay Dispatch</span>
-      <span onclick="window.proPayApp.scrollTo('sectors')">Threat Sectors</span>
-      <span onclick="window.proPayApp.scrollTo('simulator')">Live Simulator</span>
-      <span onclick="window.proPayApp.scrollTo('feed')">Kafka Feed</span>
-      <span onclick="window.proPayApp.openModal('modal-hld')">C4 HLD Architecture</span>
-      <span onclick="window.proPayApp.openModal('modal-ollama')">Ollama Boundary</span>
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <div class="announcement-content">
+      <span class="badge-pill lime">NEW</span>
+      <span>On-Premise Ollama Engine Armed for Quishing &amp; Unsolicited Link Defense</span>
+      <span class="announcement-link" onclick="window.proPayApp.openModal('modal-ollama')">Learn about the strict Ollama boundary ➔</span>
     </div>
-    <div class="dispatch-meta">
-      <span class="badge-pill volt"><span class="volt-pulse">●</span> OLLAMA PRIVATE VPC</span>
-      <button class="btn-checkpoint" onclick="window.proPayApp.openModal('modal-viva')">
-        CHECKPOINT 3:30 PM ➔
-      </button>
+    <div class="announcement-checkpoint" onclick="window.proPayApp.openModal('modal-viva')">
+      <span>CHECKPOINT 3:30 PM VIVA GUIDE</span> ↗
     </div>
   </div>
 
-  <!-- Studio Header (pleasecallmechamp.com style) -->
-  <header class="studio-masthead">
-    <div class="masthead-brand" onclick="window.proPayApp.resetView()">
-      <div class="brand-monogram">PP</div>
-      <div class="brand-meta">
-        <span class="brand-title">ProPay Studio</span>
-        <span class="brand-desc">COGNITIVE BANKING RISK & QUISHING DEFENSE</span>
+  <!-- WeBank Style Modern Header -->
+  <header class="webank-header">
+    <div class="header-inner">
+      
+      <!-- Brand Logo -->
+      <div class="brand-logo" onclick="window.proPayApp.resetView()">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="logo-text">ProPay</span>
       </div>
-    </div>
 
-    <nav class="masthead-nav">
-      <button class="nav-item active" onclick="window.proPayApp.scrollTo('hero')">01 // EDITORIAL</button>
-      <button class="nav-item" onclick="window.proPayApp.scrollTo('sectors')">02 // 3 SECTORS</button>
-      <button class="nav-item" onclick="window.proPayApp.scrollTo('simulator')">03 // SIMULATOR</button>
-      <button class="nav-item" onclick="window.proPayApp.scrollTo('feed')">04 // TELEMETRY</button>
-      <button class="nav-item volt" onclick="window.proPayApp.openModal('modal-hld')">05 // ARCHITECTURE ↗</button>
-    </nav>
+      <!-- Navigation Links -->
+      <nav class="nav-menu">
+        <div class="nav-item-dropdown" onclick="window.proPayApp.scrollTo('sectors')">
+          <span>Threat Sectors</span>
+          <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+        </div>
+        <div class="nav-item-dropdown" onclick="window.proPayApp.scrollTo('simulator')">
+          <span>Live Simulator</span>
+          <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+        </div>
+        <span class="nav-link" onclick="window.proPayApp.openModal('modal-hld')">C4 HLD Architecture</span>
+        <span class="nav-link" onclick="window.proPayApp.openModal('modal-ollama')">Ollama Boundary</span>
+        <span class="nav-link" onclick="window.proPayApp.scrollTo('feed')">Kafka Feed</span>
+      </nav>
+
+      <!-- Action Group -->
+      <div class="header-actions">
+        <span class="text-login" onclick="window.proPayApp.openModal('modal-viva')">Viva Cheatsheet</span>
+        <button class="btn-signup" onclick="window.proPayApp.scrollTo('simulator')">
+          <span>Try Simulator</span>
+        </button>
+      </div>
+
+    </div>
   </header>
 
-  <!-- Main Editorial Canvas -->
-  <main class="editorial-container">
+  <!-- Main Canvas Container -->
+  <main class="main-body">
 
     <!-- ====================================================================
-         SECTION 1: TOWERING CONDENSED WORDMARK (PIRATE WIRES × CHAMP)
+         HERO SECTION: WeBank Style Central Headline & Vector Line-Art
          ==================================================================== -->
-    <section class="hero-wordmark-section" id="section-hero">
-      
-      <!-- Studio Ribbon -->
-      <div class="studio-sub-ribbon">
-        <span class="mono-label">PLEASE CALL ME PROPAY STUDIO // ENTERPRISE RISK INFRASTRUCTURE</span>
-        <div class="quick-anchors">
-          <span onclick="window.proPayApp.scrollTo('simulator')">Threat Simulator</span> · 
-          <span onclick="window.proPayApp.scrollTo('sectors')">3 Sectors</span> · 
-          <span onclick="window.proPayApp.openModal('modal-ollama')">Ollama Scoping</span> · 
-          <span onclick="window.proPayApp.openModal('modal-hld')">C4 Diagram</span>
+    <section class="webank-hero-section" id="section-hero">
+      <div class="hero-container">
+
+        <!-- Left Vector Line-Art: Hand Scanning QR / POS Terminal (WeBank style) -->
+        <div class="vector-illustration-left">
+          <svg class="illustration-svg" viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Terminal Base with Lime Accent Fill -->
+            <rect x="80" y="80" width="100" height="95" rx="16" fill="#D4F862" stroke="#0F172A" stroke-width="3"/>
+            <!-- Keypad Screen -->
+            <rect x="95" y="95" width="70" height="34" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>
+            <!-- QR Pattern on Terminal Screen -->
+            <rect x="102" y="102" width="8" height="8" fill="#0F172A"/>
+            <rect x="149" y="102" width="8" height="8" fill="#0F172A"/>
+            <rect x="102" y="113" width="8" height="8" fill="#0F172A"/>
+            <line x1="116" y1="104" x2="140" y2="104" stroke="#0F172A" stroke-width="2"/>
+            <line x1="116" y1="114" x2="145" y2="114" stroke="#0F172A" stroke-width="2"/>
+            <!-- Number Buttons Grid -->
+            <circle cx="108" cy="144" r="4" fill="#0F172A"/>
+            <circle cx="130" cy="144" r="4" fill="#0F172A"/>
+            <circle cx="152" cy="144" r="4" fill="#0F172A"/>
+            <circle cx="108" cy="160" r="4" fill="#0F172A"/>
+            <circle cx="130" cy="160" r="4" fill="#0F172A"/>
+            <circle cx="152" cy="160" r="4" fill="#0F172A"/>
+            <!-- Human Hand Tapping Card -->
+            <path d="M20 100 C 40 85, 65 90, 80 102" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
+            <rect x="52" y="55" width="46" height="28" rx="4" transform="rotate(-20 52 55)" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>
+            <!-- Radio Scan Waves -->
+            <path d="M140 45 C 150 50, 155 62, 150 72" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 4"/>
+          </svg>
         </div>
-        <span class="mono-label">INLINE &lt; 38MS · KAFKA 50K TPS <span class="volt-dot pulse"></span></span>
-      </div>
 
-      <!-- Pure Monolithic Towering Typography: PROPAY (No Buggy Insertions) -->
-      <div class="giant-wordmark-container">
-        <div class="towering-wordmark">PROPAY</div>
-      </div>
-
-      <!-- Editorial Manifesto Row (pleasecallmechamp.com style) -->
-      <div class="editorial-manifesto-row">
-        <div class="manifesto-lead-btn" onclick="window.proPayApp.scrollTo('simulator')">
-          The Protocol ➔
-        </div>
-        <p class="manifesto-statement">
-          We bring real-time fraud defense and cognitive quishing intelligence to life through sleek, automated pipelines—crafting experiences that go beyond static rules to eliminate physical QR sticker fraud, unsolicited smishing links, and sub-second payment exploitation.
-        </p>
-      </div>
-
-      <!-- Pirate Wires Editorial Lead Story Split Grid -->
-      <div class="editorial-lead-story-grid">
-        <div class="story-copy-col">
-          <div class="story-category-tag">THREAT INTELLIGENCE DISPATCH // 21 NOV 2026</div>
-          <h1 class="story-main-headline">
-            What to Flag Before the Settlement: The New Age of QR Quishing &amp; Reverse-Collect Scams
+        <!-- Center Content Block -->
+        <div class="hero-center-content">
+          <h1 class="hero-headline">
+            Intercept, verify, protect your<br/>
+            cash with a <span class="highlight-underline">single agent<svg class="doodle-squiggle" viewBox="0 0 200 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 14C50 3, 140 2, 197 12C150 6, 80 8, 30 15" stroke="#6366F1" stroke-width="4.5" stroke-linecap="round"/></svg></span>
           </h1>
-          <p class="story-deck">
-            A field guide to how physical payment stickers on campus terminals and deceptive SMS fee-refund links bypass legacy banking thresholds—and how on-premise Ollama agents catch them cold in under 1.4 seconds.
-          </p>
-          <div class="story-author-byline">
-            <span class="byline-avatar">VP</span>
-            <div class="byline-meta">
-              <span class="byline-name">Vamshik Patel &amp; Team</span>
-              <span class="byline-role">Principal Risk &amp; AI Architecture · ProPay Systems</span>
-            </div>
-            <span class="badge-pill volt" style="margin-left: auto;">SLA &lt; 38ms</span>
-          </div>
-        </div>
 
-        <div class="story-hud-col">
-          <div class="radar-hud-card">
-            <div class="hud-header">
-              <span class="mono-label" style="color: var(--accent-volt);">REAL-TIME RISK RADAR</span>
-              <span class="badge-pill purple">OLLAMA PRIVATE VPC</span>
-            </div>
-            <div class="hud-center-display">
-              <div class="hud-reticle">
-                <div class="reticle-circle-outer"></div>
-                <div class="reticle-circle-inner"></div>
-                <div class="reticle-crosshair"></div>
-                <div class="reticle-ping"></div>
-              </div>
-              <div class="hud-stats-readout">
-                <div class="readout-item">
-                  <span class="mono-sub">ACTIVE INLINE TPS</span>
-                  <span class="readout-val volt">49,210 TPS</span>
-                </div>
-                <div class="readout-item">
-                  <span class="mono-sub">OLLAMA LATENCY</span>
-                  <span class="readout-val" style="color: #C084FC;">1.24s ASYNC</span>
-                </div>
-                <div class="readout-item">
-                  <span class="mono-sub">INLINE WIRE CLEARANCE</span>
-                  <span class="readout-val" style="color: var(--state-approved);">&lt; 38.2MS</span>
-                </div>
-              </div>
-            </div>
-            <button class="btn-volt full-width" onclick="window.proPayApp.scrollTo('simulator')">
-              LAUNCH LIVE THREAT SIMULATOR ➔
+          <p class="hero-subtitle">
+            ProPay gives banks and fintechs real-time cognitive defense against physical QR code tampering (Quishing) and unsolicited smishing links using an on-premises Ollama agent.
+          </p>
+
+          <!-- Input CTA Group (WeBank style) -->
+          <div class="hero-input-group">
+            <input type="text" class="hero-search-input" id="hero-quick-input" placeholder="Paste UPI QR string (upi://pay?pa=...) or suspicious link..." value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" />
+            <button class="hero-cta-btn" onclick="window.proPayApp.quickAnalyzeFromHero()">
+              <span>Analyze Threat</span>
             </button>
           </div>
+
+          <div class="hero-micro-copy">
+            <span>Inline clearance &lt; 38ms</span> · <span>Zero cloud PII leakage</span> · <span>50,000 TPS Apache Kafka backbone</span>
+          </div>
         </div>
+
+        <!-- Right Vector Line-Art: Laptop with AI Shield & Alerts (WeBank style) -->
+        <div class="vector-illustration-right">
+          <svg class="illustration-svg" viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Laptop Base -->
+            <path d="M40 160 L180 160 L195 170 L25 170 Z" fill="#0F172A" stroke="#0F172A" stroke-width="2"/>
+            <!-- Laptop Screen -->
+            <rect x="52" y="70" width="116" height="85" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
+            <!-- Internal Graph Screen Fill with Lime -->
+            <rect x="60" y="78" width="100" height="68" rx="4" fill="#F8FAFC"/>
+            <!-- Line Chart on Laptop -->
+            <path d="M66 130 L85 115 L105 125 L125 95 L145 100 L155 88" stroke="#6366F1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Floating Flying Envelope 1 with Lime Accent -->
+            <rect x="145" y="30" width="36" height="24" rx="4" fill="#D4F862" stroke="#0F172A" stroke-width="2.2" transform="rotate(15 145 30)"/>
+            <path d="M148 35 L163 46 L178 39" stroke="#0F172A" stroke-width="2" transform="rotate(15 145 30)"/>
+            <!-- Floating Shield Alert 2 with Purple Accent -->
+            <rect x="25" y="45" width="34" height="24" rx="4" fill="#EDE9FE" stroke="#6366F1" stroke-width="2.2" transform="rotate(-12 25 45)"/>
+            <path d="M36 50 L42 56 L49 48" stroke="#6366F1" stroke-width="2" transform="rotate(-12 25 45)"/>
+            <!-- Sparkles -->
+            <path d="M190 85 L193 92 L200 95 L193 98 L190 105 L187 98 L180 95 L187 92 Z" fill="#6366F1"/>
+          </svg>
+        </div>
+
       </div>
 
+      <!-- Trust & Rails Bar (WeBank style) -->
+      <div class="trust-rails-bar">
+        <p class="trust-title">Securing transactions across Tier-1 payment rails and enterprise banking networks</p>
+        <div class="trust-logos-row">
+          <div class="logo-pill">FEDNOW RAIL</div>
+          <div class="logo-pill">SWIFT ISO-20022</div>
+          <div class="logo-pill">UPI 2.0 PROTOCOL</div>
+          <div class="logo-pill">HDFC / ICICI CLEARED</div>
+          <div class="logo-pill">PCI-DSS LEVEL 1</div>
+          <div class="logo-pill">FINCEN SAR READY</div>
+        </div>
+      </div>
     </section>
 
     <!-- ====================================================================
-         SECTION 2: PIRATE WIRES DAILY / NEWSPRINT PAPER SECTION
+         SECTION 2: THE 3 THREAT SECTORS (WeBank Modern Fintech Cards)
          ==================================================================== -->
     <section class="sectors-section" id="section-sectors">
-      
-      <!-- Date Strip Bar -->
-      <div class="daily-date-banner">
-        <div class="date-badge">November 21, 2026</div>
-        <div class="daily-title">From the ProPay Threat Intelligence Desk</div>
-        <div class="daily-meta" onclick="window.proPayApp.openModal('modal-ollama')">
-          OLLAMA SCOPING RULE // CHECKPOINT CRITICAL ➔
-        </div>
+      <div class="section-heading-wrap">
+        <span class="pill-badge-indigo">MULTI-TIER DEFENSE</span>
+        <h2 class="section-headline">The 3 Threat Sectors</h2>
+        <p class="section-deck">
+          Decoupling sub-38ms deterministic payment clearance from asynchronous on-premise Ollama cognitive reasoning.
+        </p>
       </div>
 
-      <!-- 3-Column Editorial Card Grid (Pure High Contrast) -->
-      <div class="threat-sectors-3col">
+      <div class="sectors-grid">
         
         <!-- Sector 1 -->
-        <article class="sector-article-card">
-          <div class="article-meta-header">
-            <span class="author-tag">SECTOR 01 // EDGE INGRESS</span>
-            <span class="metric-tag volt">&lt; 5MS SLA</span>
+        <div class="sector-card">
+          <div class="sector-badge-row">
+            <span class="sector-number">SECTOR 01</span>
+            <span class="sla-badge lime">&lt; 5ms Ingress</span>
           </div>
-          <h2 class="article-title">QR Payload Extraction &amp; Deep-Link Unrolling</h2>
-          <p class="article-summary">
-            Directly decodes camera QR scans, parses UPI payment intent URIs (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links (<code>bit.ly</code>, <code>tinyurl</code>), and cleans Punycode character spoofing before reaching the Kafka event bus.
+          <div class="sector-icon-wrap lime">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+              <path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 20h3v1h-3z"/>
+            </svg>
+          </div>
+          <h3 class="sector-title">QR Payload &amp; Deep-Link Extractor</h3>
+          <p class="sector-desc">
+            Directly decodes camera QR scans, extracts UPI payment intent parameters (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links (<code>bit.ly</code>, <code>tinyurl</code>), and cleans Punycode character spoofing at the API edge.
           </p>
-          <div class="article-footer">
-            <span class="mono-sub">WebAssembly Edge · Envoy Proxy</span>
-            <button class="article-action-btn" onclick="window.proPayApp.loadPreset('quishing')">TEST QR ➔</button>
+          <div class="sector-footer-specs">
+            <span>WebAssembly Edge</span> · <span>Envoy Proxy</span> · <span>Zero Network Call</span>
           </div>
-        </article>
+        </div>
 
         <!-- Sector 2 -->
-        <article class="sector-article-card featured-ollama">
-          <div class="article-meta-header">
-            <span class="author-tag" style="color: #C084FC;">SECTOR 02 // OLLAMA COGNITIVE</span>
-            <span class="metric-tag purple">ON-PREMISE VPC</span>
+        <div class="sector-card featured-purple">
+          <div class="sector-badge-row">
+            <span class="sector-number purple">SECTOR 02 // OLLAMA</span>
+            <span class="sla-badge purple">Private On-Prem VPC</span>
           </div>
-          <h2 class="article-title">Semantic Phishing &amp; QR Payee Mismatch Heuristics</h2>
-          <p class="article-summary">
+          <div class="sector-icon-wrap purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+              <path d="M9 16c1.5 1.2 4.5 1.2 6 0"/>
+            </svg>
+          </div>
+          <h3 class="sector-title">Semantic Phishing &amp; QR Payee Mismatch</h3>
+          <p class="sector-desc">
             Strictly scoped on-premise Ollama agent (Llama 3 / Mistral). Analyzes deceptive social engineering text lures, compares merchant display names against payee settlement VPAs, and compiles plain-English forensic dossiers.
           </p>
-          <div class="article-footer">
-            <span class="mono-sub" style="color: #C084FC;">Zero Cloud PII · Bypasses Inline Path</span>
-            <button class="article-action-btn" onclick="window.proPayApp.openModal('modal-ollama')">RULE ➔</button>
+          <div class="sector-footer-specs purple">
+            <span>Zero Cloud PII</span> · <span>Async &lt; 1.4s</span> · <span>Bypasses Wire Clearance</span>
           </div>
-        </article>
+        </div>
 
         <!-- Sector 3 -->
-        <article class="sector-article-card">
-          <div class="article-meta-header">
-            <span class="author-tag" style="color: var(--state-approved);">SECTOR 03 // ACTION</span>
-            <span class="metric-tag green">REAL-TIME INTERCEPT</span>
+        <div class="sector-card">
+          <div class="sector-badge-row">
+            <span class="sector-number">SECTOR 03</span>
+            <span class="sla-badge green">Real-Time Action</span>
           </div>
-          <h2 class="article-title">Adaptive In-App Warnings &amp; Automated SAR Filings</h2>
-          <p class="article-summary">
+          <div class="sector-icon-wrap green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <h3 class="sector-title">Adaptive Mitigation &amp; Auto-SAR</h3>
+          <p class="sector-desc">
             Presents dynamic warning overlays to users on their mobile banking glass, triggers biometric step-up challenges, freezes compromised payee accounts, and auto-generates FinCEN-compliant Suspicious Activity Reports (SAR).
           </p>
-          <div class="article-footer">
-            <span class="mono-sub" style="color: var(--state-approved);">99.4% Arrest Rate · WORM Storage</span>
-            <button class="article-action-btn" onclick="window.proPayApp.loadPreset('smishing')">TEST LINK ➔</button>
+          <div class="sector-footer-specs green">
+            <span>Dynamic Glass Warning</span> · <span>WORM Audit Log</span> · <span>Auto-SAR</span>
           </div>
-        </article>
+        </div>
 
       </div>
     </section>
@@ -222,62 +254,64 @@
         
         <div class="sim-header">
           <div>
-            <span class="mono-label" style="color: var(--accent-volt);">LIVE DEMONSTRATION WORKBENCH // 3:30 PM VIVA</span>
-            <h2 class="sim-title">Interactive Threat Execution Pipeline</h2>
+            <span class="pill-badge-indigo">INTERACTIVE WORKBENCH</span>
+            <h2 class="sim-title">Live Threat Execution Pipeline</h2>
             <p class="sim-deck">
               Inject live payloads into the ProPay risk mesh. Observe sub-38ms inline fast-path clearance, asynchronous Ollama cognitive deep-dives, and automated enforcement actions.
             </p>
           </div>
-          <button class="btn-stark" onclick="window.proPayApp.openModal('modal-hld')">
-            VIEW C4 HLD ARCHITECTURE ↗
+          <div class="sim-header-actions">
+            <button class="btn-outline" onclick="window.proPayApp.openModal('modal-hld')">
+              <span>View C4 Architecture ↗</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Presets Bar -->
+        <div class="sim-presets-row">
+          <button class="preset-tab" id="btn-p-clean" onclick="window.proPayApp.loadPreset('clean')">
+            <span class="dot-status green"></span> PRESET 1: CLEAN BANK WIRE (CLEARANCE QR)
+          </button>
+          <button class="preset-tab active" id="btn-p-quishing" onclick="window.proPayApp.loadPreset('quishing')">
+            <span class="dot-status red"></span> PRESET 2: QUISHING (TAMPERED QR STICKER)
+          </button>
+          <button class="preset-tab" id="btn-p-smishing" onclick="window.proPayApp.loadPreset('smishing')">
+            <span class="dot-status amber"></span> PRESET 3: UNSOLICITED SMISHING LINK
           </button>
         </div>
 
-        <!-- Preset Controls -->
-        <div class="sim-presets-bar">
-          <button class="preset-pill" id="btn-p-clean" onclick="window.proPayApp.loadPreset('clean')">
-            <span>✓ PRESET 1: CLEAN BANK WIRE / CLEARANCE QR</span>
-          </button>
-          <button class="preset-pill active" id="btn-p-quishing" onclick="window.proPayApp.loadPreset('quishing')">
-            <span style="color: #F87171;">⚠️</span> PRESET 2: QUISHING (TAMPERED QR STICKER)
-          </button>
-          <button class="preset-pill" id="btn-p-smishing" onclick="window.proPayApp.loadPreset('smishing')">
-            <span style="color: #F87171;">🚨</span> PRESET 3: UNSOLICITED SMISHING LINK
+        <!-- Search Input Bar -->
+        <div class="sim-search-bar">
+          <input type="text" class="sim-search-input" id="sim-input" value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" placeholder="Paste any UPI URI, QR intent string, or payment link..." />
+          <button class="btn-execute" id="btn-run-sim" onclick="window.proPayApp.executeSimulation()">
+            <span>Run Threat Pipeline ➔</span>
           </button>
         </div>
 
-        <!-- Input Row -->
-        <div class="sim-input-row">
-          <input type="text" class="input-mono" id="sim-input" value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" placeholder="Paste any UPI URI, QR intent string, or payment link..." />
-          <button class="btn-volt" id="btn-run-sim" onclick="window.proPayApp.executeSimulation()">
-            RUN THREAT PIPELINE ➔
-          </button>
-        </div>
-
-        <!-- Live Telemetry Stream -->
-        <div class="telemetry-terminal" id="telemetry-output">
-          <!-- Rendered reactively by app.js -->
+        <!-- Telemetry Results Box -->
+        <div class="telemetry-box" id="telemetry-output">
+          <!-- Rendered dynamically by app.js -->
         </div>
 
       </div>
     </section>
 
     <!-- ====================================================================
-         SECTION 4: REAL-TIME KAFKA STREAMING FEED
+         SECTION 4: KAFKA STREAMING FEED TICKER
          ==================================================================== -->
     <section class="feed-section" id="section-feed">
-      <div class="feed-header-strip">
+      <div class="feed-header-row">
         <div>
-          <span class="mono-label" style="color: var(--accent-volt);">APACHE KAFKA TRANSACTION STREAM (50,000 TPS)</span>
+          <span class="pill-badge-indigo">KAFKA 50,000 TPS STREAM</span>
           <h2 class="feed-title">Real-Time Omnichannel Ingress Ticker</h2>
         </div>
-        <div class="feed-live-status">
-          <span class="volt-pulse">●</span> LIVE PARTITIONED FEED
+        <div class="live-status-pill">
+          <span class="live-pulse-green">●</span> STREAMING PARTITIONED TOPIC
         </div>
       </div>
 
-      <div class="feed-table-container">
-        <table class="feed-table">
+      <div class="table-responsive-wrapper">
+        <table class="modern-fintech-table">
           <thead>
             <tr>
               <th>TX ID</th>
@@ -285,7 +319,7 @@
               <th>PAYEE / URI TARGET</th>
               <th>INLINE SLA</th>
               <th>OLLAMA REASONING</th>
-              <th>ACTION</th>
+              <th>ENFORCEMENT</th>
             </tr>
           </thead>
           <tbody id="feed-tbody">
@@ -301,60 +335,59 @@
        MODAL 1: C4 LEVEL 2 HLD ARCHITECTURE
        ==================================================================== -->
   <div class="modal-backdrop" id="modal-hld">
-    <div class="modal-box modal-wide">
-      <div class="modal-top">
+    <div class="modal-dialog modal-wide">
+      <div class="modal-header">
         <div>
-          <span class="mono-label" style="color: var(--accent-volt);">C4 LEVEL 2 HIGH-LEVEL ARCHITECTURE (HLD)</span>
-          <h3 class="modal-heading">ProPay Real-Time Risk &amp; On-Premise Ollama Infrastructure</h3>
+          <span class="pill-badge-indigo">C4 LEVEL 2 HLD</span>
+          <h3 class="modal-title">ProPay Real-Time Risk &amp; On-Premise Ollama Infrastructure</h3>
         </div>
-        <button class="btn-stark" onclick="window.proPayApp.closeModal('modal-hld')">CLOSE [ESC]</button>
+        <button class="modal-close-btn" onclick="window.proPayApp.closeModal('modal-hld')">✕</button>
       </div>
 
-      <div class="modal-content">
-        <!-- 6 Tiers Grid -->
-        <div class="hld-tiers-matrix">
-          <div class="tier-cell">
-            <span class="mono-label" style="color: #F87171;">TIER 1: INGESTION</span>
+      <div class="modal-body">
+        <div class="hld-grid-6">
+          <div class="hld-cell">
+            <span class="cell-tag red">TIER 1: INGESTION</span>
             <h4>Omnichannel Ingress Hub</h4>
             <p>Mobile/Web QR Scans, SMS Links, Card Rails, FedNow. mTLS gateway + QR Intent Extractor in &lt; 5ms.</p>
           </div>
-          <div class="tier-cell">
-            <span class="mono-label" style="color: var(--accent-volt);">TIER 2: STREAM &amp; FEAT</span>
+          <div class="hld-cell">
+            <span class="cell-tag green">TIER 2: STREAM &amp; FEAT</span>
             <h4>Kafka &amp; Redis Feature Store</h4>
             <p>Apache Kafka (50k TPS) + Flink sliding velocity aggregations and impossible travel calculations in &lt; 15ms.</p>
           </div>
-          <div class="tier-cell" style="border-color: rgba(192, 132, 252, 0.5);">
-            <span class="mono-label" style="color: #C084FC;">TIER 3: HYBRID ENGINE</span>
+          <div class="hld-cell highlight-purple">
+            <span class="cell-tag purple">TIER 3: HYBRID ENGINE</span>
             <h4>Drools Inline + Ollama Async</h4>
             <p>Inline sync path runs in &lt; 38ms (Drools + LightGBM). Asynchronous Ollama cluster executes in &lt; 1.4s.</p>
           </div>
-          <div class="tier-cell">
-            <span class="mono-label" style="color: var(--state-approved);">TIER 4: ENFORCEMENT</span>
+          <div class="hld-cell">
+            <span class="cell-tag indigo">TIER 4: ENFORCEMENT</span>
             <h4>Friction-Adaptive Interceptor</h4>
             <p>Allows safe payments, triggers 2FA/biometric challenges, and freezes confirmed fraud with in-app warnings.</p>
           </div>
-          <div class="tier-cell">
-            <span class="mono-label" style="color: var(--text-slate);">TIER 5: ANALYST WORKBENCH</span>
+          <div class="hld-cell">
+            <span class="cell-tag slate">TIER 5: ANALYST WORKBENCH</span>
             <h4>Human-in-the-Loop (HITL)</h4>
             <p>Presents pre-compiled Ollama evidence dossiers to fraud analysts, slashing triage from 15m to &lt; 2m.</p>
           </div>
-          <div class="tier-cell">
-            <span class="mono-label" style="color: #38BDF8;">TIER 6: COMPLIANCE</span>
+          <div class="hld-cell">
+            <span class="cell-tag blue">TIER 6: COMPLIANCE</span>
             <h4>WORM Audit &amp; Auto-SAR</h4>
             <p>Write-Once-Read-Many immutable storage with automated drafting of FinCEN Suspicious Activity Reports.</p>
           </div>
         </div>
 
-        <div class="hld-dual-speed-box">
-          <span class="mono-label" style="color: var(--accent-volt);">THE DUAL-SPEED ARCHITECTURAL PRINCIPLE:</span>
+        <div class="dual-speed-note-box">
+          <strong>THE DUAL-SPEED ARCHITECTURAL PRINCIPLE:</strong>
           <p>
             Transactions are never held waiting for an LLM. Our inline fast-path clears legitimate payments in <strong>&lt; 38ms</strong> using high-speed rule engines and LightGBM models. The on-premise Ollama cluster is engaged <strong>strictly asynchronously</strong> for ambiguous anomalies, deceptive link inspection, and forensic case dossiers.
           </p>
         </div>
       </div>
 
-      <div class="modal-bottom">
-        <button class="btn-stark" onclick="window.proPayApp.closeModal('modal-hld')">CLOSE</button>
+      <div class="modal-footer">
+        <button class="btn-modal-close" onclick="window.proPayApp.closeModal('modal-hld')">Close</button>
       </div>
     </div>
   </div>
@@ -363,96 +396,96 @@
        MODAL 2: STRICT OLLAMA BOUNDARY
        ==================================================================== -->
   <div class="modal-backdrop" id="modal-ollama">
-    <div class="modal-box">
-      <div class="modal-top">
+    <div class="modal-dialog">
+      <div class="modal-header">
         <div>
-          <span class="mono-label" style="color: #C084FC;">CHECKPOINT CRITICAL: OLLAMA SCOPING BOUNDARY</span>
-          <h3 class="modal-heading">Strict Ollama Deployment Scope &amp; Banking Privacy Mandate</h3>
+          <span class="pill-badge-indigo">CHECKPOINT CRITICAL</span>
+          <h3 class="modal-title">Strict Ollama Deployment Scope &amp; Privacy Mandate</h3>
         </div>
-        <button class="btn-stark" onclick="window.proPayApp.closeModal('modal-ollama')">CLOSE [ESC]</button>
+        <button class="modal-close-btn" onclick="window.proPayApp.closeModal('modal-ollama')">✕</button>
       </div>
 
-      <div class="modal-content">
-        <table class="boundary-table">
+      <div class="modal-body">
+        <table class="fintech-matrix-table">
           <thead>
             <tr>
               <th>COMPONENT</th>
               <th>USES OLLAMA?</th>
-              <th>ARCHITECTURAL JUSTIFICATION</th>
+              <th>JUSTIFICATION</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><strong>Inline Wire Clearance (&lt;50ms)</strong></td>
-              <td style="color: #F87171; font-weight: 700;">❌ NO</td>
+              <td class="badge-no">❌ NO</td>
               <td>LLMs add 1-2s latency. Sub-50ms wire speed is handled by Drools + LightGBM.</td>
             </tr>
             <tr>
               <td><strong>Event Routing &amp; Feature Counts</strong></td>
-              <td style="color: #F87171; font-weight: 700;">❌ NO</td>
+              <td class="badge-no">❌ NO</td>
               <td>Deterministic Kafka streaming processes 50,000 TPS with zero model overhead.</td>
             </tr>
             <tr>
               <td><strong>Semantic Phishing &amp; Link Intent</strong></td>
-              <td style="color: var(--accent-volt); font-weight: 700;">✅ YES (Ollama)</td>
+              <td class="badge-yes">✅ YES (Ollama)</td>
               <td>Parses deceptive social engineering language and urgency without sending PII to cloud APIs.</td>
             </tr>
             <tr>
               <td><strong>QR Payee VPA Mismatch Heuristic</strong></td>
-              <td style="color: var(--accent-volt); font-weight: 700;">✅ YES (Ollama)</td>
+              <td class="badge-yes">✅ YES (Ollama)</td>
               <td>Cross-references merchant metadata vs settlement address to catch physical QR sticker fraud.</td>
             </tr>
             <tr>
               <td><strong>Forensic Case Dossier Synthesis</strong></td>
-              <td style="color: var(--accent-volt); font-weight: 700;">✅ YES (Ollama)</td>
+              <td class="badge-yes">✅ YES (Ollama)</td>
               <td>Translates multi-dimensional anomaly scores into clear human-readable evidence for analysts.</td>
             </tr>
             <tr>
               <td><strong>Data Sovereignty &amp; PCI-DSS</strong></td>
-              <td style="color: var(--accent-volt); font-weight: 700;">✅ YES (Ollama)</td>
+              <td class="badge-yes">✅ YES (Ollama)</td>
               <td>Hosted on-premises. Zero banking customer data ever touches third-party cloud infrastructure.</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="modal-bottom">
-        <button class="btn-stark" onclick="window.proPayApp.closeModal('modal-ollama')">CLOSE</button>
+      <div class="modal-footer">
+        <button class="btn-modal-close" onclick="window.proPayApp.closeModal('modal-ollama')">Close</button>
       </div>
     </div>
   </div>
 
   <!-- ====================================================================
-       MODAL 3: 3:30 PM VIVA GUIDE
+       MODAL 3: VIVA GUIDE
        ==================================================================== -->
   <div class="modal-backdrop" id="modal-viva">
-    <div class="modal-box">
-      <div class="modal-top">
+    <div class="modal-dialog">
+      <div class="modal-header">
         <div>
-          <span class="mono-label" style="color: var(--accent-volt);">CHECKPOINT 3:30 PM // VIVA CHEATSHEET</span>
-          <h3 class="modal-heading">ProPay Project Presentation &amp; Defense</h3>
+          <span class="pill-badge-indigo">VIVA GUIDE</span>
+          <h3 class="modal-title">ProPay Project Presentation &amp; Defense</h3>
         </div>
-        <button class="btn-stark" onclick="window.proPayApp.closeModal('modal-viva')">CLOSE [ESC]</button>
+        <button class="modal-close-btn" onclick="window.proPayApp.closeModal('modal-viva')">✕</button>
       </div>
 
-      <div class="modal-content">
-        <div style="background: rgba(232, 255, 71, 0.06); border: 1px solid rgba(232, 255, 71, 0.3); padding: 16px; margin-bottom: 16px;">
-          <span class="mono-label" style="color: var(--accent-volt);">60-SECOND OPENING PITCH:</span>
-          <p style="color: var(--text-bone); margin-top: 6px; line-height: 1.6; font-size: 13px;">
+      <div class="modal-body">
+        <div class="pitch-highlight-box">
+          <span class="pitch-tag">60-SECOND OPENING PITCH:</span>
+          <p>
             "Good afternoon. Our project is <strong>ProPay</strong>, an enterprise Real-Time Banking Fraud &amp; Quishing Defense Agent. We specifically target the modern 'Now Issues'—physical QR code tampering (Quishing) and unsolicited smishing links. We built a dual-speed architecture: sub-38ms deterministic wire clearance, paired with an on-premises Ollama cluster for cognitive reasoning. Crucially, Ollama is strictly scoped to semantic link analysis, payee mismatch heuristics, and forensic case dossiers—guaranteeing 100% data privacy with zero latency bottlenecks on payment clearance."
           </p>
         </div>
 
-        <span class="mono-label" style="color: var(--accent-volt);">KEY DIFFERENTIATORS:</span>
-        <ul style="margin: 8px 0 16px 20px; color: var(--text-slate); font-size: 13px; line-height: 1.6;">
-          <li><strong>Pirate Wires × pleasecallmechamp.com Design:</strong> Towering condensed typography, editorial tabloid layout, high-voltage Acid Volt highlights.</li>
+        <span class="section-subhead">KEY ARCHITECTURAL HIGHLIGHTS:</span>
+        <ul class="highlight-bullet-list">
+          <li><strong>WeBank Modern Fintech Design:</strong> Clean ivory canvas, high-contrast typography, hand-drawn vector line-art, and fluid pill micro-interactions.</li>
           <li><strong>3 Threat Sectors:</strong> Edge extraction ($&lt;5\text{ms}$), Ollama cognitive analysis ($1.2\text{s}$ async), and dynamic in-app glass warnings.</li>
-          <li><strong>Strict Ollama Boundary:</strong> On-premise deployment ensuring zero customer PII leaves the bank's secure VPC.</li>
+          <li><strong>Strict Ollama Boundary:</strong> On-premise deployment ensuring zero customer PII leaves the bank's secure perimeter.</li>
         </ul>
       </div>
 
-      <div class="modal-bottom">
-        <button class="btn-stark" onclick="window.proPayApp.closeModal('modal-viva')">CLOSE</button>
+      <div class="modal-footer">
+        <button class="btn-modal-close" onclick="window.proPayApp.closeModal('modal-viva')">Close</button>
       </div>
     </div>
   </div>
@@ -461,6 +494,6 @@
   <div class="toast-shelf" id="toast-shelf"></div>
 
   <!-- Script -->
-  <script src="js/app.js?v=3.0"></script>
+  <script src="js/app.js?v=4.0"></script>
 </body>
 </html>
