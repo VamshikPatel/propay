@@ -135,8 +135,8 @@ class RiskOrchestrator:
         ]
         return stages
 
-    def process_transaction(self, raw_input: str) -> dict:
-        """Full 5-Agent Multi-Agent Swarm Execution Pipeline with Payment Flow"""
+    def process_transaction(self, raw_input: str, recipient_email: str = None) -> dict:
+        """Full 5-Agent Multi-Agent Swarm Execution Pipeline with Payment Flow & Real-Time SMTP Alerts"""
         # AGENT 1: Ingress & Payload Decoder
         edge_data = self.parse_edge_payload(raw_input)
 
@@ -178,9 +178,9 @@ class RiskOrchestrator:
             "in_app_warning": is_fraud
         }
 
-        # AGENT 5: Ollama Email Alert & Dispatcher Agent
+        # AGENT 5: Ollama Email Alert & Real-Time Dispatcher Agent
         email_eval = self.email_agent.generate_email_alert(
-            edge_data, inline_eval, ollama_eval, action_eval
+            edge_data, inline_eval, ollama_eval, action_eval, recipient_email=recipient_email
         )
 
         # Build Juspay-style payment flow stages

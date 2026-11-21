@@ -53,11 +53,46 @@ def kafka_status():
 def simulate():
     data = request.get_json(force=True, silent=True) or {}
     payload = data.get("payload", "").strip()
+    recipient_email = (data.get("recipient_email") or data.get("email") or "").strip()
     if not payload:
         payload = "upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500"
 
-    result = orchestrator.process_transaction(payload)
+    result = orchestrator.process_transaction(payload, recipient_email=recipient_email or None)
     return jsonify(result)
+
+@app.route("/api/email/config", methods=["GET"])
+def email_config():
+    return jsonify(orchestrator.email_agent.get_smtp_config())
+
+@app.route("/api/email/send", methods=["POST"])
+def send_email_api():
+    data = request.get_json(force=True, silent=True) or {}
+    recipient = (data.get("recipient") or data.get("email") or "").strip()
+    if not recipient:
+        return jsonify({"success": False, "error": "Recipient email address is required"}), 400
+
+    subject = data.get("subject", "ProPay Payment Authorization Alert")
+    html_body = data.get("html_body", "<p>ProPay Real-Time Payment Notification</p>")
+    text_body = data.get("text_body", "ProPay Real-Time Payment Notification")
+
+    res = orchestrator.email_agent.send_smtp(recipient, subject, html_body, text_body)
+    return jsonify(res)
+
+@app.route("/api/email/history", methods=["GET"])
+def email_history():
+    log_path = orchestrator.email_agent.log_file
+    items = []
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+                for line in lines[-20:]:  # last 20
+                    if line.strip():
+                        import json
+                        items.append(json.loads(line.strip()))
+        except Exception:
+            pass
+    return jsonify({"total": len(items), "recent_dispatches": list(reversed(items))})
 
 def start_server():
     port = 5055

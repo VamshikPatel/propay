@@ -1478,6 +1478,158 @@ body {
 /* ==========================================================================
    EMAIL ALERT VIEWER & MODAL STYLES
    ========================================================================== */
+/* ==========================================================================
+   LIVE SMTP NOTIFICATION HUB & ALERT CARDS
+   ========================================================================== */
+.smtp-live-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.smtp-live-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.smtp-live-input {
+  flex: 1;
+  min-width: 240px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-main);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.smtp-live-input:focus {
+  border-color: var(--border-focus);
+  background: var(--bg-card);
+}
+
+.btn-smtp-test {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-smtp-test:hover {
+  background: var(--accent-purple-light);
+  color: var(--accent-purple);
+  border-color: var(--accent-purple);
+}
+
+.smtp-status-indicator {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Live SMTP Alert Status Card in Telemetry Box */
+.smtp-alert-status-card {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-left: 4px solid var(--accent-green);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.smtp-alert-status-card.danger {
+  border-color: rgba(239, 68, 68, 0.3);
+  border-left-color: var(--accent-red);
+}
+
+.smtp-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.smtp-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--accent-green);
+  flex-shrink: 0;
+}
+
+.smtp-alert-status-card.danger .smtp-icon {
+  color: var(--accent-red);
+}
+
+.smtp-title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.smtp-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.smtp-card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-email-dispatch-action {
+  background: var(--accent-primary);
+  color: #FFFFFF;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-email-dispatch-action:hover {
+  background: var(--accent-primary-hover);
+  transform: translateY(-1px);
+}
+
 .btn-email-alert-trigger {
   font-size: 12.5px;
   font-weight: 600;

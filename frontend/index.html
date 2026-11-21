@@ -424,6 +424,21 @@
           </button>
         </div>
 
+        <!-- Live Email Alerts & Real-Time SMTP Bar -->
+        <div class="smtp-live-bar">
+          <div class="smtp-live-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--accent-primary);"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span>LIVE EMAIL ALERT RECIPIENT:</span>
+          </div>
+          <input type="email" class="smtp-live-input" id="sim-email-input" placeholder="Enter your email to receive live clearance notification (e.g., user@example.com)..." />
+          <button class="btn-smtp-test" onclick="window.proPayApp.sendLiveTestEmail()" title="Test Live SMTP Delivery">
+            <span>Send Test Alert ↗</span>
+          </button>
+          <div class="smtp-status-indicator">
+            <span class="live-pulse-green">●</span> SMTP TLS ARMED
+          </div>
+        </div>
+
         <!-- Search Input Bar with Purplish Gradient Button -->
         <div class="sim-search-bar">
           <input type="text" class="sim-search-input" id="sim-input" value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" placeholder="Paste any UPI URI, QR intent string, or payment link..." />
@@ -669,7 +684,11 @@
         </div>
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn-email-dispatch-action" onclick="window.proPayApp.sendCurrentModalEmail()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <span>Dispatch via SMTP TLS Now ↗</span>
+        </button>
         <button class="btn-modal-close" onclick="window.proPayApp.closeModal('modal-email-alert')">Close Preview</button>
       </div>
     </div>
