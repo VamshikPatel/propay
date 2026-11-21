@@ -1,0 +1,1199 @@
+/* ==========================================================================
+   PROPAY — Pirate Wires × pleasecallmechamp.com × Motion.dev Design System
+   Real-Time Banking Fraud & Cognitive Quishing Defense Agent
+   ========================================================================== */
+
+:root {
+  /* Obsidian Palette */
+  --bg-obsidian: #070708;
+  --bg-darker: #050506;
+  --surface-card: #0E0E12;
+  --surface-elevated: #15151A;
+  --surface-hover: #1A1A22;
+
+  /* Hairlines & Borders */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.16);
+  --border-bright: rgba(255, 255, 255, 0.32);
+
+  /* Typography Colors */
+  --text-pure: #FFFFFF;
+  --text-bone: #F4F3EF;
+  --text-slate: #8A8A93;
+  --text-dim: #52525A;
+
+  /* High-Voltage Accents */
+  --accent-volt: #E8FF47;          /* Acid Volt */
+  --accent-orange: #FF5722;        /* Pirate Wires Signal Orange */
+  --accent-purple: #C084FC;        /* Ollama Purple */
+  --state-approved: #34D399;       /* Emerald */
+  --state-rejected: #F87171;       /* Coral Red */
+
+  /* Typography Font Stacks */
+  --font-condensed: 'Anton', 'Impact', -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Motion & Spring Physics */
+  --spring-snappy: cubic-bezier(0.175, 0.885, 0.32, 1.15);
+  --ease-a24: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 160ms;
+  --duration-normal: 280ms;
+}
+
+/* Reset & Foundation */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--bg-obsidian);
+  color: var(--text-bone);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--bg-obsidian);
+  overflow-x: hidden;
+}
+
+/* Film Grain Texture */
+.film-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Background Hairline Grid */
+.bg-grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Common Typography */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-slate);
+}
+
+.mono-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-slate);
+  letter-spacing: 0.05em;
+}
+
+/* Badges & Pills */
+.badge-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-slate);
+  letter-spacing: 0.04em;
+}
+
+.badge-pill.volt {
+  border-color: rgba(232, 255, 71, 0.35);
+  color: var(--accent-volt);
+  background: rgba(232, 255, 71, 0.08);
+}
+
+.badge-pill.purple {
+  border-color: rgba(192, 132, 252, 0.4);
+  color: var(--accent-purple);
+  background: rgba(192, 132, 252, 0.08);
+}
+
+.volt-pulse {
+  display: inline-block;
+  color: var(--accent-volt);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.9); }
+}
+
+/* Buttons */
+.btn-volt {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 22px;
+  background: var(--accent-volt);
+  color: #070708;
+  border: none;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--spring-snappy), background var(--duration-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-volt:hover {
+  transform: translateY(-2px);
+  background: #F2FF7A;
+  box-shadow: 0 4px 20px rgba(232, 255, 71, 0.25);
+}
+
+.btn-volt.full-width {
+  width: 100%;
+}
+
+.btn-stark {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--text-bone);
+  border: 1px solid var(--border-medium);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.btn-stark:hover {
+  border-color: var(--accent-volt);
+  color: var(--accent-volt);
+  background: rgba(232, 255, 71, 0.06);
+}
+
+.btn-checkpoint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 12px;
+  background: var(--accent-orange);
+  color: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.btn-checkpoint:hover {
+  opacity: 0.85;
+}
+
+/* ==========================================================================
+   TOP DISPATCH STRIP (Pirate Wires Style)
+   ========================================================================== */
+.top-dispatch-strip {
+  background: #000000;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 8px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 101;
+}
+
+.dispatch-links {
+  display: flex;
+  gap: 20px;
+  color: var(--text-slate);
+}
+
+.dispatch-links span {
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.dispatch-links span:hover,
+.dispatch-links span.active {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.dispatch-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   STUDIO MASTHEAD (pleasecallmechamp.com style)
+   ========================================================================== */
+.studio-masthead {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7, 7, 8, 0.94);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.masthead-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.brand-monogram {
+  width: 32px;
+  height: 32px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-condensed);
+  font-size: 18px;
+  letter-spacing: -0.05em;
+  color: var(--accent-volt);
+}
+
+.brand-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+}
+
+.brand-desc {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-slate);
+  letter-spacing: 0.06em;
+}
+
+.masthead-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  padding: 4px;
+}
+
+.nav-item {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-slate);
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.nav-item:hover {
+  color: #FFFFFF;
+}
+
+.nav-item.active {
+  color: #FFFFFF;
+  background: var(--surface-elevated);
+  font-weight: 600;
+}
+
+.nav-item.volt {
+  color: var(--accent-volt);
+}
+
+/* ==========================================================================
+   EDITORIAL CONTAINER & HERO WORDMARK SECTION
+   ========================================================================== */
+.editorial-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px 80px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-wordmark-section {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  padding: 28px 36px 36px 36px;
+  margin-bottom: 48px;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+}
+
+.studio-sub-ribbon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.quick-anchors {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-slate);
+  letter-spacing: 0.05em;
+}
+
+.quick-anchors span {
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.quick-anchors span:hover {
+  color: #FFFFFF;
+}
+
+/* PIRATE WIRES TOWERING CONDENSED WORDMARK */
+.giant-wordmark-container {
+  padding: 4px 0 16px 0;
+  user-select: none;
+  overflow: hidden;
+}
+
+.towering-wordmark {
+  font-family: var(--font-condensed);
+  font-size: clamp(72px, 14vw, 172px);
+  font-weight: 400;
+  line-height: 0.84;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+}
+
+.char-p {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.embedded-badge {
+  position: absolute;
+  top: 15%;
+  right: 14%;
+  width: clamp(22px, 3.5vw, 42px);
+  height: clamp(22px, 3.5vw, 42px);
+  background: var(--bg-obsidian);
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-volt);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+}
+
+.embedded-badge svg {
+  width: 55%;
+  height: 55%;
+}
+
+.editorial-manifesto-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 32px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 20px;
+  margin-bottom: 32px;
+  align-items: baseline;
+}
+
+.manifesto-lead-btn {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-volt);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: opacity var(--duration-fast);
+}
+
+.manifesto-lead-btn:hover {
+  opacity: 0.8;
+}
+
+.manifesto-statement {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-bone);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  max-width: 880px;
+}
+
+/* LEAD STORY SPLIT GRID (Pirate Wires Style) */
+.editorial-lead-story-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 32px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 28px;
+}
+
+.story-category-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-orange);
+  margin-bottom: 10px;
+}
+
+.story-main-headline {
+  font-family: var(--font-condensed);
+  font-size: clamp(32px, 4vw, 54px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+.story-deck {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--text-bone);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  max-width: 580px;
+  margin-bottom: 24px;
+}
+
+.story-author-byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 16px;
+}
+
+.byline-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-medium);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-volt);
+}
+
+.byline-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.byline-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.byline-role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-slate);
+}
+
+/* RADAR HUD CARD */
+.radar-hud-card {
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-darker);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hud-center-display {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.hud-reticle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 1px dashed rgba(232, 255, 71, 0.4);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reticle-circle-inner {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 255, 71, 0.25);
+}
+
+.reticle-ping {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--accent-volt);
+  border-radius: 50%;
+  top: 25%;
+  right: 28%;
+  box-shadow: 0 0 10px var(--accent-volt);
+  animation: pingGlow 2s infinite;
+}
+
+@keyframes pingGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.4); }
+}
+
+.hud-stats-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.readout-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.readout-val {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.readout-val.volt {
+  color: var(--accent-volt);
+}
+
+/* ==========================================================================
+   SECTION 2: PIRATE WIRES DAILY / 3-COLUMN SECTORS
+   ========================================================================== */
+.sectors-section {
+  margin-bottom: 48px;
+}
+
+.daily-date-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 2px solid #FFFFFF;
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.date-badge {
+  font-family: var(--font-condensed);
+  font-size: 20px;
+  background: var(--accent-orange);
+  color: #FFFFFF;
+  padding: 4px 12px;
+  letter-spacing: 0.02em;
+}
+
+.daily-title {
+  font-family: var(--font-condensed);
+  font-size: 26px;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.daily-meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-volt);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  text-decoration: underline;
+}
+
+.threat-sectors-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.sector-article-card {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--duration-fast), border-color var(--duration-fast);
+}
+
+.sector-article-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-medium);
+}
+
+.sector-article-card.featured-ollama {
+  border: 1px solid rgba(192, 132, 252, 0.45);
+  background: linear-gradient(180deg, rgba(192, 132, 252, 0.06) 0%, var(--surface-card) 100%);
+}
+
+.article-meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.author-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #F87171;
+}
+
+.metric-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.metric-tag.volt {
+  background: rgba(232, 255, 71, 0.1);
+  color: var(--accent-volt);
+}
+
+.metric-tag.purple {
+  background: rgba(192, 132, 252, 0.1);
+  color: var(--accent-purple);
+}
+
+.metric-tag.green {
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--state-approved);
+}
+
+.article-title {
+  font-family: var(--font-condensed);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.article-summary {
+  font-size: 13px;
+  color: var(--text-slate);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.article-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 14px;
+}
+
+.article-action-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  color: var(--text-bone);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.article-action-btn:hover {
+  border-color: var(--accent-volt);
+  color: var(--accent-volt);
+}
+
+/* ==========================================================================
+   SECTION 3: LIVE INTERACTIVE THREAT SIMULATOR
+   ========================================================================== */
+.simulator-section {
+  margin-bottom: 48px;
+}
+
+.simulator-card {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  padding: 32px 36px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.sim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.sim-title {
+  font-family: var(--font-condensed);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  margin-top: 2px;
+}
+
+.sim-deck {
+  font-size: 13px;
+  color: var(--text-slate);
+  max-width: 680px;
+  margin-top: 4px;
+}
+
+.sim-presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.preset-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 16px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-bone);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.preset-pill:hover {
+  border-color: var(--accent-volt);
+  color: var(--accent-volt);
+  transform: translateY(-1px);
+}
+
+.preset-pill.active {
+  border-color: var(--accent-volt);
+  background: rgba(232, 255, 71, 0.08);
+  color: var(--accent-volt);
+}
+
+.sim-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.input-mono {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-medium);
+  color: #FFFFFF;
+  padding: 12px 18px;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+
+.input-mono:focus {
+  border-color: var(--accent-volt);
+}
+
+.telemetry-terminal {
+  border: 1px solid var(--border-subtle);
+  background: #050506;
+  padding: 24px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.trace-step-row {
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  align-items: center;
+}
+
+.trace-step-row:last-child {
+  border-bottom: none;
+}
+
+.dossier-box {
+  margin-top: 20px;
+  border: 1px solid rgba(192, 132, 252, 0.45);
+  background: rgba(192, 132, 252, 0.06);
+  padding: 20px;
+}
+
+.dossier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dossier-body {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-bone);
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.alert-banner {
+  margin-top: 20px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.alert-banner.safe {
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.08);
+  color: #34D399;
+}
+
+.alert-banner.danger {
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.1);
+  color: #F87171;
+}
+
+/* ==========================================================================
+   SECTION 4: KAFKA STREAMING FEED TICKER
+   ========================================================================== */
+.feed-section {
+  margin-bottom: 48px;
+}
+
+.feed-header-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.feed-title {
+  font-family: var(--font-condensed);
+  font-size: 26px;
+  color: #FFFFFF;
+}
+
+.feed-live-status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-volt);
+  letter-spacing: 0.06em;
+}
+
+.feed-table-container {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  overflow-x: auto;
+}
+
+.feed-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: left;
+}
+
+.feed-table th {
+  padding: 14px 18px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-slate);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+}
+
+.feed-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-bone);
+}
+
+.feed-table tr:hover td {
+  background: var(--surface-hover);
+}
+
+/* ==========================================================================
+   MODALS
+   ========================================================================== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(10px);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop.active {
+  display: flex;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 680px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
+  animation: modalEnter var(--duration-normal) var(--spring-snappy);
+}
+
+.modal-box.modal-wide {
+  max-width: 920px;
+}
+
+@keyframes modalEnter {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-top {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-heading {
+  font-family: var(--font-condensed);
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  margin-top: 2px;
+}
+
+.modal-content {
+  padding: 24px;
+  max-height: 72vh;
+  overflow-y: auto;
+}
+
+.modal-bottom {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hld-tiers-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.tier-cell {
+  background: #060608;
+  border: 1px solid var(--border-subtle);
+  padding: 16px;
+}
+
+.tier-cell h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 4px 0 6px 0;
+}
+
+.tier-cell p {
+  font-size: 11px;
+  color: var(--text-slate);
+  line-height: 1.5;
+}
+
+.hld-dual-speed-box {
+  background: rgba(232, 255, 71, 0.05);
+  border: 1px solid rgba(232, 255, 71, 0.3);
+  padding: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.boundary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.boundary-table th {
+  padding: 10px 14px;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-slate);
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+.boundary-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-bone);
+}
+
+/* Toast Shelf */
+.toast-shelf {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast-item {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 12px 18px;
+  background: #141418;
+  border: 1px solid var(--accent-volt);
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  animation: toastIn var(--duration-fast) var(--spring-snappy);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .editorial-manifesto-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .editorial-lead-story-grid {
+    grid-template-columns: 1fr;
+  }
+  .threat-sectors-3col {
+    grid-template-columns: 1fr;
+  }
+  .hld-tiers-matrix {
+    grid-template-columns: 1fr;
+  }
+  .sim-input-row {
+    grid-template-columns: 1fr;
+  }
+  .trace-step-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .top-dispatch-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 16px;
+  }
+  .dispatch-links {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
