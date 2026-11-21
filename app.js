@@ -294,8 +294,8 @@ class ProPayApp {
     const fromEl = document.getElementById('cfg-smtp-from');
     const btnSave = document.getElementById('btn-save-smtp');
 
-    let host = hostEl ? hostEl.value.trim() : '';
-    let port = portEl ? parseInt(portEl.value.trim(), 10) : 587;
+    let host = hostEl ? (hostEl.value.trim() || hostEl.placeholder || 'smtp.gmail.com') : 'smtp.gmail.com';
+    let port = portEl ? parseInt(portEl.value.trim() || '587', 10) : 587;
     // Auto-strip port if user typed host:port (e.g. smtp.gmail.com:587)
     if (host.includes(':')) {
       const parts = host.split(':');
@@ -304,12 +304,16 @@ class ProPayApp {
         port = parseInt(parts[1], 10);
         if (portEl) portEl.value = port;
       }
-      if (hostEl) hostEl.value = host;
     }
+    if (hostEl) hostEl.value = host;
+
     const use_tls = tlsEl ? tlsEl.value === 'true' : true;
-    const user = userEl ? userEl.value.trim() : '';
+    let user = userEl ? (userEl.value.trim() || userEl.placeholder || 'sveeresh004@gmail.com') : 'sveeresh004@gmail.com';
+    if (userEl) userEl.value = user;
+
     const password = passEl ? passEl.value.trim() : '';
-    const from_email = fromEl ? fromEl.value.trim() : '';
+    let from_email = fromEl ? (fromEl.value.trim() || fromEl.placeholder || user) : user;
+    if (fromEl) fromEl.value = from_email;
 
     let activeProv = 'custom';
     document.querySelectorAll('.smtp-prov-btn.active').forEach(b => {
@@ -386,11 +390,8 @@ class ProPayApp {
 
   async testSmtpFromModal() {
     const userEl = document.getElementById('cfg-smtp-user');
-    let email = userEl ? userEl.value.trim() : '';
-    if (!email) {
-      email = prompt('Enter recipient email address to send test message:', 'yourname@example.com');
-      if (!email) return;
-    }
+    let email = userEl ? (userEl.value.trim() || userEl.placeholder || 'sveeresh004@gmail.com') : 'sveeresh004@gmail.com';
+    if (userEl && !userEl.value) userEl.value = email;
 
     this.showToast(`Sending test alert to ${email}...`);
 
@@ -401,8 +402,9 @@ class ProPayApp {
       const passEl = document.getElementById('cfg-smtp-password');
       const fromEl = document.getElementById('cfg-smtp-from');
 
-      let h = hostEl ? hostEl.value.trim() : '';
-      let p = portEl ? portEl.value.trim() : '587';
+      let h = hostEl ? (hostEl.value.trim() || hostEl.placeholder || 'smtp.gmail.com') : 'smtp.gmail.com';
+      if (hostEl && !hostEl.value) hostEl.value = h;
+      let p = portEl ? (portEl.value.trim() || '587') : '587';
       if (h.includes(':')) {
         const parts = h.split(':');
         h = parts[0].trim();

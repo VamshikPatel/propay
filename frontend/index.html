@@ -434,6 +434,12 @@
           <button class="btn-smtp-test" onclick="window.proPayApp.sendLiveTestEmail()" title="Test Live SMTP Delivery">
             <span>Send Test Alert ↗</span>
           </button>
+          <button class="btn-smtp-config-gear" onclick="window.proPayApp.openGmailInboxModal()" title="View sveeresh004@gmail.com Received Email in Gmail Web" style="border-color:#EA4335; color:#EA4335; font-weight:700;">
+            <span style="display:flex; align-items:center; gap:6px;">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="#EA4335"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <span>Gmail Inbox (sveeresh004) ↗</span>
+            </span>
+          </button>
           <button class="btn-smtp-config-gear" onclick="window.proPayApp.openModal('modal-smtp-config')" title="Configure SMTP Server Credentials">
             <span>⚙ SMTP Settings</span>
           </button>
@@ -727,7 +733,7 @@
         <form id="smtp-settings-form" onsubmit="event.preventDefault(); window.proPayApp.saveSmtpSettings();" style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
           <div class="smtp-form-row">
             <label class="smtp-form-label">SMTP Host</label>
-            <input type="text" class="smtp-form-input" id="cfg-smtp-host" placeholder="smtp.gmail.com" required />
+            <input type="text" class="smtp-form-input" id="cfg-smtp-host" value="smtp.gmail.com" placeholder="smtp.gmail.com" required />
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
