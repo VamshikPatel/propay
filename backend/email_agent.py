@@ -75,7 +75,18 @@ class OllamaEmailAgent:
         current = self.get_smtp_config()
         for k in ["host", "port", "user", "password", "from_email", "use_tls", "provider"]:
             if k in new_cfg:
-                if k == "port":
+                if k == "host":
+                    raw_h = str(new_cfg[k]).strip()
+                    if ":" in raw_h:
+                        p_parts = raw_h.split(":")
+                        current["host"] = p_parts[0].strip()
+                        try:
+                            current["port"] = int(p_parts[1].strip())
+                        except ValueError:
+                            pass
+                    else:
+                        current["host"] = raw_h
+                elif k == "port":
                     try:
                         current[k] = int(new_cfg[k])
                     except (ValueError, TypeError):
@@ -280,13 +291,25 @@ class OllamaEmailAgent:
 
         # Attempt live SMTP network delivery
         try:
-            port = int(cfg["port"])
+            raw_host = cfg.get("host", "").strip()
+            # Clean hostname if user provided host:port
+            if ":" in raw_host:
+                parts = raw_host.split(":")
+                host = parts[0].strip()
+                try:
+                    port = int(parts[1].strip())
+                except ValueError:
+                    port = int(cfg.get("port", 587))
+            else:
+                host = raw_host
+                port = int(cfg.get("port", 587))
+
             use_ssl = port == 465
 
             if use_ssl:
-                server = smtplib.SMTP_SSL(cfg["host"], port, timeout=10.0)
+                server = smtplib.SMTP_SSL(host, port, timeout=10.0)
             else:
-                server = smtplib.SMTP(cfg["host"], port, timeout=10.0)
+                server = smtplib.SMTP(host, port, timeout=10.0)
                 if cfg.get("use_tls", True):
                     server.starttls()
 
@@ -298,7 +321,7 @@ class OllamaEmailAgent:
 
             delivery_result["status"] = "SENT_LIVE_SMTP"
             delivery_result["delivered"] = True
-            delivery_result["details"] = f"Delivered via live SMTP TLS relay {cfg['host']}:{cfg['port']} to {recipient}"
+            delivery_result["details"] = f"Delivered via live SMTP TLS relay {host}:{port} to {recipient}"
         except smtplib.SMTPAuthenticationError as auth_err:
             delivery_result["status"] = "SMTP_AUTH_FAILED"
             delivery_result["delivered"] = False

@@ -241,8 +241,18 @@ class ProPayApp {
     const fromEl = document.getElementById('cfg-smtp-from');
     const btnSave = document.getElementById('btn-save-smtp');
 
-    const host = hostEl ? hostEl.value.trim() : '';
-    const port = portEl ? parseInt(portEl.value.trim(), 10) : 587;
+    let host = hostEl ? hostEl.value.trim() : '';
+    let port = portEl ? parseInt(portEl.value.trim(), 10) : 587;
+    // Auto-strip port if user typed host:port (e.g. smtp.gmail.com:587)
+    if (host.includes(':')) {
+      const parts = host.split(':');
+      host = parts[0].trim();
+      if (parts[1] && !isNaN(parseInt(parts[1], 10))) {
+        port = parseInt(parts[1], 10);
+        if (portEl) portEl.value = port;
+      }
+      if (hostEl) hostEl.value = host;
+    }
     const use_tls = tlsEl ? tlsEl.value === 'true' : true;
     const user = userEl ? userEl.value.trim() : '';
     const password = passEl ? passEl.value.trim() : '';
@@ -338,10 +348,18 @@ class ProPayApp {
       const passEl = document.getElementById('cfg-smtp-password');
       const fromEl = document.getElementById('cfg-smtp-from');
 
+      let h = hostEl ? hostEl.value.trim() : '';
+      let p = portEl ? portEl.value.trim() : '587';
+      if (h.includes(':')) {
+        const parts = h.split(':');
+        h = parts[0].trim();
+        if (parts[1]) p = parts[1].trim();
+      }
+
       const bodyData = {
         recipient: email,
-        host: hostEl ? hostEl.value.trim() : undefined,
-        port: portEl ? portEl.value.trim() : undefined,
+        host: h || undefined,
+        port: p || undefined,
         use_tls: tlsEl ? tlsEl.value === 'true' : undefined,
         user: email,
         password: passEl && passEl.value ? passEl.value.trim() : undefined,
