@@ -1,91 +1,140 @@
-# ProPay — 3:30 PM Checkpoint Submission & Viva Defense Guide
-**Real-Time Banking Fraud & Cognitive Quishing Defense Agent**  
-**Design Direction:** WeBank Modern Fintech Header (Line-art illustrations, lime accents, doodle squiggle underline) × shadcn/ui Minimal Controls  
-**Checkpoint Date & Time:** 21st November 2026, 3:30 PM
+# ProPay — Viva & Technical Interview Defense Guide
+**Dual-Speed Banking Fraud & Quishing Defense Engine**  
+**Calibrated for:** On-Campus (Skyhigh Security, Epicor, Product Companies) & Off-Campus (Slice, Uber, Razorpay, PhonePe) Interviews.
 
 ---
 
-## 1. 60-Second Opening Pitch to the Panel / Guide
+## 1. The 60-Second Elevator Pitch (Memorize This)
 
-> *"Good afternoon Sir/Madam. Our project is **ProPay**, an enterprise Real-Time Banking Fraud & Quishing Defense Agent.
+> *"Good afternoon Sir/Madam / Hi [Interviewer Name]. My project is **ProPay**, an enterprise real-time fraud defense engine specifically targeting modern zero-day payment attacks: **Physical QR Code Tampering (Quishing)** and **Deceptive Phishing Links** on instant payment rails like UPI.
 >
-> Traditional fraud detection systems focus on historical database thresholds, leaving banks completely vulnerable to emerging zero-day digital fraud: specifically **Quishing (tampered physical QR stickers on point-of-sale terminals)** and **unsolicited smishing links** distributed via SMS and messaging channels.
+> In modern payment networks, transactions settle in **under 50 milliseconds**. You cannot run a heavy AI model inline on every transaction because LLMs take 1 to 2 seconds, which would crash transaction throughput.
 >
-> ProPay introduces a **Dual-Speed Architecture** across **3 Threat Sectors** and a **5-Agent Swarm**:
-> 1. Our synchronous inline fast-path clears legitimate payments in **under 38 milliseconds** using lightweight rule engines and LightGBM models.
-> 2. Ambiguous anomalies and deceptive payloads are dispatched **asynchronously to a private, on-premise Ollama LLM cluster (Llama 3)**.
+> To solve this, I architected a **Dual-Speed Pipeline** in Python:
+> 1. **Synchronous Fast-Path Gatekeeper (<30ms):** Implements NPCI UPI Intent URI parsing, merchant-vs-settlement authority mismatch heuristics, and an in-memory sliding-window velocity rate limiter.
+> 2. **Asynchronous Cognitive Worker:** When a transaction is flagged suspicious, a local Ollama LLM (Llama 3) executes in the background to analyze the deceptive context, generate a plain-English forensic dossier, and dispatch an automated SMTP email alert.
 >
-> Crucially, **Ollama is strictly scoped to where it excels**: semantic phishing text analysis, QR merchant-vs-payee mismatch heuristics, plain-English forensic case dossiers, and automated security email alert synthesis—guaranteeing 100% banking data sovereignty without slowing down sub-second transaction throughput.
->
-> Our user interface incorporates **Juspay-style payment aggregation flows**, demonstrating the end-to-end payment lifecycle through Kafka streaming partitions, fast-path scoring, switch clearing, and contextual email dispatch."*
+> Every transaction verdict is cryptographically sealed into an append-only ledger using **SHA-256 chained hashing**, guaranteeing tamper-evident audit trails."*
 
 ---
 
-## 2. Live Demonstration Flow for the Checkpoint
+## 2. The 5 Questions Every Interviewer Will Ask (and Your Winning Answers)
 
-Open `frontend/index.html` in Chrome/Edge or run `server.py` (`http://localhost:5055`):
-
-1. **Showcase the WeBank Modern Fintech & shadcn Design**:
-   - Point out the clean ivory/white canvas, high-impact headline *"Intercept, verify, protect your cash with a single agent"*, and the purple hand-drawn doodle squiggle underline.
-   - Point out the custom vector illustrations: POS terminal with electric lime fill on the left, and laptop with AI shield and alert envelopes on the right.
-   - Demonstrate the **shadcn-style Theme Toggle Switch** in the top navigation bar with animated sun/moon indicators.
-2. **Demonstrate Preset 1 (Clean Bank Wire / Clearance QR)**:
-   - Click `PRESET 1` $\rightarrow$ Click `Run Threat Pipeline ➔`.
-   - **Show the Evaluator:**
-     - **Juspay Checkout Sheet**: Displays `HDFC Bank Treasury`, ₹50,000, verified institutional rail.
-     - **9-Stage Lifecycle Pipeline**: `PAYMENT_INITIATED` $\rightarrow$ `KAFKA_INGESTED` $\rightarrow$ `GATEWAY_ROUTED` $\rightarrow$ `RISK_SCORED (PASS)` $\rightarrow$ `OLLAMA_BYPASSED (Wire Speed)` $\rightarrow$ `BANK_SWITCH_CLEARED` $\rightarrow$ `ENFORCEMENT (ALLOW)` $\rightarrow$ `EMAIL_DISPATCHED` $\rightarrow$ `SETTLEMENT_COMPLETE`.
-     - Fast-path SLA: **$16.2\text{ms}$** (sub-38ms achieved).
-3. **Demonstrate Preset 2 (Quishing Attack / Tampered QR Sticker)**:
-   - Click `PRESET 2` $\rightarrow$ Click `Run Threat Pipeline ➔`.
-   - **Show the Evaluator:** 
-     - **Juspay Aggregator Sheet**: Shows claimed merchant `HDFC Official Merchant`, but underlying settlement is `scammer_wallet@paytm`.
-     - **9-Stage Lifecycle**: `RISK_SCORED (FLAGGED)` $\rightarrow$ `OLLAMA_ANALYZED (THREAT)` $\rightarrow$ `BANK_SWITCH_HELD` $\rightarrow$ `ENFORCEMENT (FREEZE_AND_WARN)` $\rightarrow$ `EMAIL_DISPATCHED` $\rightarrow$ `TRANSACTION_FROZEN`.
-     - **Ollama Forensic Dossier**:
-       *"CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy. The QR display metadata explicitly claims 'HDFC Official Merchant', but the underlying settlement address resolves to an unverified individual wallet ('scammer_wallet@paytm'). Strongly indicates physical QR sticker replacement attack on point-of-sale terminals."*
-4. **Demonstrate Preset 3 (Unsolicited Smishing Link)**:
-   - Click `PRESET 3` $\rightarrow$ Click `Run Threat Pipeline ➔`.
-   - Shortened `bit.ly` link is unrolled $\rightarrow$ resolves to lookalike domain `.xyz` $\rightarrow$ Ollama semantic analysis halts reverse-collect credential harvesting.
-5. **Showcase Multi-Agent Swarm Orchestration & Automated Email Alerts**:
-   - Highlight the 5 specialized autonomous agents with clean vector SVG glyphs (zero emojis):
-     - `Agent 01: Ingress & Decoding Agent` (WASM Edge, <5ms)
-     - `Agent 02: Fast-Path Rule Agent` (Drools + LightGBM, <38ms)
-     - `Agent 03: Ollama Cognitive Agent` (Private Llama 3 On-Premise, ~1.2s Async)
-     - `Agent 04: Adaptive Enforcement Agent` (Dynamic Glass Interception & Freeze)
-     - `Agent 05: Ollama Email Alert Agent` (Contextual Customer Alerts & SOC Escalations)
-   - Click `View Generated Email Alert ↗` to demonstrate the live synthesized banking email:
-     - Customer View: Clear notification of payment block, claimed vs actual payee discrepancy, and "Not Me / Freeze Account" CTA.
-     - Bank SOC View: Full incident report, Drools trigger rule, Ollama dossier, and FinCEN SAR filing.
-6. **Showcase Kafka Streaming Ingress Ticker**:
-   - Point to the live feed ticker showing 50,000 TPS simulated Kafka topic ingestion with 12 partitions, latency SLA, and instant email dispatch status.
-7. **Open C4 Level 2 HLD Architecture Modal**:
-   - Click `C4 HLD Architecture` in the top bar to walk the panel through the complete 6-tier architecture and the **Strict Ollama Boundary Table**.
+### Q1: "Why did you separate the Fast-Path from the LLM instead of running AI on every transaction?"
+- **The Senior SWE Answer:**
+  > *"Because of the **latency SLA trade-off**. On instant payment rails like UPI or FedNow, the network clearance SLA is strictly sub-50ms. LLM inference introduces a 1–2 second latency bottleneck. Placing an LLM inline on thousands of transactions per second would cause massive timeouts and customer churn. 
+  > 
+  > In our dual-speed architecture, 95%+ of legitimate transactions clear in **under 30 milliseconds** via deterministic heuristics. The LLM is invoked strictly asynchronously as a background worker on the 5% of flagged anomalies to provide human-readable explainability and automated security alerts."*
 
 ---
 
-## 3. Potential Tricky Evaluator Questions & Authoritative Answers
-
-### Q1: "Why not use a Cloud LLM like OpenAI GPT-4 or Gemini for fraud analysis?"
-- **Answer:** *"In banking risk infrastructure, customer PII, account numbers, and settlement metadata cannot leave the bank's secure VPC or data center due to **PCI-DSS, GDPR, and central bank data sovereignty mandates**. Hosting an on-premise **Ollama cluster** guarantees that 100% of reasoning occurs locally inside the bank's perimeter with zero external egress. Optional API keys are supported for private proxy enclaves."*
-
-### Q2: "Isn't an LLM too slow to evaluate banking transactions in real-time?"
-- **Answer:** *"Yes, which is exactly why our architecture enforces the **Strict Ollama Boundary**. Ollama is **never** placed in the synchronous inline path. Wire payments are cleared in **under 38 milliseconds** using Drools deterministic rules and LightGBM models. Ollama is strictly triggered **asynchronously** for flagged anomalies, semantic link inspection, and pre-compiling analyst evidence dossiers."*
-
-### Q3: "How does ProPay stop Quishing (QR Phishing) specifically?"
-- **Answer:** *"Quishing occurs when fraudsters paste a fake paper QR sticker over a verified merchant's stand. When scanned, the QR display text might say 'HDFC Official Merchant', but the underlying URI routes to a private personal UPI handle (`attacker@paytm`). Sector 1 extracts both strings at the edge; Sector 2 (Ollama) compares the claimed entity against the payee settlement history, immediately catching the discrepancy before funds transfer."*
-
-### Q4: "What happens after fraud is caught? Does it just block?"
-- **Answer:** *"ProPay uses a **Friction-Adaptive Response**: for trusted transactions it is frictionless; for medium ambiguity it challenges the user with biometric step-up auth; for confirmed Quishing/Phishing, it freezes the transaction, warns the user with a dynamic glass overlay, and automatically drafts an audit-ready Suspicious Activity Report (SAR) for regulatory compliance."*
+### Q2: "How does your Quishing detection work under the hood?"
+- **The Senior SWE Answer:**
+  > *"A UPI QR code conforms to the NPCI Intent specification: `upi://pay?pa=...&pn=...&am=...`. 
+  > 
+  > In a physical Quishing attack, scammers paste a malicious QR sticker over a shopkeeper's genuine QR stand. The display name on the sticker says 'Starbucks Coffee' or 'HDFC Official Merchant' (`pn`), but the underlying payee address (`pa`) routes funds to an unauthorized personal handle like `scammer_wallet@paytm`.
+  > 
+  > Our engine parses the URI using Python's `urllib.parse`, extracts `pn` and `pa`, and cross-references them against institutional settlement domains. If a trusted corporate authority is claimed in `pn` but resolves to an unverified consumer VPA in `pa`, our heuristic flags an **Authority Mismatch** in under 0.1ms."*
 
 ---
 
-## 4. Architectural Summary
+### Q3: "How did you implement the velocity rate limiter without slowing down the database?"
+- **The Senior SWE Answer:**
+  > *"I implemented an **In-Memory Sliding-Window Rate Limiter**. For each user or VPA, we maintain an in-memory list of Unix timestamps of their recent transactions. 
+  > 
+  > When a new transaction arrives, we prune timestamps older than our 60-second window and append the current timestamp. If the count exceeds our threshold (e.g., >3 transactions in 60 seconds), we flag a `VELOCITY_ANOMALY`. 
+  > 
+  > This provides $O(1)$ amortized time complexity with zero database disk I/O, preventing automated account draining in sub-millisecond time."*
 
-| Layer | Technology | Function | SLA |
-| :--- | :--- | :--- | :--- |
-| **Tier 1: Ingestion** | Envoy Edge + WebAssembly | QR Intent & Short-URL Unroller | $< 5\text{ms}$ |
-| **Tier 2: Streaming** | Apache Kafka + Flink + Redis | Sliding-window velocity (50k TPS, 12 Partitions) | $< 15\text{ms}$ |
-| **Tier 3A: Inline Sync** | Drools + LightGBM (ONNX) | Deterministic Sanction & Tabular Scoring | $< 38\text{ms}$ |
-| **Tier 3B: Async Agent** | **Ollama On-Premise (Llama 3)** | Semantic Phishing & QR Mismatch Reasoning | $< 1.4\text{s}$ (Async) |
-| **Tier 4: Action** | Adaptive Interceptor | Dynamic Warning Glass & Freeze | Real-Time |
-| **Tier 5: Alerts & Mailer**| Ollama Mailer + SMTP TLS | Customer Security Alert & SOC Ticket | $< 15\text{ms}$ |
-| **Tier 6: Governance** | WORM S3 Storage | FinCEN SAR Auto-Filing & Non-repudiation | Immutable |
+---
+
+### Q4: "How does your Tamper-Evident SHA-256 Ledger work?"
+- **The Senior SWE Answer:**
+  > *"It uses **Cryptographic Hash Chaining** (similar to a blockchain block-header or Git commit tree). 
+  > 
+  > Each transaction record is logged to an append-only JSONL file with two hashes:
+  > 1. `prev_hash`: The SHA-256 digest of the immediately preceding record (or a 64-zero genesis hash for the first record).
+  > 2. `record_hash`: Computed as `SHA256(canonical_json(payload) + prev_hash)`.
+  > 
+  > We also built an integrity verification function (`verify_ledger_integrity()`) that scans the file from beginning to end and recomputes the hashes. If an attacker or insider edits even a single character or amount in an old transaction, the entire subsequent hash chain breaks mathematically, exposing the tampering immediately."*
+
+---
+
+### Q5: "Why use local Ollama instead of an external API like OpenAI GPT-4?"
+- **The Senior SWE Answer:**
+  > *"In banking and payment systems, **data sovereignty and PCI-DSS compliance** are paramount. Sending customer account numbers, transaction amounts, and payee metadata to public third-party cloud APIs risks PII leakage. 
+  > 
+  > By running **Ollama (Llama 3)** locally on-premise, 100% of the cognitive reasoning stays inside the bank's secure perimeter, ensuring complete privacy with zero cloud data egress."*
+
+---
+
+## 3. Live Demonstration Cheat-Sheet
+
+Open `frontend/index.html` or run `python server.py` (`http://localhost:5055`):
+
+1. **Highlight the Clean Dodo Payments Aesthetic:**
+   - Point out the calm pastel gradient canvas, the clean sans-serif typography, and the zero-clutter layout.
+   - Show the **Live Telemetry HUD** and the quick scan search bar.
+
+2. **Run Preset 1: Clean Bank Wire:**
+   - Click `PRESET 1` $\rightarrow$ Click `Run Pipeline`.
+   - Show that the transaction is recognized as an institutional settlement (`hdfc.corporate@hdfcbank`).
+   - Fast-path latency: **< 1ms**, LLM is bypassed to preserve speed, transaction status: `ALLOW`.
+
+3. **Run Preset 2: Quishing Attack (QR Sticker Replacement):**
+   - Click `PRESET 2` $\rightarrow$ Click `Run Pipeline`.
+   - Show the mismatch: Payee name claims `HDFC Official Merchant`, but settlement VPA routes to `scammer_wallet@paytm`.
+   - Fast-path immediately flags `PAYEE_AUTHORITY_MISMATCH_QUISHING`.
+   - Ollama LLM runs in the background and outputs the plain-English forensic case dossier.
+   - Click `View Generated Email ↗` to show the personalized customer warning and bank SOC ticket.
+
+4. **Run Preset 3: Unsolicited Smishing Link:**
+   - Click `PRESET 3` $\rightarrow$ Click `Run Pipeline`.
+   - Show the shortened `bit.ly` link being resolved to an untrusted `.xyz` domain, intercepted before credential harvesting.
+
+5. **Demonstrate Ledger Integrity:**
+   - Show that every transaction is appended with a `record_hash` and `prev_hash` to `backend/audit_ledger.jsonl`.
+
+---
+
+## 4. Quick Code Snippets (Know How to Write These on Paper)
+
+### A. Sliding-Window Velocity Rate Limiter
+```python
+import time
+from collections import defaultdict
+
+velocity_store = defaultdict(list)
+
+def check_velocity(user_id: str, window_sec: int = 60, max_limit: int = 3) -> bool:
+    now = time.time()
+    # 1. Prune timestamps older than window
+    velocity_store[user_id] = [t for t in velocity_store[user_id] if (now - t) <= window_sec]
+    # 2. Record current attempt
+    velocity_store[user_id].append(now)
+    # 3. Check limit
+    return len(velocity_store[user_id]) > max_limit
+```
+
+### B. SHA-256 Hash Chaining
+```python
+import hashlib, json
+
+def compute_record_hash(payload: dict, prev_hash: str) -> str:
+    canonical_data = json.dumps(payload, sort_keys=True) + prev_hash
+    return hashlib.sha256(canonical_data.encode('utf-8')).hexdigest()
+```
+
+### C. NPCI UPI Intent Parsing
+```python
+from urllib.parse import urlparse, parse_qs
+
+def parse_upi_intent(raw_qr_uri: str) -> dict:
+    parsed = urlparse(raw_qr_uri)
+    params = parse_qs(parsed.query)
+    return {
+        "pa": params.get("pa", [""])[0].lower(),  # Payee VPA
+        "pn": params.get("pn", [""])[0],          # Payee Merchant Name
+        "am": params.get("am", [""])[0],          # Amount
+    }
+```

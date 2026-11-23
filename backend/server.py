@@ -1,6 +1,8 @@
 """
 ProPay Backend — Flask API Server & Static Frontend Host
 Port: 5055
+Provides endpoints for dual-speed risk scoring, cryptographic audit verification,
+and contextual SMTP email dispatch.
 """
 
 import os
@@ -21,13 +23,15 @@ def index():
 
 @app.route("/api/health", methods=["GET"])
 def health():
+    ledger_stat = orchestrator.ledger.get_ledger_status()
     return jsonify({
         "status": "healthy",
-        "service": "ProPay Risk & Quishing Engine",
+        "service": "ProPay Dual-Speed Risk & Quishing Defense Engine",
         "port": 5055,
-        "inline_sla_target_ms": 38.0,
+        "inline_sla_target_ms": 30.0,
         "ollama_ready": True,
-        "kafka_cluster": orchestrator.kafka_sim.get_cluster_status()["status"]
+        "ledger_status": ledger_stat["status"],
+        "ledger_records": ledger_stat["total_records"]
     })
 
 @app.route("/api/ollama/status", methods=["GET"])
@@ -41,9 +45,30 @@ def ollama_status():
         "scoped_scope": ["semantic_phishing", "qr_vpa_mismatch", "forensic_dossier", "email_synthesis"]
     })
 
+@app.route("/api/ledger/status", methods=["GET"])
+def ledger_status():
+    return jsonify(orchestrator.ledger.get_ledger_status())
+
+@app.route("/api/ledger/verify", methods=["GET"])
+def ledger_verify():
+    is_valid, count, msg = orchestrator.ledger.verify_ledger_integrity()
+    return jsonify({
+        "is_valid": is_valid,
+        "records_verified": count,
+        "message": msg
+    })
+
+# Backward-compatible endpoint for frontend ticker feed
 @app.route("/api/kafka/status", methods=["GET"])
 def kafka_status():
-    return jsonify(orchestrator.kafka_sim.get_cluster_status())
+    status = orchestrator.ledger.get_ledger_status()
+    return jsonify({
+        "cluster_id": "propay-audit-stream",
+        "topic": "fraud-ingress-topic",
+        "num_partitions": 1,
+        "status": status["status"],
+        "records": status["total_records"]
+    })
 
 @app.route("/api/simulate", methods=["POST"])
 def simulate():
@@ -68,7 +93,6 @@ def email_config():
 def test_email():
     data = request.get_json(force=True, silent=True) or {}
     recipient = (data.get("recipient") or data.get("email") or "").strip()
-    # If custom config passed in test request, save it first
     if data.get("host") and data.get("user"):
         orchestrator.email_agent.save_smtp_config(data)
     res = orchestrator.email_agent.test_smtp_connection(recipient=recipient)
@@ -96,7 +120,7 @@ def email_history():
         try:
             with open(log_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-                for line in lines[-20:]:  # last 20
+                for line in lines[-20:]:
                     if line.strip():
                         import json
                         items.append(json.loads(line.strip()))
@@ -114,10 +138,10 @@ def start_server():
     port = 5055
     url = f"http://localhost:{port}"
     print("=" * 70)
-    print("  PROPAY STUDIO SERVER ONLINE")
+    print("  PROPAY DUAL-SPEED RISK ENGINE ONLINE")
     print(f"  URL: {url}")
-    print("  Engine: 5-Agent Multi-Agent Swarm with On-Premise Ollama")
-    print("  Kafka: Simulated 12-partition fraud-ingress-topic")
+    print("  Engine: Fast-Path Rule & Velocity Engine (<30ms) + Ollama Llama 3")
+    print("  Audit Ledger: Tamper-Evident SHA-256 Chained JSONL")
     print("=" * 70)
     webbrowser.open(url)
     app.run(host="0.0.0.0", port=port, debug=False)

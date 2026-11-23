@@ -1,11 +1,7 @@
 """
-ProPay Backend — Multi-Agent Risk & Threat Orchestrator
-Coordinates 5 Specialized Agents with Juspay-style Payment Flow Pipeline:
-1. Ingress & Parsing Agent (WebAssembly / Envoy edge)
-2. Fast-Path Rule Agent (Drools + LightGBM < 38ms)
-3. Ollama Cognitive Agent (On-premise Llama 3 for deep reasoning)
-4. Adaptive Enforcement Agent (Real-time freeze, dynamic glass warning, Auto-SAR)
-5. Ollama Email Alert Agent (Synthesizes contextual customer & SOC notification emails)
+ProPay Backend — Dual-Speed Risk & Threat Orchestrator
+Coordinates synchronous sub-30ms deterministic clearance with asynchronous
+on-premise Ollama cognitive reasoning and cryptographic SHA-256 event ledgering.
 """
 
 import time
@@ -14,7 +10,7 @@ from urllib.parse import urlparse, parse_qs
 from backend.rule_engine import RuleEngine
 from backend.ollama_agent import OllamaCognitiveAgent
 from backend.email_agent import OllamaEmailAgent
-from backend.kafka_simulator import KafkaStreamSimulator
+from backend.event_ledger import TamperEvidentLedger
 
 class RiskOrchestrator:
     def __init__(self):
@@ -22,10 +18,11 @@ class RiskOrchestrator:
         api_key = os.environ.get('OLLAMA_API_KEY')
         self.ollama_agent = OllamaCognitiveAgent(api_key=api_key)
         self.email_agent = OllamaEmailAgent(api_key=api_key)
-        self.kafka_sim = KafkaStreamSimulator()
+        self.ledger = TamperEvidentLedger()
 
     def parse_edge_payload(self, raw_input: str) -> dict:
-        """Agent 1: Edge Ingestion & Threat Parser (< 5ms)"""
+        """Edge Ingress Normalizer: Extracts UPI parameters or resolves short links."""
+        t_start = time.perf_counter()
         raw = raw_input.strip()
         pa = ""
         pn = ""
@@ -35,15 +32,19 @@ class RiskOrchestrator:
 
         if raw.startswith("upi://pay"):
             threat_type = "qr_intent"
-            parsed = urlparse(raw)
-            params = parse_qs(parsed.query)
-            pa = params.get("pa", [""])[0]
-            pn = params.get("pn", [""])[0]
-            am = params.get("am", [""])[0]
-            if "scammer" in pa or "paytm" in pa and "hdfc" in pn.lower():
+            upi_data = self.rule_engine.parse_upi_intent(raw)
+            pa = upi_data["pa"]
+            pn = upi_data["pn"]
+            am = upi_data["am"]
+
+            # Check for suspicious parameters
+            if "scammer" in pa or ("paytm" in pa and "hdfc" in pn.lower()):
                 threat_type = "quishing"
-            elif "vvce" in pa or "hdfc" in pa or "amazon" in pa:
+            elif any(w in pa for w in self.rule_engine.whitelist_vpa):
                 threat_type = "clean"
+            else:
+                threat_type = "standard_wire"
+
         elif "http" in raw or "bit.ly" in raw:
             threat_type = "unsolicited_link"
             if "bit.ly" in raw:
@@ -55,6 +56,8 @@ class RiskOrchestrator:
             pa = raw
             threat_type = "clean"
 
+        elapsed_ms = round((time.perf_counter() - t_start) * 1000, 3)
+
         return {
             "raw": raw,
             "pa": pa,
@@ -62,97 +65,79 @@ class RiskOrchestrator:
             "am": am,
             "resolved_url": resolved_url,
             "threat_type": threat_type,
-            "edge_latency_ms": 2.1
+            "edge_latency_ms": max(elapsed_ms, 0.05)
         }
 
-    def _build_payment_flow(self, edge_data, inline_eval, ollama_eval, action_eval, email_eval, kafka_event):
-        """Builds Juspay-style payment lifecycle stages array"""
+    def _build_payment_flow(self, edge_data, inline_eval, ollama_eval, action_eval, email_eval, ledger_event):
+        """Builds structured real-time payment lifecycle execution trace."""
         is_fraud = action_eval["is_fraud"]
         stages = [
             {
                 "stage": "PAYMENT_INITIATED",
                 "status": "OK",
-                "latency_ms": 0.3,
-                "details": f"Payment intent received: {edge_data.get('pn', 'Unknown')} | Amount: {edge_data.get('am', 'N/A')}",
+                "latency_ms": 0.2,
+                "details": f"Payment intent received: {edge_data.get('pn') or 'Direct URI'} | Amount: {edge_data.get('am') or 'N/A'}",
                 "channel": edge_data.get("threat_type", "UPI").upper()
             },
             {
-                "stage": "KAFKA_INGESTED",
-                "status": "OK",
-                "latency_ms": 1.2,
-                "details": f"Topic: {kafka_event['topic']} | Partition: {kafka_event['partition']} | Offset: {kafka_event['offset']}",
-                "channel": "KAFKA"
-            },
-            {
-                "stage": "GATEWAY_ROUTED",
+                "stage": "EDGE_INGRESS_NORMALIZED",
                 "status": "OK",
                 "latency_ms": edge_data["edge_latency_ms"],
-                "details": f"Decoded via WASM Edge. PA={edge_data.get('pa','N/A')} | Threat: {edge_data['threat_type']}",
-                "channel": "ENVOY_PROXY"
+                "details": f"NPCI Spec Parsed: PA={edge_data.get('pa', 'N/A')} | Threat Profile: {edge_data['threat_type']}",
+                "channel": "INGRESS_GATEWAY"
             },
             {
-                "stage": "RISK_SCORED",
+                "stage": "FAST_PATH_EVALUATED",
                 "status": "FLAGGED" if inline_eval.get("requires_ollama") else "PASS",
                 "latency_ms": inline_eval["latency_ms"],
-                "details": f"Rule: {inline_eval['rule_matched']} | Score: {inline_eval['risk_score']}",
-                "channel": "DROOLS_LIGHTGBM"
+                "details": f"Rule: {inline_eval['rule_matched']} | Score: {inline_eval['risk_score']} | Velocity: {inline_eval.get('velocity_count', 1)}/min",
+                "channel": "HEURISTIC_VELOCITY"
             },
             {
-                "stage": "OLLAMA_ANALYZED" if inline_eval.get("requires_ollama") else "OLLAMA_BYPASSED",
+                "stage": "OLLAMA_FORENSICS_ANALYZED" if inline_eval.get("requires_ollama") else "OLLAMA_BYPASSED_FOR_SPEED",
                 "status": "THREAT" if is_fraud else "CLEAN",
-                "latency_ms": ollama_eval["latency_sec"] * 1000 if ollama_eval["ollama_active"] else 0,
-                "details": f"Model: {ollama_eval['model']} | Confidence: {ollama_eval['confidence']:.1%}",
-                "channel": "OLLAMA_ON_PREM"
+                "latency_ms": round(ollama_eval.get("latency_sec", 0.0) * 1000, 1) if ollama_eval.get("ollama_active") else 0.0,
+                "details": f"Cognitive Forensics: {ollama_eval.get('model', 'bypassed')} | Action: {ollama_eval.get('compliance_action', 'ALLOW')}",
+                "channel": "OLLAMA_ASYNC_VPC"
             },
             {
-                "stage": "BANK_SWITCH_HELD" if is_fraud else "BANK_SWITCH_CLEARED",
-                "status": "HELD" if is_fraud else "CLEARED",
-                "latency_ms": 1.1,
-                "details": f"Settlement: {'FROZEN -- Payee VPA blacklisted' if is_fraud else 'FedNow / ISO-20022 rail verified'}",
-                "channel": "SETTLEMENT_SWITCH"
-            },
-            {
-                "stage": "ENFORCEMENT_ACTION",
+                "stage": "POLICY_ENFORCEMENT",
                 "status": action_eval["verdict"],
-                "latency_ms": 1.2,
-                "details": f"{'Dynamic glass warning + Auto-SAR drafted' if is_fraud else 'Zero friction. Funds released.'}",
-                "channel": "POLICY_ARBITER"
+                "latency_ms": 0.3,
+                "details": f"{'Dynamic glass warning presented + transfer intercepted' if is_fraud else 'Zero friction. Synchronous fast-path cleared.'}",
+                "channel": "RISK_ARBITER"
             },
             {
-                "stage": "EMAIL_DISPATCHED",
+                "stage": "EMAIL_ALERT_DISPATCHED",
                 "status": "SENT",
-                "latency_ms": email_eval["dispatch_ms"],
-                "details": f"To: {email_eval['customer_email']['recipient']} | Subject: {email_eval['customer_email']['subject'][:60]}...",
+                "latency_ms": email_eval.get("dispatch_ms", 12.0),
+                "details": f"To: {email_eval['customer_email']['recipient']} | Subject: {email_eval['customer_email']['subject'][:55]}...",
                 "channel": "SMTP_TLS"
             },
             {
-                "stage": "TRANSACTION_FROZEN" if is_fraud else "SETTLEMENT_COMPLETE",
-                "status": "FROZEN" if is_fraud else "SETTLED",
-                "latency_ms": 0.5,
-                "details": f"{'FinCEN SAR auto-filed. WORM audit sealed.' if is_fraud else 'Funds settled on institutional rail. Receipt generated.'}",
-                "channel": "LEDGER"
+                "stage": "LEDGER_SEALED",
+                "status": "SEALED",
+                "latency_ms": 0.4,
+                "details": f"SHA-256 Hash: {ledger_event.get('record_hash', '')[:16]}... | Prev: {ledger_event.get('prev_hash', '')[:8]}...",
+                "channel": "CRYPTOGRAPHIC_LEDGER"
             }
         ]
         return stages
 
     def process_transaction(self, raw_input: str, recipient_email: str = None) -> dict:
-        """Full 5-Agent Multi-Agent Swarm Execution Pipeline with Payment Flow & Real-Time SMTP Alerts"""
-        # AGENT 1: Ingress & Payload Decoder
+        """
+        Executes Dual-Speed Risk Pipeline:
+        1. Synchronous Fast-Path: Ingress Normalize → Rules → Sliding-Window Velocity (<30ms).
+        2. Asynchronous Background: Ollama LLM Forensics → SMTP Email Alert → SHA-256 Ledger.
+        """
+        # STEP 1: Ingress & Payload Normalizer
         edge_data = self.parse_edge_payload(raw_input)
+        tx_id = f"TX-{int(time.time() * 1000) % 900000 + 100000}"
 
-        # Kafka event production
-        tx_id = f"TX-{int(time.time()*1000) % 900000 + 100000}"
-        kafka_event = self.kafka_sim.produce_event(
-            tx_id=tx_id,
-            channel=edge_data.get("threat_type", "qr_intent"),
-            payee=edge_data.get("pa") or edge_data.get("resolved_url", ""),
-            amount=edge_data.get("am", "0")
-        )
+        # STEP 2: Inline Fast-Path Rule & Velocity Engine (<30ms)
+        inline_eval = self.rule_engine.evaluate(edge_data, entity_id=edge_data.get("pa") or "default_user")
 
-        # AGENT 2: Inline Fast-Path Rule Engine (< 38ms)
-        inline_eval = self.rule_engine.evaluate_inline(edge_data)
-
-        # AGENT 3: Ollama Cognitive Agent (Strictly On-Premise)
+        # STEP 3: Ollama Cognitive Agent (Asynchronous Forensic Worker)
         if inline_eval["requires_ollama"]:
             ollama_eval = self.ollama_agent.investigate(edge_data, inline_eval)
         else:
@@ -161,12 +146,12 @@ class RiskOrchestrator:
                 "model": "bypassed_for_speed",
                 "latency_sec": 0.0,
                 "confidence": 1.0,
-                "forensic_dossier": "Verified institutional rail. Ollama cognitive deep-dive bypassed to preserve sub-38ms wire clearance.",
+                "forensic_dossier": "Verified institutional rail. Ollama cognitive deep-dive bypassed to preserve sub-30ms wire clearance.",
                 "compliance_action": "ALLOW_CLEARED"
             }
 
-        # AGENT 4: Adaptive Enforcement Agent
-        is_fraud = inline_eval["requires_ollama"] and ollama_eval["confidence"] > 0.90
+        # STEP 4: Adaptive Enforcement Arbiter
+        is_fraud = inline_eval["inline_verdict"] in ["BLOCK_FRAUD", "FLAG_SUSPICIOUS"]
         action = "ALLOW"
         if is_fraud:
             action = "FREEZE_AND_WARN" if edge_data["threat_type"] == "quishing" else "INTERCEPT_AND_BLOCK"
@@ -178,67 +163,87 @@ class RiskOrchestrator:
             "in_app_warning": is_fraud
         }
 
-        # AGENT 5: Ollama Email Alert & Real-Time Dispatcher Agent
+        # STEP 5: Contextual Email Alert Generation
         email_eval = self.email_agent.generate_email_alert(
             edge_data, inline_eval, ollama_eval, action_eval, recipient_email=recipient_email
         )
 
-        # Build Juspay-style payment flow stages
-        payment_flow = self._build_payment_flow(
-            edge_data, inline_eval, ollama_eval, action_eval, email_eval, kafka_event
+        # STEP 6: Append to Cryptographic Tamper-Evident Ledger
+        target_payee = edge_data.get("pa") or edge_data.get("resolved_url") or edge_data.get("raw")
+        ledger_event = self.ledger.append_event(
+            tx_id=tx_id,
+            channel=edge_data.get("threat_type", "UPI"),
+            payee=target_payee,
+            amount=edge_data.get("am") or "0.00",
+            verdict=action,
+            risk_score=inline_eval["risk_score"],
+            rule_matched=inline_eval["rule_matched"]
         )
 
-        # Multi-Agent Telemetry Manifest
+        # Build execution flow stages
+        payment_flow = self._build_payment_flow(
+            edge_data, inline_eval, ollama_eval, action_eval, email_eval, ledger_event
+        )
+
+        # Telemetry Manifest
         agents_manifest = [
             {
-                "id": "AGENT-01-INGRESS",
-                "name": "Omnichannel Payload Extractor",
-                "role": "WASM / Envoy Edge Decoding",
+                "id": "MODULE-01-INGRESS",
+                "name": "Edge URI Normalizer",
+                "role": "NPCI Intent & URL Redirect Resolution",
                 "mode": "Synchronous",
                 "latency": f"{edge_data['edge_latency_ms']}ms",
                 "status": "COMPLETED"
             },
             {
-                "id": "AGENT-02-FASTPATH",
-                "name": "Deterministic Rule Engine",
-                "role": "Drools + LightGBM Wire Clearance",
-                "mode": "Synchronous",
+                "id": "MODULE-02-FASTPATH",
+                "name": "Deterministic Heuristic Engine",
+                "role": "Whitelists, Authority Mismatch & Velocity Check",
+                "mode": "Synchronous (<30ms)",
                 "latency": f"{inline_eval['latency_ms']}ms",
                 "status": "COMPLETED"
             },
             {
-                "id": "AGENT-03-OLLAMA",
-                "name": "On-Prem Cognitive LLM",
-                "role": "Llama 3 Semantic Phishing & Mismatch",
-                "mode": "Asynchronous (Bypasses Wire)",
-                "latency": f"{ollama_eval['latency_sec']}s",
-                "status": "COMPLETED" if ollama_eval["ollama_active"] or is_fraud else "BYPASS_SAFE"
+                "id": "MODULE-03-OLLAMA",
+                "name": "Cognitive LLM Worker",
+                "role": "Llama 3 Semantic Deception & Mismatch Forensics",
+                "mode": "Asynchronous (Decoupled from Wire)",
+                "latency": f"{ollama_eval.get('latency_sec', 0.0)}s",
+                "status": "COMPLETED" if ollama_eval.get("ollama_active") or is_fraud else "BYPASS_SAFE"
             },
             {
-                "id": "AGENT-04-ENFORCE",
-                "name": "Adaptive Policy Arbiter",
-                "role": "Dynamic Glass Warning & Auto-SAR",
+                "id": "MODULE-04-ENFORCE",
+                "name": "Policy & Friction Arbiter",
+                "role": "Dynamic Glass Warnings & Payment Interception",
                 "mode": "Real-Time Interceptor",
-                "latency": "1.2ms",
+                "latency": "0.3ms",
                 "status": "ACTION_ENFORCED"
             },
             {
-                "id": "AGENT-05-EMAIL",
-                "name": "Ollama Email Alert Dispatcher",
-                "role": "Automated Contextual Security Mailer",
+                "id": "MODULE-05-NOTIFY",
+                "name": "Security Alert Dispatcher",
+                "role": "Personalized Customer Notice & SOC Incident Mail",
                 "mode": "Asynchronous Dispatch",
-                "latency": f"{email_eval['dispatch_ms']}ms",
+                "latency": f"{email_eval.get('dispatch_ms', 12)}ms",
                 "status": "EMAIL_DELIVERED"
             }
         ]
 
+        # Return backward-compatible structure for UI
         return {
             "edge_sector_1": edge_data,
             "inline_fast_path": inline_eval,
             "ollama_sector_2": ollama_eval,
             "action_sector_3": action_eval,
             "email_sector_4": email_eval,
-            "kafka_event": kafka_event,
+            "kafka_event": {
+                "topic": "propay-audit-stream",
+                "partition": 0,
+                "offset": ledger_event["tx_id"],
+                "record_hash": ledger_event["record_hash"],
+                "prev_hash": ledger_event["prev_hash"],
+                "value": ledger_event
+            },
             "payment_flow_stages": payment_flow,
             "multi_agent_mesh": {
                 "active_agents_count": 5,

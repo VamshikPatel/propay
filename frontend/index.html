@@ -48,21 +48,16 @@
 
       <!-- Action Buttons -->
       <div class="header-actions">
-        <!-- Minimal Theme Switcher -->
-        <div class="shadcn-theme-toggle" id="shadcn-theme-toggle" onclick="window.proPayApp.toggleTheme()" role="switch" aria-checked="false" title="Toggle Theme (Light / Dark)">
-          <div class="shadcn-switch-track">
-            <div class="shadcn-switch-thumb">
-              <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4"/>
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-              </svg>
-              <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-              </svg>
-            </div>
+        <!-- Magic UI Half-Circle Theme Toggle -->
+        <button class="magic-theme-toggle" id="shadcn-theme-toggle" onclick="window.proPayApp.toggleTheme()" title="Toggle Theme (Light / Dark)" aria-label="Toggle Theme">
+          <div class="magic-toggle-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor"/>
+            </svg>
           </div>
-          <span class="shadcn-toggle-label" id="theme-nav-label">Dark</span>
-        </div>
+          <span id="theme-nav-label" style="display:none;">Dark</span>
+        </button>
 
         <button class="text-login" onclick="window.proPayApp.openModal('modal-viva')">Viva Cheatsheet</button>
         <button class="btn-signup" onclick="window.proPayApp.scrollTo('simulator')">
@@ -141,11 +136,11 @@
             </div>
 
             <div class="hero-inspector-chips">
-              <span class="chip-tag green">Sub-38ms Fast-Path</span>
-              <span class="chip-tag">Deterministic WASM Edge</span>
+              <span class="chip-tag green">Sub-30ms Fast-Path</span>
+              <span class="chip-tag">NPCI URI Spec Normalizer</span>
+              <span class="chip-tag">In-Memory Velocity Limiter</span>
               <span class="chip-tag">Private Ollama VPC</span>
-              <span class="chip-tag">Zero Cloud PII</span>
-              <span class="chip-tag">FinCEN SAR Compliant</span>
+              <span class="chip-tag">SHA-256 Chained Audit Trail</span>
             </div>
           </div>
         </div>
@@ -187,8 +182,8 @@
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
             </div>
-            <span class="dodo-bar-text">Fast-Path Drools Rule Engine</span>
-            <span class="dodo-bar-latency">&lt; 38ms</span>
+            <span class="dodo-bar-text">Deterministic Heuristic &amp; Velocity Engine</span>
+            <span class="dodo-bar-latency">&lt; 30ms</span>
           </div>
 
           <div class="dodo-color-bar bar-red" onclick="window.proPayApp.openModal('modal-email-alert')">
@@ -287,51 +282,51 @@
           <div class="dodo-rails-grid">
             <div class="dodo-rail-badge">
               <span class="dodo-rail-name">UPI 2.0</span>
-              <span class="dodo-rail-spec">Protocol Clear</span>
+              <span class="dodo-rail-spec">NPCI Intent Spec</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">FedNow</span>
-              <span class="dodo-rail-spec">Sub-50ms Rail</span>
+              <span class="dodo-rail-name">Fast-Path</span>
+              <span class="dodo-rail-spec">Sub-30ms Heuristics</span>
             </div>
             <div class="dodo-rail-badge">
               <span class="dodo-rail-name">SWIFT</span>
               <span class="dodo-rail-spec">ISO-20022</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">PCI-DSS</span>
-              <span class="dodo-rail-spec">Level 1 Compliant</span>
+              <span class="dodo-rail-name">Velocity Filter</span>
+              <span class="dodo-rail-spec">Sliding Window O(1)</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">FinCEN SAR</span>
-              <span class="dodo-rail-spec">Automated Filing</span>
+              <span class="dodo-rail-name">SHA-256 Ledger</span>
+              <span class="dodo-rail-spec">Tamper-Evident</span>
             </div>
             <div class="dodo-rail-badge">
               <span class="dodo-rail-name">Ollama VPC</span>
               <span class="dodo-rail-spec">On-Prem Llama 3</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Kafka</span>
-              <span class="dodo-rail-spec">50k TPS Stream</span>
+              <span class="dodo-rail-name">Async Queue</span>
+              <span class="dodo-rail-spec">Event Decoupled</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Envoy WASM</span>
-              <span class="dodo-rail-spec">&lt; 5ms Ingress</span>
+              <span class="dodo-rail-name">URI Normalizer</span>
+              <span class="dodo-rail-spec">Redirect Unroller</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Redis Store</span>
-              <span class="dodo-rail-spec">Sliding Velocity</span>
+              <span class="dodo-rail-name">In-Memory Cache</span>
+              <span class="dodo-rail-spec">VPA Whitelist</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Drools Rule</span>
-              <span class="dodo-rail-spec">Deterministic</span>
+              <span class="dodo-rail-name">Quishing Check</span>
+              <span class="dodo-rail-spec">Authority Mismatch</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">LightGBM</span>
-              <span class="dodo-rail-spec">Wire Inference</span>
+              <span class="dodo-rail-name">Dynamic Glass</span>
+              <span class="dodo-rail-spec">Adaptive Warning</span>
             </div>
             <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">mTLS Core</span>
-              <span class="dodo-rail-spec">Zero Trust Mesh</span>
+              <span class="dodo-rail-name">SMTP TLS</span>
+              <span class="dodo-rail-spec">Automated Alerts</span>
             </div>
           </div>
         </div>
@@ -356,7 +351,7 @@
         <!-- Agent 1 -->
         <div class="agent-mesh-card">
           <div class="agent-card-header">
-            <span class="agent-pill-id">AGENT 01</span>
+            <span class="agent-pill-id">MODULE 01</span>
             <span class="agent-status-badge active">● SYNC</span>
           </div>
           <div class="agent-icon-box">
@@ -365,21 +360,21 @@
               <line x1="4" y1="12" x2="20" y2="12"/>
             </svg>
           </div>
-          <h4 class="agent-name">Ingress &amp; Decoding</h4>
-          <span class="agent-tech-tag">WASM Edge · Envoy</span>
+          <h4 class="agent-name">Edge URI Normalizer</h4>
+          <span class="agent-tech-tag">Python urllib · NPCI Spec</span>
           <p class="agent-summary">
-            Extracts UPI payment parameters (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links, and eliminates Punycode spoofing in &lt; 5ms.
+            Extracts UPI payment parameters (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links, and eliminates character spoofing in &lt; 1ms.
           </p>
           <div class="agent-footer-metric">
-            <span>SLA: &lt; 5.0ms</span>
-            <span class="metric-val">100% Edge</span>
+            <span>SLA: &lt; 1.0ms</span>
+            <span class="metric-val">100% Ingress</span>
           </div>
         </div>
 
         <!-- Agent 2 -->
         <div class="agent-mesh-card">
           <div class="agent-card-header">
-            <span class="agent-pill-id">AGENT 02</span>
+            <span class="agent-pill-id">MODULE 02</span>
             <span class="agent-status-badge active">● SYNC</span>
           </div>
           <div class="agent-icon-box">
@@ -387,13 +382,13 @@
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
             </svg>
           </div>
-          <h4 class="agent-name">Fast-Path Rule Agent</h4>
-          <span class="agent-tech-tag">Drools Engine · LightGBM</span>
+          <h4 class="agent-name">Heuristics &amp; Velocity</h4>
+          <span class="agent-tech-tag">Authority Check · Rate Limiter</span>
           <p class="agent-summary">
-            Validates institutional whitelists, sanction lists, and sliding-window velocity rules to authorize clean payments in &lt; 38ms.
+            Validates institutional whitelists, detects Quishing merchant mismatches, and enforces sliding-window velocity rules in &lt; 30ms.
           </p>
           <div class="agent-footer-metric">
-            <span>SLA: &lt; 38.0ms</span>
+            <span>SLA: &lt; 30.0ms</span>
             <span class="metric-val">Instant Wire</span>
           </div>
         </div>
@@ -401,7 +396,7 @@
         <!-- Agent 3 -->
         <div class="agent-mesh-card">
           <div class="agent-card-header">
-            <span class="agent-pill-id">AGENT 03 // OLLAMA</span>
+            <span class="agent-pill-id">MODULE 03 // OLLAMA</span>
             <span class="agent-status-badge purple">● ASYNC</span>
           </div>
           <div class="agent-icon-box">
@@ -412,7 +407,7 @@
           <h4 class="agent-name">Cognitive Reasoning</h4>
           <span class="agent-tech-tag">Private Ollama (Llama 3)</span>
           <p class="agent-summary">
-            Performs semantic text analysis, detects physical QR merchant-vs-payee mismatches, and compiles plain-English forensic case dossiers.
+            Performs semantic text analysis, analyzes deceptive lures, and compiles plain-English forensic incident dossiers for human review.
           </p>
           <div class="agent-footer-metric">
             <span>SLA: ~1.2s (Async)</span>
@@ -423,7 +418,7 @@
         <!-- Agent 4 -->
         <div class="agent-mesh-card">
           <div class="agent-card-header">
-            <span class="agent-pill-id">AGENT 04</span>
+            <span class="agent-pill-id">MODULE 04</span>
             <span class="agent-status-badge active">● REAL-TIME</span>
           </div>
           <div class="agent-icon-box">
@@ -432,13 +427,13 @@
             </svg>
           </div>
           <h4 class="agent-name">Adaptive Enforcement</h4>
-          <span class="agent-tech-tag">Friction Arbiter · Auto-SAR</span>
+          <span class="agent-tech-tag">Friction Arbiter · SHA-256</span>
           <p class="agent-summary">
-            Dynamically injects in-app glass warnings on customer devices, freezes tampered transfers, and drafts FinCEN SAR filings for AML compliance.
+            Dynamically injects in-app glass warnings on customer devices, freezes tampered transfers, and seals records into the cryptographic ledger.
           </p>
           <div class="agent-footer-metric">
             <span>Action: Dynamic Glass</span>
-            <span class="metric-val">WORM Logged</span>
+            <span class="metric-val">SHA-256 Sealed</span>
           </div>
         </div>
 
@@ -497,7 +492,7 @@
             Directly decodes camera QR scans, extracts UPI payment intent parameters (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links, and cleans Punycode character spoofing at the API edge.
           </p>
           <div class="agent-footer-metric">
-            <span>WASM Edge · Envoy</span>
+            <span>NPCI Spec · urllib</span>
             <span class="metric-val">Zero Network Call</span>
           </div>
         </div>
@@ -534,13 +529,13 @@
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>
             </svg>
           </div>
-          <h3 class="agent-name" style="font-size:16px;">Adaptive Mitigation &amp; Auto-SAR</h3>
+          <h3 class="agent-name" style="font-size:16px;">Adaptive Mitigation &amp; Cryptographic Ledger</h3>
           <p class="agent-summary">
-            Presents dynamic warning overlays to users on their mobile banking glass, triggers biometric step-up challenges, freezes compromised payee accounts, and auto-generates FinCEN-compliant SAR reports.
+            Presents dynamic warning overlays to users on their mobile banking glass, triggers biometric step-up challenges, freezes compromised payee accounts, and appends SHA-256 chained audit records.
           </p>
           <div class="agent-footer-metric">
             <span>Dynamic Glass Warning</span>
-            <span class="metric-val">Auto-SAR</span>
+            <span class="metric-val">SHA-256 Chain</span>
           </div>
         </div>
 
@@ -548,16 +543,16 @@
     </section>
 
     <!-- ====================================================================
-         SECTION 6: REAL-TIME KAFKA STREAMING FEED TICKER
+         SECTION 6: REAL-TIME TRANSACTION STREAMING FEED TICKER
          ==================================================================== -->
     <section class="feed-section" id="section-feed">
       <div class="feed-header-row">
         <div>
-          <span class="pill-badge-indigo">KAFKA 50,000 TPS STREAM</span>
-          <h2 class="feed-title">Real-Time Omnichannel Ingress Ticker</h2>
+          <span class="pill-badge-indigo">REAL-TIME TELEMETRY STREAM</span>
+          <h2 class="feed-title">Real-Time Ingress &amp; Ledger Ticker</h2>
         </div>
         <div class="chip-tag green">
-          ● STREAMING TOPIC (12 PARTITIONS)
+          ● AUDIT STREAM ACTIVE
         </div>
       </div>
 
@@ -601,17 +596,17 @@
           <div class="hld-cell">
             <span class="cell-tag">TIER 1: INGESTION</span>
             <h4>Omnichannel Ingress Hub</h4>
-            <p>Mobile/Web QR Scans, SMS Links, Card Rails, FedNow. mTLS gateway + QR Intent Extractor in &lt; 5ms.</p>
+            <p>Mobile/Web QR Scans, SMS Links. Python URI Normalizer parses NPCI Intent specifications in &lt; 1ms.</p>
           </div>
           <div class="hld-cell">
-            <span class="cell-tag">TIER 2: STREAM &amp; FEAT</span>
-            <h4>Kafka &amp; Redis Feature Store</h4>
-            <p>Apache Kafka (50k TPS, 12 partitions) + Flink sliding velocity aggregations and impossible travel in &lt; 15ms.</p>
+            <span class="cell-tag">TIER 2: RATE LIMITING</span>
+            <h4>In-Memory Velocity Store</h4>
+            <p>Sliding-window timestamp tracking preventing account-draining bursts (&gt;3 txns/min) in O(1) time.</p>
           </div>
           <div class="hld-cell">
-            <span class="cell-tag">TIER 3: HYBRID ENGINE</span>
-            <h4>Drools Inline + Ollama Async</h4>
-            <p>Inline sync path runs in &lt; 38ms (Drools + LightGBM). Asynchronous Ollama cluster executes in &lt; 1.4s.</p>
+            <span class="cell-tag">TIER 3: DUAL ENGINE</span>
+            <h4>Sync Fast-Path + Async LLM</h4>
+            <p>Inline sync path runs in &lt; 30ms via deterministic rules. Asynchronous Ollama cluster executes forensics.</p>
           </div>
           <div class="hld-cell">
             <span class="cell-tag">TIER 4: ENFORCEMENT</span>
@@ -621,19 +616,19 @@
           <div class="hld-cell">
             <span class="cell-tag">TIER 5: OLLAMA ALERTS</span>
             <h4>Contextual Email Dispatcher</h4>
-            <p>Synthesizes human-readable customer fraud alerts and automated SOC escalation emails with FinCEN SAR proof.</p>
+            <p>Synthesizes human-readable customer fraud alerts and automated SOC escalation emails with incident dossiers.</p>
           </div>
           <div class="hld-cell">
             <span class="cell-tag">TIER 6: COMPLIANCE</span>
-            <h4>WORM Audit &amp; Auto-SAR</h4>
-            <p>Write-Once-Read-Many immutable storage with automated drafting of FinCEN Suspicious Activity Reports.</p>
+            <h4>Tamper-Evident SHA-256 Ledger</h4>
+            <p>Append-only transaction storage with cryptographic hash chaining ensuring mathematical audit integrity.</p>
           </div>
         </div>
 
         <div class="dual-speed-note-box">
           <strong style="color:var(--text-main);">THE DUAL-SPEED ARCHITECTURAL PRINCIPLE:</strong>
           <p style="margin-top:4px;">
-            Transactions are never held waiting for an LLM. Our inline fast-path clears legitimate payments in <strong>&lt; 38ms</strong> using high-speed rule engines and LightGBM models. The on-premise Ollama cluster is engaged <strong>strictly asynchronously</strong> for ambiguous anomalies, deceptive link inspection, and forensic case dossiers.
+            Transactions are never held waiting for an LLM. Our inline fast-path clears legitimate payments in <strong>&lt; 30ms</strong> using deterministic heuristics and in-memory velocity rate limiters. The on-premise Ollama cluster is engaged <strong>strictly asynchronously</strong> for ambiguous anomalies, deceptive link inspection, and forensic case dossiers.
           </p>
         </div>
       </div>
@@ -668,14 +663,14 @@
           </thead>
           <tbody>
             <tr>
-              <td><strong>Inline Wire Clearance (&lt;50ms)</strong></td>
+              <td><strong>Inline Wire Clearance (&lt;30ms)</strong></td>
               <td><span class="chip-tag" style="background:#FEE2E2; color:#991B1B;">NO</span></td>
-              <td>LLMs add 1-2s latency. Sub-50ms wire speed is handled by Drools + LightGBM.</td>
+              <td>LLMs add 1-2s latency. Sub-30ms wire speed is handled by deterministic heuristics &amp; velocity limits.</td>
             </tr>
             <tr>
               <td><strong>Event Routing &amp; Feature Counts</strong></td>
               <td><span class="chip-tag" style="background:#FEE2E2; color:#991B1B;">NO</span></td>
-              <td>Deterministic Kafka streaming processes 50,000 TPS with zero model overhead.</td>
+              <td>Handled via in-memory Python state with zero model overhead.</td>
             </tr>
             <tr>
               <td><strong>Semantic Phishing &amp; Link Intent</strong></td>
@@ -730,11 +725,11 @@
 
         <strong style="color:var(--text-main); font-size:12px;">KEY ARCHITECTURAL HIGHLIGHTS:</strong>
         <ul style="margin: 8px 0 0 18px; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-          <li><strong>Multi-Agent Swarm:</strong> 5 cooperating autonomous agents covering Ingress, Inline Fast-Path, Ollama Cognitive, Enforcement, and Email Dispatch.</li>
-          <li><strong>Automated Email Alerts:</strong> Instant contextual email notifications synthesized for customers and bank SOC analysts with WORM audit hashes.</li>
-          <li><strong>Clean Dodo Fintech Design:</strong> Minimalist modern fintech interface with high readability, subtle pastel canvas, and zero visual clutter.</li>
-          <li><strong>Juspay-Style Payment Lifecycle:</strong> End-to-end payment aggregation visualization with Kafka stream topology and sub-38ms wire clearance.</li>
-          <li><strong>Strict Ollama Boundary:</strong> On-premise private deployment ensuring zero customer PII leaves the bank's secure perimeter.</li>
+          <li><strong>Dual-Speed Pipeline:</strong> Sub-30ms synchronous heuristic &amp; velocity gatekeeper paired with asynchronous Ollama cognitive forensics.</li>
+          <li><strong>Anti-Quishing Heuristic:</strong> Evaluates NPCI UPI Intent specifications to detect merchant authority vs. settlement VPA mismatches.</li>
+          <li><strong>Sliding-Window Velocity:</strong> In-memory rate limiting preventing automated rapid account draining in O(1) time.</li>
+          <li><strong>Tamper-Evident SHA-256 Ledger:</strong> Chained cryptographic verification ensuring immutable audit trails.</li>
+          <li><strong>Strict Ollama Boundary:</strong> On-premise deployment guaranteeing zero customer banking PII leaves the local boundary.</li>
         </ul>
       </div>
 

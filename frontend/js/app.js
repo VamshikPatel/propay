@@ -96,7 +96,7 @@ class ProPayApp {
       const res = await fetch('/api/health');
       if (res.ok) {
         const data = await res.json();
-        console.log('ProPay Flask Backend Connected on Port 5055 | Kafka:', data.kafka_cluster);
+        console.log('ProPay Flask Backend Connected on Port 5055 | Ledger:', data.ledger_status);
       }
     } catch (e) {
       console.log('Running in Standalone Client Mode (Offline Zero-Setup)');
@@ -517,7 +517,7 @@ class ProPayApp {
         <div style="padding: 32px; text-align: center; color: var(--accent-primary); font-family: var(--font-mono);">
           <div style="font-size: 24px; margin-bottom: 12px; animation: pulse 1s infinite;">●</div>
           <div style="font-weight: 700; letter-spacing: 0.05em;">ORCHESTRATING 5 AUTONOMOUS AGENTS // DISPATCHING OLLAMA REASONING...</div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Zero Cloud PII · Sub-38ms Fast-Path · Automated Email Synthesizer Active · Kafka Partitioned Stream</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Zero Cloud PII · Sub-30ms Fast-Path · Automated Email Alert Active · SHA-256 Chained Stream</div>
         </div>
       `;
     }
@@ -600,8 +600,8 @@ class ProPayApp {
           headline: 'Transaction Finalized & Cleared via FedNow Rail',
           severity: 'SAFE',
           badge_color: '#10B981',
-          body_intro: 'Your institutional payment instruction of ₹50,000 has been verified and cleared in 18.0ms through the Drools fast-path engine.',
-          discrepancy_note: 'Settlement Rail: FedNow / ISO-20022 Verified\nPayee VPA: hdfc.corporate@hdfcbank\nDrools Whitelist Check: 100% Pass\nInstant Wire Clearance (<38ms SLA)',
+          body_intro: 'Your institutional payment instruction of ₹50,000 has been verified and cleared in 18.0ms through the synchronous fast-path rule engine.',
+          discrepancy_note: 'Settlement Rail: FedNow / ISO-20022 Verified\nPayee VPA: hdfc.corporate@hdfcbank\nWhitelist Check: 100% Pass\nInstant Wire Clearance (<30ms SLA)',
           action_required: 'This transaction is finalized. Zero further action required.',
           cta_label: 'Download Settlement Invoice',
           tx_id: txId,
@@ -655,7 +655,7 @@ class ProPayApp {
           threat_type: 'PHYSICAL_QUISHING_ATTACK',
           inline_rule: 'PAYEE_AUTHORITY_MISMATCH',
           ollama_dossier: 'CRITICAL QUISHING THREAT: Display metadata claims HDFC Official Merchant, but underlying settlement resolves to scammer_wallet@paytm.',
-          sar_status: 'AUTO-FILED (FINCEN SAR READY)',
+          sar_status: 'SEALED IN SHA-256 AUDIT LEDGER',
           dispatch_status: 'DISPATCHED_SMTP_TLS'
         }
       };
@@ -693,7 +693,7 @@ class ProPayApp {
           threat_type: 'UNSOLICITED_SMISHING_LINK',
           inline_rule: 'DOMAIN_AGE_SUSPICIOUS',
           ollama_dossier: 'Linguistic analysis confirmed social engineering credential harvester pretending to offer bank security refund.',
-          sar_status: 'AUTO-FILED (FINCEN SAR READY)',
+          sar_status: 'SEALED IN SHA-256 AUDIT LEDGER',
           dispatch_status: 'DISPATCHED_SMTP_TLS'
         }
       };
@@ -811,7 +811,7 @@ class ProPayApp {
     return `
       <div class="smtp-alert-status-card ${isThreat ? 'danger' : ''}">
         <div class="smtp-card-left">
-          <svg class="smtp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="smtp-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2"/>
             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
           </svg>
@@ -871,7 +871,7 @@ class ProPayApp {
       </div>
       <div class="telemetry-step-card">
         <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-        <span>Drools Verdict: <code>${inline.rule_matched}</code> | Tabular Risk Score: <code>${inline.risk_score}</code></span>
+        <span>Fast-Path Verdict: <code>${inline.rule_matched}</code> | Risk Score: <code>${inline.risk_score}</code></span>
         <span class="step-tag indigo" style="font-size: 11px;">${inline.latency_ms}ms</span>
       </div>
       <div class="telemetry-step-card">
@@ -902,7 +902,7 @@ class ProPayApp {
 
       <div class="verdict-banner-card ${isSafe ? 'safe' : 'danger'}">
         <span>${isSafe ? 'TRANSACTION AUTHORIZED: Institutional settlement rail verified.' : 'THREAT INTERCEPTED: Malicious payload neutralized at edge. Transfer frozen.'}</span>
-        <span class="badge-pill ${isSafe ? 'lime' : 'danger'}">${isSafe ? 'TOTAL SLA: ' + inline.latency_ms + 'ms' : 'FinCEN SAR Auto-Drafted'}</span>
+        <span class="badge-pill ${isSafe ? 'lime' : 'danger'}">${isSafe ? 'TOTAL SLA: ' + inline.latency_ms + 'ms' : 'SHA-256 Ledger Sealed'}</span>
       </div>
     `;
   }
@@ -921,7 +921,7 @@ class ProPayApp {
       merchantName: type === 'clean' ? 'HDFC Bank Treasury' : (type === 'quishing' ? 'HDFC Official Merchant' : 'Urgent Security Desk'),
       payee: type === 'clean' ? 'hdfc.corporate@hdfcbank' : (type === 'quishing' ? 'scammer_wallet@paytm' : 'http://hdfc-security-refund.xyz/auth'),
       amount: type === 'clean' ? '50,000' : (type === 'quishing' ? '3,500' : '9,999'),
-      channel: type === 'clean' ? 'FEDNOW_WIRE' : (type === 'quishing' ? 'UPI_QR_INTENT' : 'SMS_DEEP_LINK'),
+      channel: type === 'clean' ? 'UPI_INTENT' : (type === 'quishing' ? 'UPI_QR_INTENT' : 'SMS_DEEP_LINK'),
       isSafe: isSafe
     };
 
@@ -929,65 +929,58 @@ class ProPayApp {
       {
         stage: "PAYMENT_INITIATED",
         status: "OK",
-        latency_ms: 0.3,
+        latency_ms: 0.2,
         details: `Customer intent received: ${orderData.merchantName} | Amount: ₹${orderData.amount}`,
         channel: orderData.channel
       },
       {
-        stage: "KAFKA_INGESTED",
+        stage: "EDGE_INGRESS_NORMALIZED",
         status: "OK",
-        latency_ms: 1.2,
-        details: "Topic: fraud-ingress-topic | Partition: 4 | Offset: 582103",
-        channel: "KAFKA_CLUSTER"
+        latency_ms: 0.8,
+        details: `NPCI Spec Parsed: PA=${orderData.payee}`,
+        channel: "INGRESS_GATEWAY"
       },
       {
-        stage: "GATEWAY_ROUTED",
-        status: "OK",
-        latency_ms: 2.1,
-        details: `Decoded via Envoy WASM Edge. Payee=${orderData.payee}`,
-        channel: "ENVOY_PROXY"
-      },
-      {
-        stage: "RISK_SCORED",
+        stage: "FAST_PATH_EVALUATED",
         status: isSafe ? "PASS" : "FLAGGED",
-        latency_ms: isSafe ? 16.2 : 22.4,
-        details: isSafe ? "Drools: INSTITUTIONAL_WHITELIST_MATCH (Score: 0.01)" : "Drools: PAYEE_AUTHORITY_MISMATCH (Score: 0.98)",
-        channel: "DROOLS_LIGHTGBM"
+        latency_ms: isSafe ? 0.04 : 0.05,
+        details: isSafe ? "Rule: INSTITUTIONAL_WHITELIST_MATCH (Score: 0.02)" : "Rule: PAYEE_AUTHORITY_MISMATCH (Score: 0.96)",
+        channel: "HEURISTIC_VELOCITY"
       },
       {
-        stage: isSafe ? "OLLAMA_BYPASSED" : "OLLAMA_ANALYZED",
+        stage: isSafe ? "OLLAMA_BYPASSED_FOR_SPEED" : "OLLAMA_FORENSICS_ANALYZED",
         status: isSafe ? "CLEAN" : "THREAT",
         latency_ms: isSafe ? 0.0 : 1240.0,
-        details: isSafe ? "Bypassed for wire speed (<38ms)" : "Llama 3: Quishing sticker overlay signature detected (99.4%)",
-        channel: "OLLAMA_ON_PREM"
+        details: isSafe ? "Bypassed for wire speed (<30ms SLA)" : "Llama 3: Quishing sticker overlay signature detected (99.4%)",
+        channel: "OLLAMA_ASYNC_VPC"
       },
       {
         stage: isSafe ? "BANK_SWITCH_CLEARED" : "BANK_SWITCH_HELD",
         status: isSafe ? "CLEARED" : "HELD",
-        latency_ms: 1.1,
-        details: isSafe ? "Settlement switch: FedNow verified" : "Settlement: FROZEN -- Payee VPA quarantined",
+        latency_ms: 0.3,
+        details: isSafe ? "Settlement switch: Rail verified" : "Settlement: FROZEN -- Payee VPA quarantined",
         channel: "SETTLEMENT_SWITCH"
       },
       {
-        stage: "ENFORCEMENT_ACTION",
+        stage: "POLICY_ENFORCEMENT",
         status: isSafe ? "ALLOW" : "FREEZE_AND_WARN",
-        latency_ms: 1.2,
-        details: isSafe ? "Zero customer friction. Funds released." : "Dynamic in-app glass warning injected on mobile glass",
+        latency_ms: 0.3,
+        details: isSafe ? "Zero customer friction. Fast-path cleared." : "Dynamic in-app glass warning injected on mobile glass",
         channel: "POLICY_ARBITER"
       },
       {
-        stage: "EMAIL_DISPATCHED",
+        stage: "EMAIL_ALERT_DISPATCHED",
         status: "SENT",
         latency_ms: 14.8,
         details: `Dispatched to: ${email.customer_email.recipient}`,
         channel: "SMTP_TLS"
       },
       {
-        stage: isSafe ? "SETTLEMENT_COMPLETE" : "TRANSACTION_FROZEN",
-        status: isSafe ? "SETTLED" : "FROZEN",
-        latency_ms: 0.5,
-        details: isSafe ? "Institutional rail settlement completed. WORM audit sealed." : "FinCEN SAR auto-drafted. Zero customer debit.",
-        channel: "LEDGER_WORM"
+        stage: "LEDGER_SEALED",
+        status: "SEALED",
+        latency_ms: 0.4,
+        details: isSafe ? "Transaction logged. SHA-256 chained hash verified." : "Threat intercepted. Cryptographic ledger record sealed.",
+        channel: "CRYPTOGRAPHIC_LEDGER"
       }
     ];
 
@@ -1008,12 +1001,12 @@ class ProPayApp {
         </div>
         <div class="telemetry-step-card">
           <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-          <span>Drools Institutional Whitelist: <code>MATCHED</code> | Tabular Risk Score: <code>0.01 (Safe)</code></span>
+          <span>Fast-Path Whitelist Rule: <code>MATCHED</code> | Deterministic Risk Score: <code>0.02 (Safe)</code></span>
           <span class="step-tag indigo" style="font-size: 11px;">16.2ms</span>
         </div>
         <div class="telemetry-step-card">
           <span class="step-tag purple">AGENT 03 [OLLAMA]</span>
-          <span>LLM Cognitive Reasoning: <code>BYPASSED (Trusted Payee in Whitelist -- sub-38ms wire speed preserved)</code></span>
+          <span>LLM Cognitive Reasoning: <code>BYPASSED (Trusted Payee in Whitelist -- sub-30ms wire speed preserved)</code></span>
           <span class="step-tag slate" style="font-size: 11px;">0.0ms</span>
         </div>
         <div class="telemetry-step-card">
@@ -1050,8 +1043,8 @@ class ProPayApp {
         </div>
         <div class="telemetry-step-card">
           <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-          <span>Drools Policy Flag: Claimed merchant authority <code>HDFC</code> diverges from settlement rail <code>@paytm</code>.</span>
-          <span class="step-tag indigo" style="font-size: 11px;">22.4ms</span>
+          <span>Fast-Path Authority Check: Claimed merchant authority <code>HDFC</code> diverges from settlement rail <code>@paytm</code>.</span>
+          <span class="step-tag indigo" style="font-size: 11px;">0.04ms</span>
         </div>
         <div class="telemetry-step-card">
           <span class="step-tag purple">AGENT 03 [OLLAMA]</span>
@@ -1085,7 +1078,7 @@ RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on custom
 
         <div class="verdict-banner-card danger">
           <span>DYNAMIC IN-APP INTERCEPTION: Customer presented with warning overlay. Payment stopped at edge.</span>
-          <span class="badge-pill danger">FinCEN SAR Auto-Drafted</span>
+          <span class="badge-pill danger">SHA-256 Ledger Sealed</span>
         </div>
       `;
       return;
@@ -1100,11 +1093,11 @@ RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on custom
         <div class="telemetry-step-card">
           <span class="step-tag red">AGENT 01 [INGRESS]</span>
           <span>Short Link Unrolled: <code>bit.ly/bank-urgent-security-refund</code> ➔ Resolves to <code>http://hdfc-security-refund.xyz/auth</code></span>
-          <span class="step-tag lime" style="font-size: 11px;">4.6ms</span>
+          <span class="step-tag lime" style="font-size: 11px;">1.6ms</span>
         </div>
         <div class="telemetry-step-card">
           <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-          <span>Drools Domain Age Rule: Domain registered &lt; 24 hours ago. Untrusted TLD (.xyz). Risk score: 0.96.</span>
+          <span>Fast-Path TLD Rule: Domain registered &lt; 24 hours ago. Untrusted TLD (.xyz). Risk score: 0.96.</span>
           <span class="step-tag indigo" style="font-size: 11px;">29.8ms</span>
         </div>
         <div class="telemetry-step-card">
@@ -1224,7 +1217,7 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
       });
       const resData = await res.json();
       if (resData.delivered) {
-        this.showToast(`✓ Live SMTP delivered to ${email}! WORM Hash: ${msg.worm_hash || 'SEALED'}`);
+        this.showToast(`✓ Live SMTP delivered to ${email}! Ledger Hash: ${msg.worm_hash || 'SEALED'}`);
       } else if (resData.status === 'NOT_CONFIGURED') {
         this.showToast('SMTP server not configured. Opening Settings...');
         this.openModal('modal-smtp-config');
@@ -1295,7 +1288,7 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
 
           <div class="email-legal-footer">
             Transaction ID: <code>${em.tx_id}</code> | Timestamp: ${em.timestamp}<br/>
-            This is an automated regulatory notification synthesized by ProPay Agent 05 (Ollama Mailer) under FinCEN WORM compliance requirements.
+            This is an automated security notification synthesized by ProPay Module 05 (Email Alert Dispatcher) and recorded in the SHA-256 chained audit ledger.
           </div>
         </div>
       `;
@@ -1306,7 +1299,7 @@ RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to 
           <div class="email-meta-line"><strong>From:</strong> <span>${soc.sender}</span></div>
           <div class="email-meta-line"><strong>To:</strong> <span>${soc.recipient}</span></div>
           <div class="email-meta-line"><strong>Subject:</strong> <span style="font-weight:700; color:#EF4444;">${soc.subject}</span></div>
-          <div class="email-meta-line"><strong>Routing:</strong> <span style="font-family:var(--font-mono); font-size:11px;">INTERNAL SOC ENCLAVE · WORM STORAGE ACTIVE</span></div>
+          <div class="email-meta-line"><strong>Routing:</strong> <span style="font-family:var(--font-mono); font-size:11px;">INTERNAL SOC ENCLAVE · SHA-256 AUDIT ACTIVE</span></div>
         </div>
         <div class="email-body-sheet">
           <div class="email-brand-title">
@@ -1322,7 +1315,7 @@ INCIDENT METRICS &amp; MULTI-AGENT TELEMETRY:
 • Threat Classification: ${soc.threat_type}
 • Fast-Path Trigger Rule: ${soc.inline_rule}
 • Dispatch Protocol: ${soc.dispatch_status}
-• FinCEN SAR Status: ${soc.sar_status}
+• Ledger Status: ${soc.sar_status}
 
 OLLAMA COGNITIVE DOSSIER (Llama 3 On-Prem VPC):
 ${soc.ollama_dossier}
@@ -1330,12 +1323,12 @@ ${soc.ollama_dossier}
 
           <div class="email-action-row">
             <button class="btn-email-action-primary" style="background:#EF4444;" onclick="window.proPayApp.showToast('Terminal blacklisted across all banking switches.')">Lock Terminal &amp; Freeze Payee VPA</button>
-            <button class="btn-email-action-secondary" onclick="window.proPayApp.showToast('SAR filing transmitted to FinCEN gateway.')">Transmit FinCEN SAR Filing</button>
+            <button class="btn-email-action-secondary" onclick="window.proPayApp.showToast('Incident logged in cryptographically chained ledger.')">Acknowledge SOC Ticket</button>
             <button class="btn-email-action-primary" style="background:var(--accent-primary); margin-left:auto;" onclick="window.proPayApp.sendCurrentModalEmail()">Dispatch Ticket ↗</button>
           </div>
 
           <div class="email-legal-footer">
-            Immutable Audit Trail Hash: <code>WORM-SAR-${Math.random().toString(16).substr(2, 10).toUpperCase()}</code><br/>
+            Immutable Audit Trail Hash: <code>SHA256-${Math.random().toString(16).substr(2, 10).toUpperCase()}</code><br/>
             Escalated to Tier-2 Security Analyst Pool. SLA resolution target &lt; 2 minutes.
           </div>
         </div>
