@@ -29,19 +29,10 @@
 
       <!-- Clean Navigation Links -->
       <nav class="nav-menu">
-        <div class="nav-item-dropdown" onclick="window.proPayApp.scrollTo('value-prop')">
-          <span>Overview</span>
-          <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-        </div>
-        <div class="nav-item-dropdown" onclick="window.proPayApp.scrollTo('orchestration')">
-          <span>Multi-Agent Swarm</span>
-          <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-        </div>
-        <div class="nav-item-dropdown" onclick="window.proPayApp.scrollTo('sectors')">
-          <span>Threat Sectors</span>
-          <svg class="chevron-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-        </div>
-        <span class="nav-link" onclick="window.proPayApp.scrollTo('simulator')">Live Simulator</span>
+        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-hero')">Overview</span>
+        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-defense')">How It Works</span>
+        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-simulator')">Phone Simulator</span>
+        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-feed')">Bank SOC Feed</span>
         <span class="nav-link" onclick="window.proPayApp.openModal('modal-hld')">Architecture</span>
         <span class="nav-link" onclick="window.proPayApp.openModal('modal-email-alert')">Email Alerts</span>
       </nav>
@@ -74,74 +65,44 @@
   <main class="main-body">
 
     <!-- ====================================================================
-         HERO SECTION (Screenshot 1: Centered Headline, Dodo Lime CTA & Preview)
+         HERO SECTION: HUMAN-FIRST CLARITY (Stop QR Code Scams)
          ==================================================================== -->
     <section class="webank-hero-section" id="section-hero">
       <div class="hero-center-content">
         
+        <span class="pill-badge-indigo" style="margin-bottom:16px; display:inline-block; letter-spacing:0.04em;">PROPAY · THE INSTANT SCAM SHIELD FOR UPI &amp; DIGITAL PAYMENTS</span>
+
         <h1 class="hero-headline">
-          The Real-Time Fraud &amp; Quishing Defense Platform for AI-First Banking
+          Stop QR Code Scams Before Your Money Leaves Your Account.
         </h1>
 
         <p class="hero-subtitle">
-          From sub-38ms wire clearance and camera QR ingress to autonomous Ollama cognitive forensics, everything fintechs need to detect, intercept, and secure instant payments.
+          Scammers paste fake QR stickers over real shop counters to steal your money. ProPay catches the mismatch in real time, warns you on your screen, and freezes the payment before you enter your PIN.
         </p>
 
         <!-- Dodo CTA Pair -->
         <div class="hero-cta-pair">
-          <button class="btn-dodo-lime" onclick="window.proPayApp.scrollTo('simulator')">
-            Get Started Now
+          <button class="btn-dodo-lime" onclick="window.proPayApp.scrollTo('section-simulator')">
+            Try Live Phone Simulator
           </button>
           <button class="btn-dodo-secondary" onclick="window.proPayApp.openModal('modal-hld')">
-            View Architecture
+            How the Tech Works
           </button>
         </div>
 
-        <!-- Segmented Tab Pills (Floating directly above Product Preview) -->
-        <div class="dodo-pill-tabs-bar">
-          <button class="dodo-pill-tab active" onclick="window.proPayApp.scrollTo('sectors')">
+        <!-- Trust Badges Bar -->
+        <div class="dodo-pill-tabs-bar" style="max-width:760px; margin:28px auto 0 auto;">
+          <div class="dodo-pill-tab">
             <span class="tab-icon-dot green"></span>
-            <span>Ingress &amp; QR Decoder</span>
-          </button>
-          <button class="dodo-pill-tab" onclick="window.proPayApp.scrollTo('orchestration')">
-            <span class="tab-icon-dot blue"></span>
-            <span>Wire Clearance &lt; 38ms</span>
-          </button>
-          <button class="dodo-pill-tab" onclick="window.proPayApp.scrollTo('simulator')">
-            <span class="tab-icon-dot purple"></span>
-            <span>Cognitive Ollama Forensics</span>
-          </button>
-        </div>
-
-        <!-- Elevated Clean Product Preview Card -->
-        <div class="dodo-hero-card">
-          <div class="dodo-card-topbar">
-            <div class="dodo-card-breadcrumbs">
-              <div class="dodo-dot-group">
-                <span></span><span></span><span></span>
-              </div>
-              <span style="font-weight:600; color:var(--text-main); margin-left:8px;">Payment Threat Inspector</span>
-              <span>/</span>
-              <span>Real-Time Telemetry HUD</span>
-            </div>
-            <span class="chip-tag green">● ONLINE</span>
+            <span>Works with PhonePe, Google Pay &amp; Paytm</span>
           </div>
-
-          <div class="dodo-card-body">
-            <div class="hero-quick-inspector">
-              <input type="text" class="hero-search-input" id="hero-quick-input" placeholder="Paste UPI QR string (upi://pay?pa=...) or suspicious link..." value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" />
-              <button class="btn-quick-scan" onclick="window.proPayApp.quickAnalyzeFromHero()">
-                Analyze Threat
-              </button>
-            </div>
-
-            <div class="hero-inspector-chips">
-              <span class="chip-tag green">Sub-30ms Fast-Path</span>
-              <span class="chip-tag">NPCI URI Spec Normalizer</span>
-              <span class="chip-tag">In-Memory Velocity Limiter</span>
-              <span class="chip-tag">Private Ollama VPC</span>
-              <span class="chip-tag">SHA-256 Chained Audit Trail</span>
-            </div>
+          <div class="dodo-pill-tab">
+            <span class="tab-icon-dot blue"></span>
+            <span>Sub-1ms Mismatch Detection</span>
+          </div>
+          <div class="dodo-pill-tab">
+            <span class="tab-icon-dot purple"></span>
+            <span>Zero-Latency Fast Path</span>
           </div>
         </div>
 
@@ -149,50 +110,50 @@
     </section>
 
     <!-- ====================================================================
-         SECTION 2: TWO-COLUMN VALUE PROPOSITION (Screenshot 2 Match)
+         SECTION 2: TWO-COLUMN VALUE PROPOSITION
          ==================================================================== -->
     <section class="dodo-split-section" id="section-value-prop">
       <div class="dodo-split-grid">
         
         <!-- Left: Statement Contrast -->
         <div class="dodo-split-left">
-          <h2 class="split-lead-bold">You're processing instant payments.</h2>
-          <h2 class="split-lead-muted">Why are you still relying on legacy batch fraud rules?</h2>
+          <h2 class="split-lead-bold">Instant payments happen in 1 second.</h2>
+          <h2 class="split-lead-muted">Why wait hours for your bank to discover fraud?</h2>
           <p class="split-lead-desc">
-            Traditional banking fraud models operate in hourly batches or introduce multi-second latency on modern instant rails. ProPay decouples sub-38ms inline clearance from on-premise Ollama cognitive reasoning—stopping physical QR sticker swaps, malicious deep links, and payee VPAs mismatches before funds leave the account.
+            Once you enter your UPI PIN, money leaves your bank account irreversibly. Traditional banks only investigate fraud hours after you file a police report. ProPay shifts protection to the pre-payment edge: our deterministic rules verify the merchant's registered identity before funds are debited.
           </p>
         </div>
 
         <!-- Right: 4 Stacked Solid Colored Pills -->
         <div class="dodo-stacked-pills">
           
-          <div class="dodo-color-bar bar-green" onclick="window.proPayApp.scrollTo('sectors')">
+          <div class="dodo-color-bar bar-green" onclick="window.proPayApp.scrollTo('section-simulator')">
             <div class="dodo-bar-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 20h3v1h-3z"/>
               </svg>
             </div>
-            <span class="dodo-bar-text">Edge Ingestion &amp; QR Decoding</span>
-            <span class="dodo-bar-latency">&lt; 5ms</span>
+            <span class="dodo-bar-text">Camera QR Decoding &amp; Verification</span>
+            <span class="dodo-bar-latency">&lt; 1ms</span>
           </div>
 
-          <div class="dodo-color-bar bar-blue" onclick="window.proPayApp.scrollTo('orchestration')">
+          <div class="dodo-color-bar bar-blue" onclick="window.proPayApp.scrollTo('section-defense')">
             <div class="dodo-bar-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
             </div>
-            <span class="dodo-bar-text">Deterministic Heuristic &amp; Velocity Engine</span>
-            <span class="dodo-bar-latency">&lt; 30ms</span>
+            <span class="dodo-bar-text">Authority Mismatch Heuristic</span>
+            <span class="dodo-bar-latency">Fast-Path &lt; 1ms</span>
           </div>
 
-          <div class="dodo-color-bar bar-red" onclick="window.proPayApp.openModal('modal-email-alert')">
+          <div class="dodo-color-bar bar-red" onclick="window.proPayApp.scrollTo('section-simulator')">
             <div class="dodo-bar-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <span class="dodo-bar-text">Dynamic Payment Interception</span>
+            <span class="dodo-bar-text">Dynamic In-App Scam Interception</span>
             <span class="dodo-bar-latency">Real-Time</span>
           </div>
 
@@ -202,8 +163,8 @@
                 <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><path d="M9 16c1.5 1.2 4.5 1.2 6 0"/>
               </svg>
             </div>
-            <span class="dodo-bar-text">Ollama Cognitive Forensics</span>
-            <span class="dodo-bar-latency">Async VPC</span>
+            <span class="dodo-bar-text">AI Threat Dossier &amp; Bank SOC Alert</span>
+            <span class="dodo-bar-latency">Async Worker</span>
           </div>
 
         </div>
@@ -212,330 +173,100 @@
     </section>
 
     <!-- ====================================================================
-         SECTION 3: TWO-COLUMN BENTO FEATURE SHOWCASE (Screenshot 3 Match)
+         SECTION 3: PHONEPE-STYLE INTERACTIVE SMARTPHONE SIMULATOR
          ==================================================================== -->
-    <section class="dodo-bento-section" id="section-bento">
-      <div class="bento-header">
-        <h2 class="bento-headline">Everything You Need to Secure Modern Payments</h2>
+    <section class="dodo-bento-section" id="section-simulator" style="padding-top:20px;">
+      <div class="bento-header" style="text-align:center; max-width:820px; margin:0 auto 28px auto;">
+        <span class="pill-badge-indigo" style="margin-bottom:8px; display:inline-block;">INTERACTIVE DEMO</span>
+        <h2 class="bento-headline">Experience ProPay on a Real Smartphone</h2>
         <p class="bento-subdeck">
-          The unified real-time risk engine for instant banking rails and AI-native fintechs worldwide.
+          Select a real-world payment scenario below to see how ProPay protects your phone during a scan.
         </p>
       </div>
 
-      <div class="dodo-bento-grid">
+      <div class="dodo-bento-card" style="width:100%; padding:28px;">
         
-        <!-- Bento Card 1: Interactive Live Simulator (Form & Presets Mockup) -->
-        <div class="dodo-bento-card" id="section-simulator">
-          <h3 class="bento-card-title">Interactive Threat Simulator</h3>
-          <p class="bento-card-subtitle">
-            Select a transaction profile to inspect inline fast-path wire clearance and asynchronous Ollama forensic traces in real time.
-          </p>
-
-          <!-- Scenario Selection Radio Cards -->
-          <div class="dodo-scenarios-group">
-            <button class="preset-tab" id="btn-p-clean" onclick="window.proPayApp.loadPreset('clean')">
-              <span class="dot-status green"></span>
-              <span>Clean Banking Wire (Authorized Retail Checkout)</span>
-            </button>
-            <button class="preset-tab active" id="btn-p-quishing" onclick="window.proPayApp.loadPreset('quishing')">
-              <span class="dot-status red"></span>
-              <span>Quishing Attack (Physical QR Sticker Tampering)</span>
-            </button>
-            <button class="preset-tab" id="btn-p-smishing" onclick="window.proPayApp.loadPreset('smishing')">
-              <span class="dot-status amber"></span>
-              <span>Unsolicited Smishing Link (Deceptive SMS Lure)</span>
-            </button>
-          </div>
-
-          <!-- Live Email Alert Recipient Bar -->
-          <div class="smtp-live-bar">
-            <span class="smtp-live-label">ALERT DISPATCH:</span>
-            <input type="email" class="smtp-live-input" id="sim-email-input" value="sveeresh004@gmail.com" placeholder="Recipient email address..." />
-            <button class="btn-smtp-test" onclick="window.proPayApp.sendLiveTestEmail()">Send Test ↗</button>
-            <button class="btn-smtp-config-gear" onclick="window.proPayApp.openModal('modal-smtp-config')" title="Configure SMTP Settings">⚙ SMTP</button>
-            <div class="smtp-status-indicator" id="smtp-live-status-badge" onclick="window.proPayApp.openModal('modal-smtp-config')" style="cursor:pointer;">
-              <span>●</span> <span id="smtp-badge-text">CHECKING SMTP...</span>
-            </div>
-          </div>
-
-          <!-- URI Search & Execution Bar -->
-          <div class="sim-search-bar">
-            <input type="text" class="sim-search-input" id="sim-input" value="upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500" placeholder="Paste any UPI URI, QR intent string, or payment link..." />
-            <button class="btn-execute" id="btn-run-sim" onclick="window.proPayApp.executeSimulation()">
-              Run Pipeline
-            </button>
-          </div>
-
-          <!-- Live Telemetry Stream Box -->
-          <div class="telemetry-box" id="telemetry-output">
-            <!-- Populated dynamically by app.js -->
-          </div>
+        <!-- Scenario Selector Tabs -->
+        <div class="dodo-scenarios-group" style="margin-bottom:20px;">
+          <button class="preset-tab" id="btn-p-clean" onclick="window.proPayApp.loadPreset('clean')">
+            <span class="dot-status green"></span>
+            <span>Scenario A: Safe Local Store (Ramesh Tea Stall · ₹30)</span>
+          </button>
+          <button class="preset-tab active" id="btn-p-quishing" onclick="window.proPayApp.loadPreset('quishing')">
+            <span class="dot-status red"></span>
+            <span>Scenario B: Fake QR Sticker Swap (Quishing Scam · ₹350)</span>
+          </button>
+          <button class="preset-tab" id="btn-p-smishing" onclick="window.proPayApp.loadPreset('smishing')">
+            <span class="dot-status amber"></span>
+            <span>Scenario C: Suspicious KYC Link (Smishing SMS · ₹4,999)</span>
+          </button>
         </div>
 
-        <!-- Bento Card 2: Universal Rails & Enterprise Standards Matrix -->
-        <div class="dodo-bento-card">
-          <h3 class="bento-card-title">Universal Rails &amp; Standards</h3>
-          <p class="bento-card-subtitle">
-            Seamlessly deployed across Tier-1 payment infrastructure with zero cloud PII exposure and end-to-end cryptographic integrity.
-          </p>
+        <!-- Optional Custom Input & Alert Email Bar -->
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px; align-items:center;">
+          <input type="text" class="sim-search-input" id="sim-input" value="upi://pay?pa=scammer_wallet@paytm&pn=Starbucks%20Official%20Merchant&am=350" placeholder="Paste custom UPI URI or link to test..." style="flex:2; min-width:260px;" />
+          <input type="email" class="smtp-live-input" id="sim-email-input" value="sveeresh004@gmail.com" placeholder="Your alert email..." style="flex:1; min-width:200px;" />
+          <button class="btn-execute" id="btn-run-sim" onclick="window.proPayApp.executeSimulation()" style="white-space:nowrap;">
+            Run Scan ➔
+          </button>
+          <button class="btn-smtp-config-gear" onclick="window.proPayApp.openModal('modal-smtp-config')" title="Configure Outbound SMTP">⚙ Email Settings</button>
+        </div>
 
-          <div class="dodo-rails-grid">
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">UPI 2.0</span>
-              <span class="dodo-rail-spec">NPCI Intent Spec</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Fast-Path</span>
-              <span class="dodo-rail-spec">Sub-30ms Heuristics</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">SWIFT</span>
-              <span class="dodo-rail-spec">ISO-20022</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Velocity Filter</span>
-              <span class="dodo-rail-spec">Sliding Window O(1)</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">SHA-256 Ledger</span>
-              <span class="dodo-rail-spec">Tamper-Evident</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Ollama VPC</span>
-              <span class="dodo-rail-spec">On-Prem Llama 3</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Async Queue</span>
-              <span class="dodo-rail-spec">Event Decoupled</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">URI Normalizer</span>
-              <span class="dodo-rail-spec">Redirect Unroller</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">In-Memory Cache</span>
-              <span class="dodo-rail-spec">VPA Whitelist</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Quishing Check</span>
-              <span class="dodo-rail-spec">Authority Mismatch</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">Dynamic Glass</span>
-              <span class="dodo-rail-spec">Adaptive Warning</span>
-            </div>
-            <div class="dodo-rail-badge">
-              <span class="dodo-rail-name">SMTP TLS</span>
-              <span class="dodo-rail-spec">Automated Alerts</span>
-            </div>
-          </div>
+        <!-- Live Telemetry / Phone Simulator Output (Dynamically Rendered by app.js) -->
+        <div id="telemetry-output">
+          <!-- Populated by window.proPayApp.renderTelemetry() -->
         </div>
 
       </div>
     </section>
 
     <!-- ====================================================================
-         SECTION 4: MULTI-AGENT SWARM ORCHESTRATION (Clean Minimal Cards)
+         SECTION 4: 3-STEP REAL-TIME DEFENSE
          ==================================================================== -->
-    <section class="orchestration-section" id="section-orchestration">
-      <div class="section-heading-wrap">
-        <span class="pill-badge-indigo">MULTI-AGENT MESH ARCHITECTURE</span>
-        <h2 class="section-headline">5 Autonomous Agents Operating at Wire Speed</h2>
+    <section class="orchestration-section" id="section-defense" style="padding-top:20px;">
+      <div class="section-heading-wrap" style="text-align:center;">
+        <span class="pill-badge-indigo">HOW PROPAY PROTECTS YOU</span>
+        <h2 class="section-headline">3-Step Real-Time Defense in Under 1 Millisecond</h2>
         <p class="section-deck">
-          ProPay deploys a decoupled multi-agent swarm where deterministic rules clear transactions in sub-38ms, while on-premise Ollama agents synthesize cognitive forensics and real-time security email alerts.
+          No heavy cloud delays, no latency bottlenecks at checkout. Here is how ProPay verifies every payment before funds leave your account.
         </p>
       </div>
 
-      <div class="agents-mesh-grid">
+      <div class="three-step-grid">
         
-        <!-- Agent 1 -->
-        <div class="agent-mesh-card">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">MODULE 01</span>
-            <span class="agent-status-badge active">● SYNC</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 7V4h3M20 7V4h-3M4 17v3h3M20 17v3h-3"/>
-              <line x1="4" y1="12" x2="20" y2="12"/>
-            </svg>
-          </div>
-          <h4 class="agent-name">Edge URI Normalizer</h4>
-          <span class="agent-tech-tag">Python urllib · NPCI Spec</span>
-          <p class="agent-summary">
-            Extracts UPI payment parameters (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links, and eliminates character spoofing in &lt; 1ms.
+        <!-- Step 1 -->
+        <div class="step-defense-card">
+          <div class="step-badge-number">1</div>
+          <h3 class="step-defense-title">Instant Name Verification</h3>
+          <p class="step-defense-desc">
+            Compares the shop name printed on the physical sticker against the bank account holder's registered identity. If a scammer routed the QR code to an unverified personal wallet, ProPay detects the mismatch instantly.
           </p>
-          <div class="agent-footer-metric">
-            <span>SLA: &lt; 1.0ms</span>
-            <span class="metric-val">100% Ingress</span>
+          <div class="step-defense-metric">
+            SLA: &lt; 1.0ms · Fast-Path Heuristic
           </div>
         </div>
 
-        <!-- Agent 2 -->
-        <div class="agent-mesh-card">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">MODULE 02</span>
-            <span class="agent-status-badge active">● SYNC</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
-          </div>
-          <h4 class="agent-name">Heuristics &amp; Velocity</h4>
-          <span class="agent-tech-tag">Authority Check · Rate Limiter</span>
-          <p class="agent-summary">
-            Validates institutional whitelists, detects Quishing merchant mismatches, and enforces sliding-window velocity rules in &lt; 30ms.
+        <!-- Step 2 -->
+        <div class="step-defense-card">
+          <div class="step-badge-number">2</div>
+          <h3 class="step-defense-title">AI Scam Explainer (Async)</h3>
+          <p class="step-defense-desc">
+            While the payment is safely paused, our on-premises AI model (Llama-3 via Ollama) analyzes the threat context and writes a clear, plain-English summary for both the customer and the bank's fraud desk.
           </p>
-          <div class="agent-footer-metric">
-            <span>SLA: &lt; 30.0ms</span>
-            <span class="metric-val">Instant Wire</span>
+          <div class="step-defense-metric">
+            Async Background · Zero Cloud PII
           </div>
         </div>
 
-        <!-- Agent 3 -->
-        <div class="agent-mesh-card">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">MODULE 03 // OLLAMA</span>
-            <span class="agent-status-badge purple">● ASYNC</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>
-            </svg>
-          </div>
-          <h4 class="agent-name">Cognitive Reasoning</h4>
-          <span class="agent-tech-tag">Private Ollama (Llama 3)</span>
-          <p class="agent-summary">
-            Performs semantic text analysis, analyzes deceptive lures, and compiles plain-English forensic incident dossiers for human review.
+        <!-- Step 3 -->
+        <div class="step-defense-card">
+          <div class="step-badge-number">3</div>
+          <h3 class="step-defense-title">Tamper-Proof Audit Record</h3>
+          <p class="step-defense-desc">
+            Every blocked scam is permanently sealed into a cryptographically chained SHA-256 ledger. If anyone ever attempts to alter or delete past fraud records, the cryptographic hash chain breaks immediately.
           </p>
-          <div class="agent-footer-metric">
-            <span>SLA: ~1.2s (Async)</span>
-            <span class="metric-val">Zero Cloud PII</span>
-          </div>
-        </div>
-
-        <!-- Agent 4 -->
-        <div class="agent-mesh-card">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">MODULE 04</span>
-            <span class="agent-status-badge active">● REAL-TIME</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-          </div>
-          <h4 class="agent-name">Adaptive Enforcement</h4>
-          <span class="agent-tech-tag">Friction Arbiter · SHA-256</span>
-          <p class="agent-summary">
-            Dynamically injects in-app glass warnings on customer devices, freezes tampered transfers, and seals records into the cryptographic ledger.
-          </p>
-          <div class="agent-footer-metric">
-            <span>Action: Dynamic Glass</span>
-            <span class="metric-val">SHA-256 Sealed</span>
-          </div>
-        </div>
-
-        <!-- Agent 5 -->
-        <div class="agent-mesh-card">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">AGENT 05 // NOTIFY</span>
-            <span class="agent-status-badge lime">● REAL-TIME</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-            </svg>
-          </div>
-          <h4 class="agent-name">Ollama Email Alert</h4>
-          <span class="agent-tech-tag">Ollama Mailer · SMTP TLS</span>
-          <p class="agent-summary">
-            Synthesizes personalized customer security alerts (tampered QR warnings or transaction receipts) and dispatches automated bank SOC escalation tickets.
-          </p>
-          <div class="agent-footer-metric">
-            <span>SLA: ~15ms Dispatch</span>
-            <span class="metric-val">Auto-Dispatched</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ====================================================================
-         SECTION 5: THE 3 THREAT SECTORS
-         ==================================================================== -->
-    <section class="orchestration-section" id="section-sectors" style="padding-top:40px;">
-      <div class="section-heading-wrap">
-        <span class="pill-badge-indigo">MULTI-TIER DEFENSE</span>
-        <h2 class="section-headline">The 3 Threat Sectors</h2>
-        <p class="section-deck">
-          Decoupling sub-38ms deterministic payment clearance from asynchronous on-premise Ollama cognitive reasoning.
-        </p>
-      </div>
-
-      <div class="agents-mesh-grid" style="grid-template-columns: repeat(3, 1fr);">
-        
-        <!-- Sector 1 -->
-        <div class="agent-mesh-card" style="padding:28px 24px;">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">SECTOR 01</span>
-            <span class="agent-status-badge active">&lt; 5ms Ingress</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 20h3v1h-3z"/>
-            </svg>
-          </div>
-          <h3 class="agent-name" style="font-size:16px;">QR Payload &amp; Deep-Link Extractor</h3>
-          <p class="agent-summary">
-            Directly decodes camera QR scans, extracts UPI payment intent parameters (<code>pa</code>, <code>pn</code>, <code>am</code>), unrolls short links, and cleans Punycode character spoofing at the API edge.
-          </p>
-          <div class="agent-footer-metric">
-            <span>NPCI Spec · urllib</span>
-            <span class="metric-val">Zero Network Call</span>
-          </div>
-        </div>
-
-        <!-- Sector 2 -->
-        <div class="agent-mesh-card" style="padding:28px 24px;">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">SECTOR 02 // OLLAMA</span>
-            <span class="agent-status-badge purple">Private On-Prem VPC</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><path d="M9 16c1.5 1.2 4.5 1.2 6 0"/>
-            </svg>
-          </div>
-          <h3 class="agent-name" style="font-size:16px;">Semantic Phishing &amp; QR Payee Mismatch</h3>
-          <p class="agent-summary">
-            Strictly scoped on-premise Ollama agent (Llama 3 / Mistral). Analyzes deceptive social engineering lures, compares merchant display names against payee settlement VPAs, and compiles plain-English dossiers.
-          </p>
-          <div class="agent-footer-metric">
-            <span>Zero Cloud PII</span>
-            <span class="metric-val">Bypasses Wire Path</span>
-          </div>
-        </div>
-
-        <!-- Sector 3 -->
-        <div class="agent-mesh-card" style="padding:28px 24px;">
-          <div class="agent-card-header">
-            <span class="agent-pill-id">SECTOR 03</span>
-            <span class="agent-status-badge active">Real-Time Action</span>
-          </div>
-          <div class="agent-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>
-            </svg>
-          </div>
-          <h3 class="agent-name" style="font-size:16px;">Adaptive Mitigation &amp; Cryptographic Ledger</h3>
-          <p class="agent-summary">
-            Presents dynamic warning overlays to users on their mobile banking glass, triggers biometric step-up challenges, freezes compromised payee accounts, and appends SHA-256 chained audit records.
-          </p>
-          <div class="agent-footer-metric">
-            <span>Dynamic Glass Warning</span>
-            <span class="metric-val">SHA-256 Chain</span>
+          <div class="step-defense-metric">
+            Tamper-Evident · SHA-256 Chained Hash
           </div>
         </div>
 

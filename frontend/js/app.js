@@ -476,9 +476,9 @@ class ProPayApp {
     if (targetTab) targetTab.classList.add('active');
 
     if (presetType === 'clean') {
-      this.simState.payload = 'upi://pay?pa=hdfc.corporate@hdfcbank&pn=HDFC%20Bank%20Treasury&am=50000';
+      this.simState.payload = 'upi://pay?pa=ramesh.tea@axisbank&pn=Ramesh%20Tea%20Stall&am=30';
     } else if (presetType === 'quishing') {
-      this.simState.payload = 'upi://pay?pa=scammer_wallet@paytm&pn=HDFC%20Official%20Merchant&am=3500';
+      this.simState.payload = 'upi://pay?pa=scammer_wallet@paytm&pn=Starbucks%20Official%20Merchant&am=350';
     } else if (presetType === 'smishing') {
       this.simState.payload = 'https://bit.ly/bank-urgent-security-refund';
     }
@@ -834,6 +834,205 @@ class ProPayApp {
     `;
   }
 
+  buildPhoneMockupHTML(data) {
+    const isSafe = data.isSafe;
+    const isSmishing = data.threatType === 'smishing' || (data.payee && data.payee.startsWith('http'));
+    const merchantName = data.merchantName || (isSafe ? 'Ramesh Tea Stall' : 'Starbucks Official Store');
+    const payee = data.payee || (isSafe ? 'ramesh.tea@axisbank' : 'scammer_wallet@paytm');
+    const amount = data.amount || (isSafe ? '30.00' : '350.00');
+
+    let shieldBadge = '';
+    let shieldTitle = '';
+    let shieldDesc = '';
+    let actionBtn = '';
+
+    if (isSafe) {
+      shieldBadge = `<span class="shield-badge-tag safe">✓ SAFE SETTLEMENT</span>`;
+      shieldTitle = `Verified Merchant Payee`;
+      shieldDesc = `Payee identity matches official merchant registration. Fast-path clearance verified with zero authority mismatch.`;
+      actionBtn = `<button class="btn-phone-primary pay" onclick="window.proPayApp.showToast('Demo: PIN screen authorized. Transaction cleared.')">
+        <span>Proceed to UPI PIN →</span>
+      </button>`;
+    } else if (isSmishing) {
+      shieldBadge = `<span class="shield-badge-tag danger">⚠️ PHISHING LURE BLOCKED</span>`;
+      shieldTitle = `Deceptive Deep Link Intercepted`;
+      shieldDesc = `SMS lure detected attempting credential harvesting. Target domain is not an authorized banking portal.`;
+      actionBtn = `<button class="btn-phone-primary cancel" onclick="window.proPayApp.showToast('Phishing link blocked. Zero funds debited.')">
+        <span>Block Link &amp; Secure Device</span>
+      </button>`;
+    } else {
+      shieldBadge = `<span class="shield-badge-tag danger">⚠️ SCAM SHIELD ACTIVATED</span>`;
+      shieldTitle = `QR Sticker Tampering Detected!`;
+      shieldDesc = `The physical counter sticker claims to be <strong>"${merchantName}"</strong>, but funds route to personal handle: <strong>"${payee}"</strong>.`;
+      actionBtn = `<button class="btn-phone-primary cancel" onclick="window.proPayApp.showToast('Payment safely cancelled. No money left your account.')">
+        <span>Cancel Payment &amp; Secure Account</span>
+      </button>`;
+    }
+
+    return `
+      <div class="phone-device-frame">
+        <div class="phone-screen">
+          <!-- Status Bar -->
+          <div class="phone-status-bar">
+            <span>09:41</span>
+            <div class="phone-island-notch">
+              <div class="phone-island-camera"></div>
+            </div>
+            <div style="display:flex; gap:5px; align-items:center;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.78-1.78C9.13 19.98 10.53 20.5 12 20.5s2.87-.52 4.46-1.47l1.78 1.78c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-.62-1.79C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+              <span>5G</span>
+              <span style="font-size:9.5px; border:1px solid currentColor; padding:0 2px; border-radius:3px;">100%</span>
+            </div>
+          </div>
+
+          <!-- Phone App Header -->
+          <div class="phone-app-header">
+            <div class="phone-app-brand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z"/></svg>
+              <span>UPI SafeScan</span>
+            </div>
+            <div class="phone-secure-badge">
+              <span>● ${isSafe ? 'VERIFIED' : 'SHIELDED'}</span>
+            </div>
+          </div>
+
+          <!-- Main Phone Screen Body -->
+          <div class="phone-content">
+            <div class="phone-merchant-box">
+              <div class="phone-avatar ${isSafe ? '' : 'danger'}">
+                ${isSafe ? '☕' : (isSmishing ? '⚠️' : '⚡')}
+              </div>
+              <div class="phone-merchant-name">
+                <span>${merchantName}</span>
+                ${isSafe ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="#10B981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="#EF4444"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>'}
+              </div>
+              <div class="phone-upi-handle">
+                ${payee}
+              </div>
+              <div class="phone-amount-display">
+                ₹${amount}
+              </div>
+            </div>
+
+            <!-- Dynamic Glass Scam Card -->
+            <div class="phone-shield-card ${isSafe ? 'safe' : 'danger'}">
+              <div class="shield-card-head">
+                ${shieldBadge}
+              </div>
+              <div class="shield-title">${shieldTitle}</div>
+              <div class="shield-desc">${shieldDesc}</div>
+              ${!isSafe ? `
+                <div class="shield-mismatch-detail">
+                  <div style="color:var(--text-muted); font-size:10px;">AUTHORITY CHECK:</div>
+                  <div>• Sticker Claim: <span style="font-weight:700; color:var(--text-main);">${merchantName}</span></div>
+                  <div>• Real Bank Payee: <span style="font-weight:700; color:#EF4444;">${payee}</span></div>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Phone Bottom Actions -->
+            <div class="phone-bottom-actions">
+              ${actionBtn}
+              <div class="phone-home-indicator"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  buildExplainerCardHTML(data) {
+    const isSafe = data.isSafe;
+    const isSmishing = data.threatType === 'smishing' || (data.payee && data.payee.startsWith('http'));
+    const merchantName = data.merchantName || (isSafe ? 'Ramesh Tea Stall' : 'Starbucks Official Store');
+    const payee = data.payee || (isSafe ? 'ramesh.tea@axisbank' : 'scammer_wallet@paytm');
+    const latency = data.latency_ms || 0.04;
+    const ruleMatched = data.ruleMatched || (isSafe ? 'INSTITUTIONAL_WHITELIST_MATCH' : 'PAYEE_AUTHORITY_MISMATCH');
+    const txId = data.txId || `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`;
+    const hash = data.record_hash || `SHA256-${Math.random().toString(16).substr(2, 10).toUpperCase()}`;
+    const stages = data.stages || [];
+
+    const plainSummary = isSafe
+      ? `ProPay checked the payee credentials against verified banking registers in ${latency}ms. Both display name and settlement handle route to the same authorized merchant. Transaction cleared safely.`
+      : `ProPay detected that the printed QR sticker claims to belong to ${merchantName}, but the underlying settlement address directs funds to an unverified personal handle (${payee}). The payment was blocked at the device edge in ${latency}ms before funds were debited.`;
+
+    return `
+      <div class="explainer-card-wrap">
+        <div class="explainer-header-row">
+          <div>
+            <span style="font-size:11px; font-weight:800; font-family:var(--font-mono); color:var(--text-dim); text-transform:uppercase;">INCIDENT ANALYSIS &amp; TELEMETRY</span>
+            <h3 style="font-size:18px; font-weight:800; color:var(--text-main); margin-top:2px;">What Just Happened?</h3>
+          </div>
+          <span class="explainer-badge-pill ${isSafe ? 'safe' : 'danger'}">
+            ${isSafe ? '● VERIFIED SAFE' : '● SCAM INTERCEPTED'}
+          </span>
+        </div>
+
+        <!-- 3 Key Metric Pills -->
+        <div class="explainer-key-metrics">
+          <div class="metric-pill-box">
+            <div class="metric-pill-label">Gate Decision</div>
+            <div class="metric-pill-value ${isSafe ? 'green' : 'red'}">${isSafe ? 'CLEARED' : 'FROZEN'}</div>
+          </div>
+          <div class="metric-pill-box">
+            <div class="metric-pill-label">Fast-Path Time</div>
+            <div class="metric-pill-value green">${latency} ms</div>
+          </div>
+          <div class="metric-pill-box">
+            <div class="metric-pill-label">Money Debited</div>
+            <div class="metric-pill-value green">₹0.00</div>
+          </div>
+        </div>
+
+        <!-- Plain English Narrative -->
+        <div class="explainer-narrative-card">
+          <div class="explainer-narrative-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>Plain-English Security Summary</span>
+          </div>
+          <p class="explainer-narrative-text">
+            ${plainSummary}
+          </p>
+        </div>
+
+        <!-- Cryptographic Audit Ledger Banner -->
+        <div class="explainer-audit-banner">
+          <div>
+            <span style="color:var(--text-dim); font-size:10px; font-family:var(--font-mono); font-weight:700;">CRYPTOGRAPHIC AUDIT RECORD:</span>
+            <div style="font-family:var(--font-mono); font-weight:700; color:var(--text-main); font-size:11.5px; margin-top:2px;">
+              <code>${hash}</code> (Chained)
+            </div>
+          </div>
+          <button class="btn-view-audit-receipt" onclick="window.proPayApp.openModal('modal-email-alert')">
+            View Audit Receipt ↗
+          </button>
+        </div>
+
+        <!-- Expandable Developer Telemetry Accordion (For Interviewers & Technical Leads) -->
+        <details class="dev-telemetry-details">
+          <summary class="dev-telemetry-summary">
+            <span>⚙ Developer &amp; Bank SOC Telemetry (For Engineers &amp; Interviewers)</span>
+            <span>▾</span>
+          </summary>
+          <div class="dev-telemetry-body">
+            <div style="margin-bottom:8px;"><strong>Rule Engine:</strong> <code>${ruleMatched}</code> (Evaluated in <code>${latency}ms</code>)</div>
+            <div style="margin-bottom:8px;"><strong>In-Memory Velocity Limiter:</strong> <code>0 anomalies detected in 60s sliding window</code></div>
+            <div style="margin-bottom:8px;"><strong>Ledger Verification:</strong> <code>Valid SHA-256 Chained Hash (Integrity 100%)</code></div>
+            <div style="margin-bottom:12px;"><strong>AI Forensic Worker:</strong> <code>Ollama Llama-3 On-Prem VPC (Async Decoupled)</code></div>
+            
+            <div style="font-weight:700; margin-bottom:6px; color:var(--text-main);">7-STAGE RISK PIPELINE TRACE:</div>
+            ${stages.map((st, i) => `
+              <div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed rgba(0,0,0,0.06);">
+                <span>${i + 1}. ${st.stage} (${st.status})</span>
+                <span style="color:var(--text-dim);">${st.latency_ms || 0.1}ms</span>
+              </div>
+            `).join('')}
+          </div>
+        </details>
+      </div>
+    `;
+  }
+
   renderApiTelemetry(data) {
     const container = document.getElementById('telemetry-output');
     if (!container) return;
@@ -846,63 +1045,23 @@ class ProPayApp {
     this.simState.emailData = email;
 
     const isSafe = !action.is_fraud;
-    const orderData = {
-      orderId: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
-      merchantName: edge.pn || (isSafe ? 'HDFC Bank Treasury' : 'HDFC Official Merchant'),
-      payee: edge.pa || edge.resolved_url || edge.raw,
-      amount: edge.am || (isSafe ? '50,000' : '3,500'),
-      channel: edge.threat_type ? edge.threat_type.toUpperCase() : 'UPI_QR',
-      isSafe: isSafe
+    const modelData = {
+      isSafe: isSafe,
+      merchantName: edge.pn || (isSafe ? 'Ramesh Tea Stall' : 'Starbucks Official Store'),
+      payee: edge.pa || edge.resolved_url || edge.raw || (isSafe ? 'ramesh.tea@axisbank' : 'scammer_wallet@paytm'),
+      amount: edge.am || (isSafe ? '30.00' : '350.00'),
+      threatType: edge.threat_type || (isSafe ? 'clean' : 'quishing'),
+      latency_ms: inline.latency_ms || 0.041,
+      ruleMatched: inline.rule_matched || (isSafe ? 'INSTITUTIONAL_WHITELIST_MATCH' : 'PAYEE_AUTHORITY_MISMATCH'),
+      txId: data.transaction_id || `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`,
+      record_hash: (data.ledger_seal && data.ledger_seal.record_hash) ? data.ledger_seal.record_hash : `SHA256-${Math.random().toString(16).substr(2, 10).toUpperCase()}`,
+      stages: data.payment_flow_stages || []
     };
 
-    const juspaySheetHTML = this.buildJuspaySheetHTML(orderData);
-    const pipelineHTML = this.buildPaymentPipelineHTML(data.payment_flow_stages);
-    const smtpAlertHTML = this.buildSmtpAlertCardHTML(email, isSafe);
-
     container.innerHTML = `
-      ${juspaySheetHTML}
-      ${pipelineHTML}
-      ${smtpAlertHTML}
-
-      <div class="telemetry-step-card">
-        <span class="step-tag red">AGENT 01 [INGRESS]</span>
-        <span>Extracted: <code>${edge.pa || edge.resolved_url || edge.raw}</code> | Name: <code>${edge.pn || 'N/A'}</code></span>
-        <span class="step-tag lime" style="font-size: 11px;">${edge.edge_latency_ms || 2.1}ms</span>
-      </div>
-      <div class="telemetry-step-card">
-        <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-        <span>Fast-Path Verdict: <code>${inline.rule_matched}</code> | Risk Score: <code>${inline.risk_score}</code></span>
-        <span class="step-tag indigo" style="font-size: 11px;">${inline.latency_ms}ms</span>
-      </div>
-      <div class="telemetry-step-card">
-        <span class="step-tag purple">AGENT 03 [OLLAMA]</span>
-        <span>Cognitive Agent: <code>${ollama.ollama_active ? 'Live Ollama Model (' + ollama.model + ')' : 'On-Prem Autonomous Synthesis'}</code></span>
-        <span class="step-tag purple" style="font-size: 11px;">${ollama.latency_sec}s (Async)</span>
-      </div>
-      <div class="telemetry-step-card">
-        <span class="step-tag ${isSafe ? 'green' : 'red'}">AGENT 04 [ENFORCE]</span>
-        <span>Enforcement: <code>${action.verdict}</code></span>
-        <span class="step-tag ${isSafe ? 'green' : 'red'}" style="font-size: 11px;">${isSafe ? 'CLEARED' : 'INTERCEPTED'}</span>
-      </div>
-      <div class="telemetry-step-card" style="border-left: 3px solid #84CC16; padding-left: 12px;">
-        <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
-        <span>Contextual Dispatch: <code>${email.customer_email.subject}</code> (SMTP TLS To: ${email.customer_email.recipient})</span>
-        <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-          View Generated Email ↗
-        </button>
-      </div>
-
-      <div class="dossier-card">
-        <div class="dossier-title-bar">
-          <span class="step-tag purple">OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
-          <span class="step-tag ${isSafe ? 'green' : 'red'}">CONFIDENCE: ${(ollama.confidence * 100).toFixed(1)}%</span>
-        </div>
-        <div class="dossier-text-body">${ollama.forensic_dossier}</div>
-      </div>
-
-      <div class="verdict-banner-card ${isSafe ? 'safe' : 'danger'}">
-        <span>${isSafe ? 'TRANSACTION AUTHORIZED: Institutional settlement rail verified.' : 'THREAT INTERCEPTED: Malicious payload neutralized at edge. Transfer frozen.'}</span>
-        <span class="badge-pill ${isSafe ? 'lime' : 'danger'}">${isSafe ? 'TOTAL SLA: ' + inline.latency_ms + 'ms' : 'SHA-256 Ledger Sealed'}</span>
+      <div class="phone-simulator-layout">
+        ${this.buildPhoneMockupHTML(modelData)}
+        ${this.buildExplainerCardHTML(modelData)}
       </div>
     `;
   }
@@ -916,227 +1075,41 @@ class ProPayApp {
     this.simState.emailData = email;
 
     const isSafe = type === 'clean';
-    const orderData = {
-      orderId: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
-      merchantName: type === 'clean' ? 'HDFC Bank Treasury' : (type === 'quishing' ? 'HDFC Official Merchant' : 'Urgent Security Desk'),
-      payee: type === 'clean' ? 'hdfc.corporate@hdfcbank' : (type === 'quishing' ? 'scammer_wallet@paytm' : 'http://hdfc-security-refund.xyz/auth'),
-      amount: type === 'clean' ? '50,000' : (type === 'quishing' ? '3,500' : '9,999'),
-      channel: type === 'clean' ? 'UPI_INTENT' : (type === 'quishing' ? 'UPI_QR_INTENT' : 'SMS_DEEP_LINK'),
-      isSafe: isSafe
-    };
+    const isSmishing = type === 'smishing';
+
+    const merchantName = isSafe ? 'Ramesh Tea Stall' : (isSmishing ? 'Electricity Bill Security Notice' : 'Starbucks Coffee Official');
+    const payee = isSafe ? 'ramesh.tea@axisbank' : (isSmishing ? 'https://bit.ly/bank-urgent-security-refund' : 'scammer_wallet@paytm');
+    const amount = isSafe ? '30.00' : (isSmishing ? '4,999.00' : '350.00');
 
     const fallbackStages = [
-      {
-        stage: "PAYMENT_INITIATED",
-        status: "OK",
-        latency_ms: 0.2,
-        details: `Customer intent received: ${orderData.merchantName} | Amount: ₹${orderData.amount}`,
-        channel: orderData.channel
-      },
-      {
-        stage: "EDGE_INGRESS_NORMALIZED",
-        status: "OK",
-        latency_ms: 0.8,
-        details: `NPCI Spec Parsed: PA=${orderData.payee}`,
-        channel: "INGRESS_GATEWAY"
-      },
-      {
-        stage: "FAST_PATH_EVALUATED",
-        status: isSafe ? "PASS" : "FLAGGED",
-        latency_ms: isSafe ? 0.04 : 0.05,
-        details: isSafe ? "Rule: INSTITUTIONAL_WHITELIST_MATCH (Score: 0.02)" : "Rule: PAYEE_AUTHORITY_MISMATCH (Score: 0.96)",
-        channel: "HEURISTIC_VELOCITY"
-      },
-      {
-        stage: isSafe ? "OLLAMA_BYPASSED_FOR_SPEED" : "OLLAMA_FORENSICS_ANALYZED",
-        status: isSafe ? "CLEAN" : "THREAT",
-        latency_ms: isSafe ? 0.0 : 1240.0,
-        details: isSafe ? "Bypassed for wire speed (<30ms SLA)" : "Llama 3: Quishing sticker overlay signature detected (99.4%)",
-        channel: "OLLAMA_ASYNC_VPC"
-      },
-      {
-        stage: isSafe ? "BANK_SWITCH_CLEARED" : "BANK_SWITCH_HELD",
-        status: isSafe ? "CLEARED" : "HELD",
-        latency_ms: 0.3,
-        details: isSafe ? "Settlement switch: Rail verified" : "Settlement: FROZEN -- Payee VPA quarantined",
-        channel: "SETTLEMENT_SWITCH"
-      },
-      {
-        stage: "POLICY_ENFORCEMENT",
-        status: isSafe ? "ALLOW" : "FREEZE_AND_WARN",
-        latency_ms: 0.3,
-        details: isSafe ? "Zero customer friction. Fast-path cleared." : "Dynamic in-app glass warning injected on mobile glass",
-        channel: "POLICY_ARBITER"
-      },
-      {
-        stage: "EMAIL_ALERT_DISPATCHED",
-        status: "SENT",
-        latency_ms: 14.8,
-        details: `Dispatched to: ${email.customer_email.recipient}`,
-        channel: "SMTP_TLS"
-      },
-      {
-        stage: "LEDGER_SEALED",
-        status: "SEALED",
-        latency_ms: 0.4,
-        details: isSafe ? "Transaction logged. SHA-256 chained hash verified." : "Threat intercepted. Cryptographic ledger record sealed.",
-        channel: "CRYPTOGRAPHIC_LEDGER"
-      }
+      { stage: "PAYMENT_INITIATED", status: "OK", latency_ms: 0.2 },
+      { stage: "EDGE_INGRESS_NORMALIZED", status: "OK", latency_ms: 0.8 },
+      { stage: "FAST_PATH_EVALUATED", status: isSafe ? "PASS" : "FLAGGED", latency_ms: 0.04 },
+      { stage: isSafe ? "OLLAMA_BYPASSED_FOR_SPEED" : "OLLAMA_FORENSICS_ANALYZED", status: isSafe ? "CLEAN" : "THREAT", latency_ms: isSafe ? 0.0 : 1240.0 },
+      { stage: isSafe ? "BANK_SWITCH_CLEARED" : "BANK_SWITCH_HELD", status: isSafe ? "CLEARED" : "HELD", latency_ms: 0.3 },
+      { stage: "POLICY_ENFORCEMENT", status: isSafe ? "ALLOW" : "FREEZE_AND_WARN", latency_ms: 0.3 },
+      { stage: "LEDGER_SEALED", status: "SEALED", latency_ms: 0.4 }
     ];
 
-    const juspaySheetHTML = this.buildJuspaySheetHTML(orderData);
-    const pipelineHTML = this.buildPaymentPipelineHTML(fallbackStages);
-    const smtpAlertHTML = this.buildSmtpAlertCardHTML(email, isSafe);
+    const modelData = {
+      isSafe: isSafe,
+      merchantName: merchantName,
+      payee: payee,
+      amount: amount,
+      threatType: type,
+      latency_ms: isSafe ? 0.041 : 0.048,
+      ruleMatched: isSafe ? 'INSTITUTIONAL_WHITELIST_MATCH' : (isSmishing ? 'DECEPTIVE_SHORT_LINK_XYZ' : 'PAYEE_AUTHORITY_MISMATCH'),
+      txId: `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`,
+      record_hash: `SHA256-${Math.random().toString(16).substr(2, 10).toUpperCase()}`,
+      stages: fallbackStages
+    };
 
-    if (type === 'clean') {
-      container.innerHTML = `
-        ${juspaySheetHTML}
-        ${pipelineHTML}
-        ${smtpAlertHTML}
-
-        <div class="telemetry-step-card">
-          <span class="step-tag red">AGENT 01 [INGRESS]</span>
-          <span>QR URI Decoded: <code>pa=hdfc.corporate@hdfcbank</code> | Display Name: <code>HDFC Bank Treasury</code></span>
-          <span class="step-tag lime" style="font-size: 11px;">1.8ms</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-          <span>Fast-Path Whitelist Rule: <code>MATCHED</code> | Deterministic Risk Score: <code>0.02 (Safe)</code></span>
-          <span class="step-tag indigo" style="font-size: 11px;">16.2ms</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag purple">AGENT 03 [OLLAMA]</span>
-          <span>LLM Cognitive Reasoning: <code>BYPASSED (Trusted Payee in Whitelist -- sub-30ms wire speed preserved)</code></span>
-          <span class="step-tag slate" style="font-size: 11px;">0.0ms</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag green">AGENT 04 [ENFORCE]</span>
-          <span>Policy Arbiter Decision: <code>ALLOW TRANSACTION</code> (Zero customer friction / funds cleared)</span>
-          <span class="step-tag green" style="font-size: 11px;">CLEARED</span>
-        </div>
-        <div class="telemetry-step-card" style="border-left: 3px solid #84CC16; padding-left: 12px;">
-          <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
-          <span>Confirmation Dispatched: <code>Payment Cleared: ₹50,000 to HDFC Bank Treasury</code> (To: ${email.customer_email.recipient})</span>
-          <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-            View Generated Email ↗
-          </button>
-        </div>
-
-        <div class="verdict-banner-card safe">
-          <span>TRANSACTION AUTHORIZED: Verified Tier-1 Institutional Settlement Rail. Zero threat detected.</span>
-          <span class="badge-pill lime">TOTAL SLA: 18.0ms</span>
-        </div>
-      `;
-      return;
-    }
-
-    if (type === 'quishing') {
-      container.innerHTML = `
-        ${juspaySheetHTML}
-        ${pipelineHTML}
-        ${smtpAlertHTML}
-
-        <div class="telemetry-step-card">
-          <span class="step-tag red">AGENT 01 [INGRESS]</span>
-          <span>QR Intent Extracted: <code>pa=scammer_wallet@paytm</code> | Claimed Display Name: <code>HDFC Official Merchant</code></span>
-          <span class="step-tag lime" style="font-size: 11px;">2.2ms</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-          <span>Fast-Path Authority Check: Claimed merchant authority <code>HDFC</code> diverges from settlement rail <code>@paytm</code>.</span>
-          <span class="step-tag indigo" style="font-size: 11px;">0.04ms</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag purple">AGENT 03 [OLLAMA]</span>
-          <span>Ollama On-Prem Cluster (Llama 3): Asynchronously executed Payee Mismatch Heuristics.</span>
-          <span class="step-tag purple" style="font-size: 11px;">1.24s (Async)</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag red">AGENT 04 [ENFORCE]</span>
-          <span>Adaptive Interception: <code>FREEZE TRANSACTION &amp; TRIGGER DYNAMIC IN-APP GLASS WARNING</code></span>
-          <span class="step-tag red" style="font-size: 11px;">BLOCKED</span>
-        </div>
-        <div class="telemetry-step-card" style="border-left: 3px solid #84CC16; padding-left: 12px;">
-          <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
-          <span>Urgent Alert Dispatched: <code>Payment Attempt Blocked -- Tampered QR Detected</code> (To: ${email.customer_email.recipient})</span>
-          <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-            View Generated Email ↗
-          </button>
-        </div>
-
-        <div class="dossier-card">
-          <div class="dossier-title-bar">
-            <span class="step-tag purple">OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
-            <span class="step-tag red">CONFIDENCE: 99.4%</span>
-          </div>
-          <div class="dossier-text-body">CRITICAL QUISHING THREAT IDENTIFIED: Severe Payee Entity Discrepancy.
-The QR display metadata explicitly claims 'HDFC Official Merchant', but the underlying settlement address resolves to an unverified individual wallet ('scammer_wallet@paytm') with 0 prior corporate history.
-
-This signature strongly matches a physical QR sticker replacement attack on point-of-sale terminals.
-RECOMMENDED ACTION: Freeze payment immediately. Trigger in-app warning on customer device. Dispatch alert to merchant fraud team.</div>
-        </div>
-
-        <div class="verdict-banner-card danger">
-          <span>DYNAMIC IN-APP INTERCEPTION: Customer presented with warning overlay. Payment stopped at edge.</span>
-          <span class="badge-pill danger">SHA-256 Ledger Sealed</span>
-        </div>
-      `;
-      return;
-    }
-
-    if (type === 'smishing') {
-      container.innerHTML = `
-        ${juspaySheetHTML}
-        ${pipelineHTML}
-        ${smtpAlertHTML}
-
-        <div class="telemetry-step-card">
-          <span class="step-tag red">AGENT 01 [INGRESS]</span>
-          <span>Short Link Unrolled: <code>bit.ly/bank-urgent-security-refund</code> ➔ Resolves to <code>http://hdfc-security-refund.xyz/auth</code></span>
-          <span class="step-tag lime" style="font-size: 11px;">1.6ms</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag indigo">AGENT 02 [FAST-PATH]</span>
-          <span>Fast-Path TLD Rule: Domain registered &lt; 24 hours ago. Untrusted TLD (.xyz). Risk score: 0.96.</span>
-          <span class="step-tag indigo" style="font-size: 11px;">29.8ms</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag purple">AGENT 03 [OLLAMA]</span>
-          <span>Ollama On-Prem Cluster (Llama 3): Linguistic and Social Engineering Intent Analysis.</span>
-          <span class="step-tag purple" style="font-size: 11px;">1.10s (Async)</span>
-        </div>
-        <div class="telemetry-step-card">
-          <span class="step-tag red">AGENT 04 [ENFORCE]</span>
-          <span>Adaptive Interception: <code>HARD REVERSE DOMAIN BLOCK &amp; REVERSE COLLECT REJECT</code></span>
-          <span class="step-tag red" style="font-size: 11px;">INTERCEPTED</span>
-        </div>
-        <div class="telemetry-step-card" style="border-left: 3px solid #84CC16; padding-left: 12px;">
-          <span class="step-tag lime">AGENT 05 [EMAIL ALERT]</span>
-          <span>Security Alert Dispatched: <code>Deceptive Link Intercepted &amp; Quarantined</code> (To: ${email.customer_email.recipient})</span>
-          <button class="btn-email-alert-trigger" style="padding: 4px 12px; font-size: 11px;" onclick="window.proPayApp.openModal('modal-email-alert')">
-            View Generated Email ↗
-          </button>
-        </div>
-
-        <div class="dossier-card">
-          <div class="dossier-title-bar">
-            <span class="step-tag purple">OLLAMA FORENSIC CASE DOSSIER (ON-PREM PRIVATE REASONING)</span>
-            <span class="step-tag red">CONFIDENCE: 98.7%</span>
-          </div>
-          <div class="dossier-text-body">SOCIAL ENGINEERING &amp; REVERSE-COLLECT TRAP DETECTED:
-The unsolicited link incorporates deceptive urgency ('Urgent security refund') combined with a lookalike domain simulating bank infrastructure ('hdfc-security-refund.xyz').
-
-Ollama semantic analysis classifies this payload as a phishing credential harvester designed to trick users into approving reverse UPI collect requests.
-RECOMMENDED ACTION: Ingress URL blocked in perimeter API gateway. Dispatched to automated domain takedown service.</div>
-        </div>
-
-        <div class="verdict-banner-card danger">
-          <span>UNSOLICITED LINK INTERCEPTED: Link quarantined. Zero customer credentials compromised.</span>
-          <span class="badge-pill danger">Zero Cloud PII Leakage</span>
-        </div>
-      `;
-      return;
-    }
+    container.innerHTML = `
+      <div class="phone-simulator-layout">
+        ${this.buildPhoneMockupHTML(modelData)}
+        ${this.buildExplainerCardHTML(modelData)}
+      </div>
+    `;
   }
 
   async sendLiveTestEmail() {
