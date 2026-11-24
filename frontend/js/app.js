@@ -850,21 +850,21 @@ class ProPayApp {
       shieldBadge = `<span class="shield-badge-tag safe">✓ SAFE SETTLEMENT</span>`;
       shieldTitle = `Verified Merchant Payee`;
       shieldDesc = `Payee identity matches official merchant registration. Fast-path clearance verified with zero authority mismatch.`;
-      actionBtn = `<button class="btn-phone-primary pay" onclick="window.proPayApp.showToast('Demo: PIN screen authorized. Transaction cleared.')">
+      actionBtn = `<button class="btn-phone-primary pay" onclick="window.proPayApp.simulateUserProceedToPin('${amount}', '${merchantName}')">
         <span>Proceed to UPI PIN →</span>
       </button>`;
     } else if (isSmishing) {
       shieldBadge = `<span class="shield-badge-tag danger">⚠️ PHISHING LURE BLOCKED</span>`;
       shieldTitle = `Deceptive Deep Link Intercepted`;
       shieldDesc = `SMS lure detected attempting credential harvesting. Target domain is not an authorized banking portal.`;
-      actionBtn = `<button class="btn-phone-primary cancel" onclick="window.proPayApp.showToast('Phishing link blocked. Zero funds debited.')">
+      actionBtn = `<button class="btn-phone-primary cancel" onclick="window.proPayApp.simulateUserCancelFraud('${amount}', '${merchantName}')">
         <span>Block Link &amp; Secure Device</span>
       </button>`;
     } else {
       shieldBadge = `<span class="shield-badge-tag danger">⚠️ SCAM SHIELD ACTIVATED</span>`;
       shieldTitle = `QR Sticker Tampering Detected!`;
       shieldDesc = `The physical counter sticker claims to be <strong>"${merchantName}"</strong>, but funds route to personal handle: <strong>"${payee}"</strong>.`;
-      actionBtn = `<button class="btn-phone-primary cancel" onclick="window.proPayApp.showToast('Payment safely cancelled. No money left your account.')">
+      actionBtn = `<button class="btn-phone-primary cancel" onclick="window.proPayApp.simulateUserCancelFraud('${amount}', '${merchantName}')">
         <span>Cancel Payment &amp; Secure Account</span>
       </button>`;
     }
@@ -946,54 +946,113 @@ class ProPayApp {
     const isSmishing = data.threatType === 'smishing' || (data.payee && data.payee.startsWith('http'));
     const merchantName = data.merchantName || (isSafe ? 'Ramesh Tea Stall' : 'Starbucks Official Store');
     const payee = data.payee || (isSafe ? 'ramesh.tea@axisbank' : 'scammer_wallet@paytm');
+    const amount = data.amount || (isSafe ? '30.00' : '350.00');
     const latency = data.latency_ms || 0.04;
     const ruleMatched = data.ruleMatched || (isSafe ? 'INSTITUTIONAL_WHITELIST_MATCH' : 'PAYEE_AUTHORITY_MISMATCH');
     const txId = data.txId || `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`;
     const hash = data.record_hash || `SHA256-${Math.random().toString(16).substr(2, 10).toUpperCase()}`;
     const stages = data.stages || [];
 
-    const plainSummary = isSafe
-      ? `ProPay checked the payee credentials against verified banking registers in ${latency}ms. Both display name and settlement handle route to the same authorized merchant. Transaction cleared safely.`
-      : `ProPay detected that the printed QR sticker claims to belong to ${merchantName}, but the underlying settlement address directs funds to an unverified personal handle (${payee}). The payment was blocked at the device edge in ${latency}ms before funds were debited.`;
+    const headerBadge = isSafe
+      ? `<span class="explainer-badge-pill safe">● TRANQUILITY VERIFIED · SAFE MERCHANT</span>`
+      : `<span class="explainer-badge-pill danger">● THREAT INTERCEPTED · SHIELD ACTIVE</span>`;
+
+    const metric1 = isSafe
+      ? `<div class="metric-pill-label">Gate Decision</div>
+         <div class="metric-pill-value green">APPROVED ✓</div>
+         <div class="metric-pill-sub" style="color:#10B981;">Zero Risk Detected</div>`
+      : `<div class="metric-pill-label">Gate Decision</div>
+         <div class="metric-pill-value red">BLOCKED ⚠️</div>
+         <div class="metric-pill-sub" style="color:#EF4444;">Payee Mismatch</div>`;
+
+    const metric2 = isSafe
+      ? `<div class="metric-pill-label">Verification Time</div>
+         <div class="metric-pill-value green">${latency} ms</div>
+         <div class="metric-pill-sub">Wire-Speed Clearance</div>`
+      : `<div class="metric-pill-label">Intercept Speed</div>
+         <div class="metric-pill-value green">${latency} ms</div>
+         <div class="metric-pill-sub">Stopped Before PIN</div>`;
+
+    const metric3 = isSafe
+      ? `<div class="metric-pill-label">Authorized Amount</div>
+         <div class="metric-pill-value green">₹${amount}</div>
+         <div class="metric-pill-sub" style="color:#10B981;">✓ Ready to Transfer</div>`
+      : `<div class="metric-pill-label">Money Debited</div>
+         <div class="metric-pill-value green">₹0.00</div>
+         <div class="metric-pill-sub" style="color:#10B981;">🛡️ ₹${amount} Saved</div>`;
+
+    const tranquilityCard = isSafe
+      ? `
+        <div class="tranquility-card safe">
+          <div class="tranquility-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div class="tranquility-heading">Complete Payment Tranquility</div>
+            <p class="tranquility-text">
+              Merchant identity <strong>${merchantName}</strong> and settlement rail <strong>${payee}</strong> are 100% verified against NPCI banking registers. No sticker tampering, phishing redirection, or velocity anomaly detected. You can proceed with total peace of mind.
+            </p>
+            <div class="tranquility-pill-row">
+              <span class="tranquil-pill">✓ Identity Match 100%</span>
+              <span class="tranquil-pill">✓ Official Bank Rail</span>
+              <span class="tranquil-pill">✓ Zero Quishing Risk</span>
+            </div>
+          </div>
+        </div>
+      `
+      : `
+        <div class="tranquility-card danger">
+          <div class="tranquility-icon-wrap danger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div style="flex:1;">
+            <div class="tranquility-heading">Zero Loss Guaranteed — Scam Frozen</div>
+            <p class="tranquility-text">
+              ProPay intercepted this transaction before funds left your account. The physical counter sticker claimed <strong>${merchantName}</strong>, but secretly routed to unverified personal handle <strong>${payee}</strong>. Your bank balance was completely protected.
+            </p>
+            <div class="tranquility-pill-row">
+              <span class="tranquil-pill danger">⚠️ Mismatch Intercepted</span>
+              <span class="tranquil-pill danger">🛡️ ₹0.00 Debited</span>
+              <span class="tranquil-pill danger">🔒 Account Secure</span>
+            </div>
+          </div>
+        </div>
+      `;
 
     return `
       <div class="explainer-card-wrap">
         <div class="explainer-header-row">
           <div>
             <span style="font-size:11px; font-weight:800; font-family:var(--font-mono); color:var(--text-dim); text-transform:uppercase;">INCIDENT ANALYSIS &amp; TELEMETRY</span>
-            <h3 style="font-size:18px; font-weight:800; color:var(--text-main); margin-top:2px;">What Just Happened?</h3>
+            <h3 style="font-size:18px; font-weight:800; color:var(--text-main); margin-top:2px;">
+              ${isSafe ? 'Safe &amp; Verified Transaction' : 'Scam Intercepted at Edge'}
+            </h3>
           </div>
-          <span class="explainer-badge-pill ${isSafe ? 'safe' : 'danger'}">
-            ${isSafe ? '● VERIFIED SAFE' : '● SCAM INTERCEPTED'}
-          </span>
+          ${headerBadge}
         </div>
 
         <!-- 3 Key Metric Pills -->
         <div class="explainer-key-metrics">
           <div class="metric-pill-box">
-            <div class="metric-pill-label">Gate Decision</div>
-            <div class="metric-pill-value ${isSafe ? 'green' : 'red'}">${isSafe ? 'CLEARED' : 'FROZEN'}</div>
+            ${metric1}
           </div>
           <div class="metric-pill-box">
-            <div class="metric-pill-label">Fast-Path Time</div>
-            <div class="metric-pill-value green">${latency} ms</div>
+            ${metric2}
           </div>
           <div class="metric-pill-box">
-            <div class="metric-pill-label">Money Debited</div>
-            <div class="metric-pill-value green">₹0.00</div>
+            ${metric3}
           </div>
         </div>
 
-        <!-- Plain English Narrative -->
-        <div class="explainer-narrative-card">
-          <div class="explainer-narrative-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span>Plain-English Security Summary</span>
-          </div>
-          <p class="explainer-narrative-text">
-            ${plainSummary}
-          </p>
-        </div>
+        <!-- Tranquility / Peace of Mind Card -->
+        ${tranquilityCard}
 
         <!-- Cryptographic Audit Ledger Banner -->
         <div class="explainer-audit-banner">
@@ -1031,6 +1090,81 @@ class ProPayApp {
         </details>
       </div>
     `;
+  }
+
+  simulateUserProceedToPin(amount, merchantName) {
+    const screen = document.querySelector('.phone-content');
+    if (!screen) return;
+    screen.innerHTML = `
+      <div style="text-align:center; padding:32px 12px; display:flex; flex-direction:column; align-items:center; flex:1; justify-content:center;">
+        <div style="width:68px; height:68px; border-radius:50%; background:rgba(16,185,129,0.15); color:#10B981; display:flex; align-items:center; justify-content:center; margin-bottom:16px; border:2px solid #10B981;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div style="font-size:18px; font-weight:800; color:var(--text-main); margin-bottom:4px;">Payment Successful</div>
+        <div style="font-size:28px; font-weight:900; color:#10B981; margin-bottom:8px;">₹${amount}</div>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:18px;">
+          Debited from Bank Account (SBI •••• 4021)<br/>
+          Securely received by <strong>${merchantName}</strong>
+        </div>
+        <div style="background:var(--bg-card-muted); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 14px; width:100%; font-family:var(--font-mono); font-size:11px; text-align:left; margin-bottom:20px;">
+          <div style="color:var(--text-dim); font-size:10px;">UPI REFERENCE:</div>
+          <div style="font-weight:700; color:var(--text-main); margin-top:2px;">UPI-${Math.floor(100000000000 + Math.random()*900000000000)}</div>
+          <div style="color:#10B981; font-weight:700; margin-top:4px;">✓ SECURED BY PROPAY SHIELD</div>
+        </div>
+        <button class="btn-phone-primary pay" onclick="window.proPayApp.loadPreset('clean')">
+          <span>Make Another Payment</span>
+        </button>
+      </div>
+      <div class="phone-home-indicator"></div>
+    `;
+
+    const metricBoxes = document.querySelectorAll('.metric-pill-box');
+    if (metricBoxes && metricBoxes.length >= 3) {
+      metricBoxes[2].innerHTML = `
+        <div class="metric-pill-label">Money Debited</div>
+        <div class="metric-pill-value green">₹${amount}</div>
+        <div class="metric-pill-sub" style="color:#10B981; font-weight:700;">✓ Confirmed Debit</div>
+      `;
+    }
+    this.showToast(`✓ Payment of ₹${amount} confirmed. Receipt delivered via SMTP.`);
+  }
+
+  simulateUserCancelFraud(amount, merchantName) {
+    const screen = document.querySelector('.phone-content');
+    if (!screen) return;
+    screen.innerHTML = `
+      <div style="text-align:center; padding:32px 12px; display:flex; flex-direction:column; align-items:center; flex:1; justify-content:center;">
+        <div style="width:68px; height:68px; border-radius:50%; background:rgba(239,68,68,0.15); color:#EF4444; display:flex; align-items:center; justify-content:center; margin-bottom:16px; border:2px solid #EF4444;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div style="font-size:18px; font-weight:800; color:var(--text-main); margin-bottom:4px;">Transfer Cancelled</div>
+        <div style="font-size:28px; font-weight:900; color:#EF4444; margin-bottom:8px;">₹0.00 Debited</div>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:18px;">
+          You safely cancelled the transfer.<br/>
+          <strong>₹${amount}</strong> was preserved in your bank account.<br/>
+          Incident logged and reported to Bank Fraud Desk.
+        </div>
+        <div style="background:var(--bg-card-muted); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 14px; width:100%; font-family:var(--font-mono); font-size:11px; text-align:left; margin-bottom:20px;">
+          <div style="color:var(--text-dim); font-size:10px;">SECURITY ACTION:</div>
+          <div style="font-weight:700; color:#EF4444; margin-top:2px;">FRAUD PREVENTED AT EDGE</div>
+          <div style="color:var(--text-muted); margin-top:2px;">Scammer Wallet Blacklisted on Terminal</div>
+        </div>
+        <button class="btn-phone-primary pay" onclick="window.proPayApp.loadPreset('clean')">
+          <span>Test Safe Merchant</span>
+        </button>
+      </div>
+      <div class="phone-home-indicator"></div>
+    `;
+
+    const metricBoxes = document.querySelectorAll('.metric-pill-box');
+    if (metricBoxes && metricBoxes.length >= 3) {
+      metricBoxes[2].innerHTML = `
+        <div class="metric-pill-label">Money Debited</div>
+        <div class="metric-pill-value green">₹0.00</div>
+        <div class="metric-pill-sub" style="color:#10B981; font-weight:700;">🛡️ ₹${amount} Saved</div>
+      `;
+    }
+    this.showToast(`🛡️ Transfer cancelled. ₹${amount} preserved in your account.`);
   }
 
   renderApiTelemetry(data) {
