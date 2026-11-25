@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ProPay — Real-Time Banking Fraud &amp; Multi-Agent Quishing Defense</title>
-  <link rel="stylesheet" href="css/styles.css?v=7.0" />
+  <link rel="icon" type="image/png" href="images/propay-logo-64.png" />
+  <link rel="stylesheet" href="css/styles.css?v=8.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,12 +18,10 @@
   <header class="dodo-header">
     <div class="header-inner">
       
-      <!-- Brand Logo (High-contrast lime circle + clean sans wordmark) -->
+      <!-- Brand Logo (Interlocking Double-P Monogram) -->
       <div class="brand-logo" onclick="window.proPayApp.resetView()">
         <div class="logo-mark">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z" fill="currentColor"/>
-          </svg>
+          <img src="images/propay-logo.png" alt="ProPay" class="brand-logo-img" />
         </div>
         <span class="logo-text">ProPay</span>
       </div>
@@ -50,7 +49,6 @@
           <span id="theme-nav-label" style="display:none;">Dark</span>
         </button>
 
-        <button class="text-login" onclick="window.proPayApp.openModal('modal-viva')">Viva Cheatsheet</button>
         <button class="btn-signup" onclick="window.proPayApp.scrollTo('simulator')">
           <span>Try Simulator</span>
         </button>
@@ -433,42 +431,6 @@
     </div>
   </div>
 
-  <!-- ====================================================================
-       MODAL 3: VIVA GUIDE
-       ==================================================================== -->
-  <div class="modal-backdrop" id="modal-viva">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <div>
-          <span class="pill-badge-indigo">VIVA GUIDE</span>
-          <h3 class="modal-title">ProPay Project Presentation &amp; Defense</h3>
-        </div>
-        <button class="modal-close-btn" onclick="window.proPayApp.closeModal('modal-viva')">✕</button>
-      </div>
-
-      <div class="modal-body">
-        <div class="dual-speed-note-box" style="margin-bottom:16px;">
-          <strong style="color:var(--text-main);">60-SECOND OPENING PITCH:</strong>
-          <p style="margin-top:6px;">
-            "Good afternoon Sir/Madam. Our project is <strong>ProPay</strong>, an enterprise Real-Time Banking Fraud &amp; Quishing Defense Agent. We specifically target modern zero-day attack vectors—physical QR code tampering (Quishing) and unsolicited smishing links. We built a dual-speed multi-agent architecture: sub-38ms deterministic wire clearance, paired with an on-premises Ollama cluster for cognitive reasoning. Crucially, Ollama is strictly scoped to semantic link analysis, payee mismatch heuristics, and automated email alert dispatch—guaranteeing 100% data privacy with zero latency bottlenecks on payment clearance."
-          </p>
-        </div>
-
-        <strong style="color:var(--text-main); font-size:12px;">KEY ARCHITECTURAL HIGHLIGHTS:</strong>
-        <ul style="margin: 8px 0 0 18px; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-          <li><strong>Dual-Speed Pipeline:</strong> Sub-30ms synchronous heuristic &amp; velocity gatekeeper paired with asynchronous Ollama cognitive forensics.</li>
-          <li><strong>Anti-Quishing Heuristic:</strong> Evaluates NPCI UPI Intent specifications to detect merchant authority vs. settlement VPA mismatches.</li>
-          <li><strong>Sliding-Window Velocity:</strong> In-memory rate limiting preventing automated rapid account draining in O(1) time.</li>
-          <li><strong>Tamper-Evident SHA-256 Ledger:</strong> Chained cryptographic verification ensuring immutable audit trails.</li>
-          <li><strong>Strict Ollama Boundary:</strong> On-premise deployment guaranteeing zero customer banking PII leaves the local boundary.</li>
-        </ul>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn-modal-close" onclick="window.proPayApp.closeModal('modal-viva')">Close</button>
-      </div>
-    </div>
-  </div>
 
   <!-- ====================================================================
        MODAL 4: GENERATED EMAIL ALERT VIEWER

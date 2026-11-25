@@ -7,3 +7,5 @@ backend/smtp_config.json
 smtp_config.json
 .env
 *.env
+scratch/
+

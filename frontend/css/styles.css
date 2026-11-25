@@ -176,18 +176,25 @@ body {
 .logo-mark {
   width: 32px;
   height: 32px;
-  background: var(--dodo-lime);
-  border-radius: 9999px;
+  background: transparent;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0F172A;
-  box-shadow: 0 2px 8px rgba(163, 230, 53, 0.3);
+}
+
+.logo-mark img,
+.brand-logo-img {
+  width: 26px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.16));
 }
 
 .logo-mark svg {
-  width: 18px;
-  height: 18px;
+  width: 26px;
+  height: 30px;
 }
 
 .logo-text {
