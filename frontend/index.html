@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ProPay — Real-Time Banking Fraud &amp; Multi-Agent Quishing Defense</title>
   <link rel="icon" type="image/png" href="images/propay-logo-64.png" />
-  <link rel="stylesheet" href="css/styles.css?v=8.0" />
+  <link rel="stylesheet" href="css/styles.css?v=9.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,27 +19,27 @@
     <div class="header-inner">
       
       <!-- Brand Logo (Interlocking Double-P Monogram) -->
-      <div class="brand-logo" onclick="window.proPayApp.resetView()">
+      <button type="button" class="brand-logo" onclick="window.proPayApp.resetView()" aria-label="ProPay Home">
         <div class="logo-mark">
           <img src="images/propay-logo.png" alt="ProPay" class="brand-logo-img" />
         </div>
         <span class="logo-text">ProPay</span>
-      </div>
+      </button>
 
       <!-- Clean Navigation Links -->
-      <nav class="nav-menu">
-        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-hero')">Overview</span>
-        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-defense')">How It Works</span>
-        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-simulator')">Phone Simulator</span>
-        <span class="nav-link" onclick="window.proPayApp.scrollTo('section-feed')">Bank SOC Feed</span>
-        <span class="nav-link" onclick="window.proPayApp.openModal('modal-hld')">Architecture</span>
-        <span class="nav-link" onclick="window.proPayApp.openModal('modal-email-alert')">Email Alerts</span>
+      <nav class="nav-menu" id="main-nav-menu" aria-label="Primary Navigation">
+        <button type="button" class="nav-link active" data-target="section-hero" onclick="window.proPayApp.scrollTo('section-hero')">Overview</button>
+        <button type="button" class="nav-link" data-target="section-defense" onclick="window.proPayApp.scrollTo('section-defense')">How It Works</button>
+        <button type="button" class="nav-link" data-target="section-simulator" onclick="window.proPayApp.scrollTo('section-simulator')">Phone Simulator</button>
+        <button type="button" class="nav-link" data-target="section-feed" onclick="window.proPayApp.scrollTo('section-feed')">Bank SOC Feed</button>
+        <button type="button" class="nav-link" data-modal="modal-hld" onclick="window.proPayApp.openModal('modal-hld')">Architecture</button>
+        <button type="button" class="nav-link" data-modal="modal-email-alert" onclick="window.proPayApp.openModal('modal-email-alert')">Email Alerts</button>
       </nav>
 
       <!-- Action Buttons -->
       <div class="header-actions">
         <!-- Magic UI Half-Circle Theme Toggle -->
-        <button class="magic-theme-toggle" id="shadcn-theme-toggle" onclick="window.proPayApp.toggleTheme()" title="Toggle Theme (Light / Dark)" aria-label="Toggle Theme">
+        <button type="button" class="magic-theme-toggle" id="shadcn-theme-toggle" onclick="window.proPayApp.toggleTheme()" title="Toggle Theme (Light / Dark)" aria-label="Toggle Theme">
           <div class="magic-toggle-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="9"/>
@@ -49,8 +49,16 @@
           <span id="theme-nav-label" style="display:none;">Dark</span>
         </button>
 
-        <button class="btn-signup" onclick="window.proPayApp.scrollTo('simulator')">
+        <button type="button" class="btn-signup" onclick="window.proPayApp.scrollTo('section-simulator')">
           <span>Try Simulator</span>
+        </button>
+
+        <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" onclick="window.proPayApp.toggleMobileMenu()" title="Menu" aria-label="Toggle Navigation Menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
         </button>
       </div>
 
@@ -554,6 +562,6 @@
   <div class="toast-shelf" id="toast-shelf"></div>
 
   <!-- Script -->
-  <script src="js/app.js?v=7.0"></script>
+  <script src="js/app.js?v=9.0"></script>
 </body>
 </html>

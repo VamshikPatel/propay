@@ -26,6 +26,7 @@ class ProPayApp {
     this.renderTelemetry();
     this.startFeedTicker();
     this.bindEvents();
+    this.initScrollSpy();
     this.checkBackendHealth();
     this.checkSmtpStatus();
   }
@@ -54,17 +55,29 @@ class ProPayApp {
   }
 
   bindEvents() {
-    // Escape key closes modals
+    // Escape key closes modals and mobile menu
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
+        this.closeMobileMenu();
+        this.updateActiveNavFromScroll();
       }
     });
 
-    // Click outside modal dialog closes it
+    // Click outside modal dialog closes it; click outside header closes mobile menu
+    document.addEventListener('click', (e) => {
+      const header = document.querySelector('.dodo-header');
+      if (header && !header.contains(e.target)) {
+        this.closeMobileMenu();
+      }
+    });
+
     document.querySelectorAll('.modal-backdrop').forEach(modal => {
       modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.remove('active');
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          this.updateActiveNavFromScroll();
+        }
       });
     });
 
@@ -442,15 +455,86 @@ class ProPayApp {
   }
 
   scrollTo(sectionId) {
-    const el = document.getElementById(`section-${sectionId}`);
+    document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
+    this.closeMobileMenu();
+
+    const el = document.getElementById(sectionId) || document.getElementById(`section-${sectionId}`);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      const headerOffset = 82;
+      const topPos = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({
+        top: Math.max(0, topPos),
+        behavior: 'smooth'
+      });
+      this.setActiveNav(el.id);
     }
   }
 
   resetView() {
+    document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
+    this.closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.setActiveNav('section-hero');
     this.showToast('ProPay view reset to top.');
+  }
+
+  setActiveNav(targetId) {
+    document.querySelectorAll('.nav-link').forEach(link => {
+      const isMatch = link.getAttribute('data-target') === targetId || link.getAttribute('data-modal') === targetId;
+      link.classList.toggle('active', isMatch);
+    });
+  }
+
+  initScrollSpy() {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          this.updateActiveNavFromScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+    this.updateActiveNavFromScroll();
+  }
+
+  updateActiveNavFromScroll() {
+    if (document.querySelector('.modal-backdrop.active')) return;
+    const sections = ['section-hero', 'section-simulator', 'section-defense', 'section-feed'];
+    const scrollPos = window.scrollY + 140;
+    let activeId = 'section-hero';
+
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el) {
+        const docTop = el.getBoundingClientRect().top + window.scrollY;
+        if (docTop <= scrollPos) {
+          activeId = id;
+        }
+      }
+    }
+
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 24) {
+      activeId = 'section-feed';
+    }
+
+    this.setActiveNav(activeId);
+  }
+
+  toggleMobileMenu() {
+    const nav = document.getElementById('main-nav-menu');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    if (!nav) return;
+    const isOpen = nav.classList.toggle('mobile-open');
+    if (toggle) toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  closeMobileMenu() {
+    const nav = document.getElementById('main-nav-menu');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    if (nav) nav.classList.remove('mobile-open');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
   }
 
   quickAnalyzeFromHero() {
@@ -1516,6 +1600,7 @@ ${soc.ollama_dossier}
   }
 
   openModal(id) {
+    this.closeMobileMenu();
     const m = document.getElementById(id);
     if (m) m.classList.add('active');
     if (id === 'modal-email-alert') {
@@ -1524,11 +1609,15 @@ ${soc.ollama_dossier}
     if (id === 'modal-smtp-config') {
       this.loadSmtpConfigToModal();
     }
+    if (id === 'modal-hld' || id === 'modal-email-alert') {
+      this.setActiveNav(id);
+    }
   }
 
   closeModal(id) {
     const m = document.getElementById(id);
     if (m) m.classList.remove('active');
+    this.updateActiveNavFromScroll();
   }
 
   showToast(text) {
