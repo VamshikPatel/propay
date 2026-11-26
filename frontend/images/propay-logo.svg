@@ -1,6 +1,14 @@
-<svg viewBox="0 0 45 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Back P: Vibrant Cyan (#019BE1) -->
-  <path d="M42.2 24.3c-1.3 7-6.5 11.2-14.5 11.2h-5.8l-2.6 15.5h-9.5l1.6-9.5 1.8-11.5.4-2.5h7.8c8 0 13.3-6.8 13.3-12.5 3.9 2 6.2 6.1 5.5 10.6z" fill="#019BE1"/>
-  <!-- Front P: Deep Indigo Navy (#002D8A) with crisp white border -->
-  <path d="M36.7 13.7c0 5.8-5.3 12.5-13.3 12.5H15.6l-.4 2.5L13.4 40H3.8l5.8-37h15.5c5.2 0 9.3 2.9 10.8 7 .5 1.1.8 2.4.8 3.7z" fill="#002D8A" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" fill="none">
+  <defs>
+    <linearGradient id="propay-bg" x1="0" y1="0" x2="360" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2225FF"/>
+      <stop offset="100%" stop-color="#1416D0"/>
+    </linearGradient>
+    <path id="propay-corner-arrow" d="M155 62H174V142A32 32 0 0 1 142 174H62V155H141.6L85.3 98.7L98.7 85.3L155 141.6V62Z" fill="#E6E7FF"/>
+  </defs>
+  <rect width="360" height="360" rx="84" fill="url(#propay-bg)"/>
+  <use href="#propay-corner-arrow"/>
+  <use href="#propay-corner-arrow" transform="rotate(90 180 180)"/>
+  <use href="#propay-corner-arrow" transform="rotate(180 180 180)"/>
+  <use href="#propay-corner-arrow" transform="rotate(270 180 180)"/>
 </svg>

@@ -188,7 +188,7 @@ body {
   width: 32px;
   height: 32px;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,16 +196,17 @@ body {
 
 .logo-mark img,
 .brand-logo-img {
-  width: 26px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.16));
+  border-radius: 8px;
+  filter: drop-shadow(0 2px 6px rgba(27, 28, 216, 0.25));
 }
 
 .logo-mark svg {
-  width: 26px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
 }
 
 .logo-text {
