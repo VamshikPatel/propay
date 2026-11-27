@@ -2014,6 +2014,110 @@ section[id^="section-"] {
   color: var(--text-muted);
 }
 
+/* ==========================================================================
+   MODAL 5: SMTP SERVER & LIVE ALERT CONFIGURATION
+   ========================================================================== */
+.smtp-provider-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.smtp-prov-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card-muted);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.smtp-prov-btn:hover {
+  border-color: var(--text-dim);
+  color: var(--text-main);
+}
+
+.smtp-prov-btn.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+[data-theme="dark"] .smtp-prov-btn.active {
+  background: var(--dodo-lime);
+  color: #0F172A;
+  border-color: var(--dodo-lime);
+}
+
+.smtp-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.smtp-form-label {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+.smtp-form-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card-muted);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+[data-theme="dark"] select.smtp-form-input {
+  color-scheme: dark;
+}
+
+.smtp-form-input::placeholder {
+  color: var(--text-dim);
+}
+
+.smtp-form-input:focus {
+  border-color: var(--border-focus);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 2px rgba(163, 230, 53, 0.25);
+}
+
+.smtp-tip-box {
+  background: var(--accent-purple-light);
+  border: 1px solid rgba(124, 58, 237, 0.28);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--text-main);
+  line-height: 1.55;
+}
+
+.smtp-tip-box code {
+  background: var(--bg-card);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
 /* Email Viewer & Notifications */
 .floating-email-banner {
   position: fixed;
