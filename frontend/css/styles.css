@@ -1454,6 +1454,60 @@ section[id^="section-"] {
   border-bottom: none;
 }
 
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card-muted);
+  color: var(--text-main);
+}
+
+.badge-pill.lime {
+  background: rgba(163, 230, 53, 0.22);
+  color: #365314;
+  border-color: rgba(132, 204, 22, 0.45);
+}
+
+[data-theme="dark"] .badge-pill.lime {
+  background: rgba(163, 230, 53, 0.14);
+  color: #BEF264;
+  border-color: rgba(163, 230, 53, 0.35);
+}
+
+.badge-pill.safe {
+  background: rgba(16, 185, 129, 0.12);
+  color: #065F46;
+  border-color: rgba(16, 185, 129, 0.32);
+}
+
+[data-theme="dark"] .badge-pill.safe {
+  background: rgba(16, 185, 129, 0.14);
+  color: #34D399;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.badge-pill.danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #B91C1C;
+  border-color: rgba(239, 68, 68, 0.32);
+}
+
+[data-theme="dark"] .badge-pill.danger {
+  background: rgba(239, 68, 68, 0.16);
+  color: #FCA5A5;
+  border-color: rgba(239, 68, 68, 0.38);
+}
+
 /* ==========================================================================
    MODALS (Clean Dodo Dialogs)
    ========================================================================== */
@@ -1797,15 +1851,25 @@ section[id^="section-"] {
 }
 
 .feed-email-btn {
-  border: none;
+  -webkit-appearance: none;
+  appearance: none;
   font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
 }
 
 .feed-email-btn:hover {
   transform: translateY(-1px);
   filter: brightness(1.08);
+}
+
+.feed-email-btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
 }
 
 .email-meta-header {
