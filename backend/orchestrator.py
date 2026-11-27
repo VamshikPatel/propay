@@ -137,6 +137,10 @@ class RiskOrchestrator:
         # STEP 2: Inline Fast-Path Rule & Velocity Engine (<30ms)
         inline_eval = self.rule_engine.evaluate(edge_data, entity_id=edge_data.get("pa") or "default_user")
 
+        # Ensure threat_type reflects deterministic fraud detection even for non-preset handles
+        if inline_eval["inline_verdict"] in ["BLOCK_FRAUD", "FLAG_SUSPICIOUS"] and edge_data.get("threat_type") in ["standard_wire", "qr_intent", "clean", "unknown"]:
+            edge_data["threat_type"] = "smishing" if edge_data.get("resolved_url") else "quishing"
+
         # STEP 3: Ollama Cognitive Agent (Asynchronous Forensic Worker)
         if inline_eval["requires_ollama"]:
             ollama_eval = self.ollama_agent.investigate(edge_data, inline_eval)
@@ -231,6 +235,7 @@ class RiskOrchestrator:
 
         # Return backward-compatible structure for UI
         return {
+            "transaction_id": tx_id,
             "edge_sector_1": edge_data,
             "inline_fast_path": inline_eval,
             "ollama_sector_2": ollama_eval,

@@ -18,7 +18,48 @@ class ProPayApp {
     };
 
     this.txCounter = 8402;
+    this.feedRecords = new Map();
+    this.activeEmailData = null;
+    this.activeEmailSource = 'simulator';
     this.init();
+  }
+
+  escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  classifyPayload(val) {
+    const lower = (val || '').toLowerCase();
+    if (
+      lower.includes('bit.ly') ||
+      lower.includes('tinyurl') ||
+      lower.includes('.xyz') ||
+      lower.includes('refund') ||
+      lower.includes('urgent') ||
+      lower.includes('kyc') ||
+      lower.includes('smishing') ||
+      lower.startsWith('http')
+    ) {
+      return 'smishing';
+    }
+    if (
+      lower.includes('scammer') ||
+      lower.includes('scam_') ||
+      lower.includes('fake_qr') ||
+      lower.includes('tampered') ||
+      lower.includes('quishing') ||
+      lower.includes('fraud') ||
+      (lower.includes('@paytm') && lower.includes('hdfc')) ||
+      (lower.includes('@paytm') && lower.includes('starbucks'))
+    ) {
+      return 'quishing';
+    }
+    return 'clean';
   }
 
   init() {
@@ -618,8 +659,18 @@ class ProPayApp {
       });
       if (res.ok) {
         const apiData = await res.json();
+        const action = apiData.action_sector_3 || {};
+        const edge = apiData.edge_sector_1 || {};
+        const isFraud = Boolean(action.is_fraud);
+        const derivedType = isFraud
+          ? (edge.threat_type === 'smishing' || edge.threat_type === 'unsolicited_link' ? 'smishing' : 'quishing')
+          : 'clean';
+
+        this.simState.resultType = derivedType;
         this.simState.lastApiData = apiData;
         this.simState.emailData = apiData.email_sector_4 || null;
+        this.activeEmailData = this.simState.emailData;
+        this.activeEmailSource = 'simulator';
         this.renderApiTelemetry(apiData);
         this.simState.isAnalyzing = false;
         if (btn) {
@@ -630,7 +681,7 @@ class ProPayApp {
         const custEmail = emailSector && emailSector.customer_email ? emailSector.customer_email : null;
         const sentTo = recipientEmail || (custEmail ? custEmail.recipient : 'customer@bank-client.com');
         const subject = custEmail ? custEmail.subject : 'Payment Clearance Receipt';
-        const isSafe = !apiData.action_sector_3 || !apiData.action_sector_3.is_fraud;
+        const isSafe = !isFraud;
 
         // Trigger live audio-visual notification banner
         this.showIncomingEmailBanner(sentTo, subject, isSafe);
@@ -643,13 +694,7 @@ class ProPayApp {
 
     // Client-side fallback simulation
     setTimeout(() => {
-      if (val.includes('scammer') || val.includes('paytm') || val.includes('quishing')) {
-        this.simState.resultType = 'quishing';
-      } else if (val.includes('bit.ly') || val.includes('refund') || val.includes('urgent') || val.includes('smishing')) {
-        this.simState.resultType = 'smishing';
-      } else {
-        this.simState.resultType = 'clean';
-      }
+      this.simState.resultType = this.classifyPayload(val);
 
       this.simState.isAnalyzing = false;
       if (btn) {
@@ -662,15 +707,47 @@ class ProPayApp {
     }, 450);
   }
 
-  generateFallbackEmailData(type, customEmail = '') {
-    const txId = `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`;
-    const now = new Date().toISOString().replace('T', ' ').substr(0, 19) + ' UTC';
-    const emailToUse = customEmail || (type === 'clean' ? 'corp.treasury@enterprise-client.com' : 'victim.user@corp-client.com');
+  buildEmailAlertBundle(context = {}) {
+    const type = context.type || 'clean';
+    const isSafe = context.isSafe !== undefined ? Boolean(context.isSafe) : type === 'clean';
+    const isSmishing = !isSafe && type === 'smishing';
+    const txId = context.txId || `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`;
+    const now = context.timestamp || (new Date().toISOString().replace('T', ' ').substr(0, 19) + ' UTC');
+    const customEmail = (context.recipientEmail || '').trim();
+    const emailToUse = customEmail || (isSafe ? 'corp.treasury@enterprise-client.com' : 'victim.user@corp-client.com');
+    const wormHash = context.wormHash || `SHA256-${Math.random().toString(16).substr(2, 12).toUpperCase()}`;
+    const channel = context.channel || (isSmishing ? 'SMS Link Ingress' : (isSafe ? 'FedNow Wire' : 'POS Terminal QR'));
+    const sla = context.sla || '18.0ms';
+    const payee = context.payee || (isSafe ? 'hdfc.corporate@hdfcbank' : (isSmishing ? 'bit.ly/bank-urgent-security-refund' : 'scammer_wallet@paytm'));
+    const claimedMerchant = context.claimedMerchant || (isSafe ? 'HDFC Bank Treasury' : (isSmishing ? 'Bank Urgent Refund Portal' : 'HDFC Official Merchant'));
+    const amount = context.amount || (isSafe ? '50,000' : (isSmishing ? '4,999' : '3,500'));
+    const enforcement = context.enforcement || (isSafe ? 'ALLOW' : (isSmishing ? 'INTERCEPTED' : 'BLOCK & WARN'));
+    const ollamaStatus = context.ollamaStatus || (isSafe ? 'Bypassed (Safe)' : 'Ollama Flagged');
+    const sourceLabel = context.sourceLabel || 'Simulator Evaluation';
 
-    if (type === 'clean') {
+    if (isSafe) {
+      const subject = `Payment Cleared: ₹${amount} to ${claimedMerchant} (${txId})`;
+      const headline = `Transaction Finalized & Cleared via ${channel}`;
+      const bodyIntro = `Your payment instruction of ₹${amount} to ${payee} via ${channel} has been verified and cleared in ${sla} through the synchronous fast-path rule engine.`;
+      const discrepancyNote = [
+        `Settlement Channel: ${channel} / ISO-20022 Verified`,
+        `Payee VPA / Target: ${payee}`,
+        `Inline Fast-Path SLA: ${sla} (Whitelist Check: 100% Pass)`,
+        `Ollama Cognitive Engine: ${ollamaStatus} · Enforcement: ${enforcement}`
+      ].join('\n');
+      const actionRequired = 'This transaction is finalized. Zero further action required.';
+      const socIntro = `Clean transaction audit record for ${txId} (${payee}). Fast-path checks passed in ${sla}; no SOC escalation required.`;
+
       return {
         agent_id: 'AGENT-05-EMAIL-DISPATCHER',
         status: 'SENT',
+        source_label: sourceLabel,
+        tx_id: txId,
+        is_safe: true,
+        threat_type: 'clean',
+        channel,
+        payee,
+        enforcement,
         dispatch_ms: 12.4,
         smtp_delivery: {
           delivered: true,
@@ -680,73 +757,65 @@ class ProPayApp {
         customer_email: {
           recipient: emailToUse,
           sender: 'ProPay Security & Clearance <alerts@security.propay.bank>',
-          subject: `Payment Cleared: ₹50,000 to HDFC Bank Treasury (${txId})`,
-          headline: 'Transaction Finalized & Cleared via FedNow Rail',
+          subject,
+          headline,
           severity: 'SAFE',
           badge_color: '#10B981',
-          body_intro: 'Your institutional payment instruction of ₹50,000 has been verified and cleared in 18.0ms through the synchronous fast-path rule engine.',
-          discrepancy_note: 'Settlement Rail: FedNow / ISO-20022 Verified\nPayee VPA: hdfc.corporate@hdfcbank\nWhitelist Check: 100% Pass\nInstant Wire Clearance (<30ms SLA)',
-          action_required: 'This transaction is finalized. Zero further action required.',
+          is_safe: true,
+          threat_type: 'clean',
+          body_intro: bodyIntro,
+          discrepancy_note: discrepancyNote,
+          action_required: actionRequired,
           cta_label: 'Download Settlement Invoice',
+          secondary_cta_label: 'Report Unauthorized Activity',
           tx_id: txId,
           timestamp: now,
-          worm_hash: `SHA256-${Math.random().toString(16).substr(2, 12).toUpperCase()}`
+          worm_hash: wormHash,
+          html_body: `<p><strong>${headline}</strong></p><p>${bodyIntro}</p><pre>${discrepancyNote}</pre><p>${actionRequired}</p>`
         },
         soc_email: {
           recipient: 'soc-fraud-ops@propay.bank',
           sender: 'ProPay Multi-Agent Mesh <orchestrator@agent.propay.bank>',
-          subject: `[CLEAN TRANSACTION] Payment Cleared: ₹50,000 (${txId})`,
+          subject: `[CLEAN AUDIT LOG] ${subject}`,
           tx_id: txId,
           timestamp: now,
+          is_safe: true,
           threat_type: 'CLEAN_PAYMENT',
           inline_rule: 'INSTITUTIONAL_WHITELIST_MATCH',
-          ollama_dossier: 'Bypassed to preserve sub-38ms wire speed.',
+          ollama_dossier: `${ollamaStatus}: Verified clean payment target (${payee}). Bypassed deep LLM inspection to preserve sub-30ms wire speed.`,
           sar_status: 'NOT REQUIRED (CLEAN)',
-          dispatch_status: 'DISPATCHED_SMTP_TLS'
+          dispatch_status: 'ARCHIVED_CLEAN_LOG',
+          worm_hash: wormHash,
+          body_intro: socIntro,
+          html_body: `<p><strong>CLEAN AUDIT LOG (${txId})</strong></p><p>${socIntro}</p>`
         }
       };
-    } else if (type === 'quishing') {
+    }
+
+    if (isSmishing) {
+      const subject = `SECURITY ALERT: Deceptive Link Intercepted (${txId})`;
+      const headline = 'Deceptive Phishing Link Intercepted & Quarantined';
+      const bodyIntro = `A deceptive link (${payee}) routed through ${channel} attempting credential harvesting or reverse-collect fraud was blocked at the ProPay perimeter in ${sla}.`;
+      const discrepancyNote = [
+        `Blocked Target URI: ${payee}`,
+        `Ingress Channel: ${channel} · Enforcement: ${enforcement}`,
+        `AI Cognitive Flag: ${ollamaStatus} (${sla} inline intercept)`,
+        `Threat Signature: Social engineering urgency / unverified external redirect.`
+      ].join('\n');
+      const actionRequired = 'Payment was NOT finalized. Never approve unexpected UPI collect requests or enter your PIN on external links.';
+      const socDossier = `HIGH-RISK SMISHING THREAT (${txId}): ${ollamaStatus} flagged '${payee}' on ${channel} (${sla}). Enforcement applied: ${enforcement}. Domain quarantined before PIN entry.`;
+      const socIntro = `Escalated smishing intercept ${txId} targeting ${payee} via ${channel}.`;
+
       return {
         agent_id: 'AGENT-05-EMAIL-DISPATCHER',
         status: 'SENT',
-        dispatch_ms: 16.2,
-        smtp_delivery: {
-          delivered: true,
-          mode: 'LIVE_SMTP_READY',
-          status: 'ALERT_DISPATCHED_SMTP'
-        },
-        customer_email: {
-          recipient: emailToUse,
-          sender: 'ProPay Security Defense <alerts@security.propay.bank>',
-          subject: `URGENT: Payment Attempt Blocked - Tampered QR Detected (${txId})`,
-          headline: 'Unauthorized Payment Intercepted at Edge',
-          severity: 'CRITICAL',
-          badge_color: '#EF4444',
-          body_intro: 'Our multi-agent defense system intercepted a payment attempt of ₹3,500 because physical QR sticker tampering was detected at the terminal.',
-          discrepancy_note: 'Claimed Merchant: HDFC Official Merchant\nActual Payee Wallet: scammer_wallet@paytm (Unverified External Wallet)\nAttack Signature: Point-of-sale physical sticker overlay attack.',
-          action_required: 'No funds have been debited from your bank account. Your account remains completely secure.',
-          cta_label: 'Review Incident Dossier & Confirm Identity',
-          tx_id: txId,
-          timestamp: now,
-          worm_hash: `SHA256-${Math.random().toString(16).substr(2, 12).toUpperCase()}`
-        },
-        soc_email: {
-          recipient: 'soc-fraud-ops@propay.bank',
-          sender: 'ProPay Multi-Agent Mesh <orchestrator@agent.propay.bank>',
-          subject: `[CRITICAL SOC ESCALATION] Quishing Intercept on Terminal POS-481 (${txId})`,
-          tx_id: txId,
-          timestamp: now,
-          threat_type: 'PHYSICAL_QUISHING_ATTACK',
-          inline_rule: 'PAYEE_AUTHORITY_MISMATCH',
-          ollama_dossier: 'CRITICAL QUISHING THREAT: Display metadata claims HDFC Official Merchant, but underlying settlement resolves to scammer_wallet@paytm.',
-          sar_status: 'SEALED IN SHA-256 AUDIT LEDGER',
-          dispatch_status: 'DISPATCHED_SMTP_TLS'
-        }
-      };
-    } else {
-      return {
-        agent_id: 'AGENT-05-EMAIL-DISPATCHER',
-        status: 'SENT',
+        source_label: sourceLabel,
+        tx_id: txId,
+        is_safe: false,
+        threat_type: 'smishing',
+        channel,
+        payee,
+        enforcement,
         dispatch_ms: 14.8,
         smtp_delivery: {
           delivered: true,
@@ -756,17 +825,21 @@ class ProPayApp {
         customer_email: {
           recipient: emailToUse,
           sender: 'ProPay Security Defense <alerts@security.propay.bank>',
-          subject: `SECURITY ALERT: Deceptive Link Intercepted (${txId})`,
-          headline: 'Deceptive Phishing Link Quarantined',
+          subject,
+          headline,
           severity: 'HIGH',
           badge_color: '#F59E0B',
-          body_intro: 'A deceptive link (bit.ly/bank-urgent-security-refund) attempting reverse-collect credential harvesting was blocked by the ProPay API perimeter.',
-          discrepancy_note: 'Resolved URL: http://hdfc-security-refund.xyz/auth\nDomain Registration: < 24 hours old\nLinguistic Intent: False urgency credential trap.',
-          action_required: 'Never approve unexpected UPI reverse collect requests or enter PINs on external URLs.',
+          is_safe: false,
+          threat_type: 'smishing',
+          body_intro: bodyIntro,
+          discrepancy_note: discrepancyNote,
+          action_required: actionRequired,
           cta_label: 'View Domain Quarantine Report',
+          secondary_cta_label: 'Report False Alarm',
           tx_id: txId,
           timestamp: now,
-          worm_hash: `SHA256-${Math.random().toString(16).substr(2, 12).toUpperCase()}`
+          worm_hash: wormHash,
+          html_body: `<p><strong>${headline}</strong></p><p>${bodyIntro}</p><pre>${discrepancyNote}</pre><p>${actionRequired}</p>`
         },
         soc_email: {
           recipient: 'soc-fraud-ops@propay.bank',
@@ -774,14 +847,94 @@ class ProPayApp {
           subject: `[HIGH SOC ESCALATION] Reverse-Collect Phishing Neutralized (${txId})`,
           tx_id: txId,
           timestamp: now,
+          is_safe: false,
           threat_type: 'UNSOLICITED_SMISHING_LINK',
-          inline_rule: 'DOMAIN_AGE_SUSPICIOUS',
-          ollama_dossier: 'Linguistic analysis confirmed social engineering credential harvester pretending to offer bank security refund.',
-          sar_status: 'SEALED IN SHA-256 AUDIT LEDGER',
-          dispatch_status: 'DISPATCHED_SMTP_TLS'
+          inline_rule: 'UNVERIFIED_REDIRECT_OR_SUSPICIOUS_TLD',
+          ollama_dossier: socDossier,
+          sar_status: 'ESCALATED · SEALED IN SHA-256 AUDIT LEDGER',
+          dispatch_status: 'DISPATCHED_SMTP_TLS',
+          worm_hash: wormHash,
+          body_intro: socIntro,
+          html_body: `<p><strong>HIGH SOC ESCALATION (${txId})</strong></p><p>${socDossier}</p>`
         }
       };
     }
+
+    // Quishing / fraudulent VPA threat
+    const subject = `URGENT: Payment Blocked — Fraudulent / Tampered Payee Detected (${txId})`;
+    const headline = 'Unauthorized Payment Blocked & Frozen at Edge';
+    const bodyIntro = `Our multi-agent defense engine blocked a payment attempt of ₹${amount} via ${channel} because suspicious payee / QR tampering indicators were detected on target '${payee}'.`;
+    const discrepancyNote = [
+      `Claimed Merchant / Context: ${claimedMerchant}`,
+      `Flagged Payee Target: ${payee} (Unverified / Blacklisted Handle)`,
+      `Ingress Channel: ${channel} · Inline SLA: ${sla}`,
+      `Ollama Cognitive Engine: ${ollamaStatus} · Enforcement: ${enforcement}`
+    ].join('\n');
+    const actionRequired = 'Payment was BLOCKED before settlement. No funds have been debited from your bank account.';
+    const socDossier = `CRITICAL QUISHING / FRAUD THREAT (${txId}): ${ollamaStatus} flagged settlement target '${payee}' via ${channel} (${sla}). Enforcement '${enforcement}' froze transfer prior to PIN authorization.`;
+    const socIntro = `Critical SOC escalation for blocked transaction ${txId} to suspect payee ${payee}.`;
+
+    return {
+      agent_id: 'AGENT-05-EMAIL-DISPATCHER',
+      status: 'SENT',
+      source_label: sourceLabel,
+      tx_id: txId,
+      is_safe: false,
+      threat_type: 'quishing',
+      channel,
+      payee,
+      enforcement,
+      dispatch_ms: 16.2,
+      smtp_delivery: {
+        delivered: true,
+        mode: 'LIVE_SMTP_READY',
+        status: 'ALERT_DISPATCHED_SMTP'
+      },
+      customer_email: {
+        recipient: emailToUse,
+        sender: 'ProPay Security Defense <alerts@security.propay.bank>',
+        subject,
+        headline,
+        severity: 'CRITICAL',
+        badge_color: '#EF4444',
+        is_safe: false,
+        threat_type: 'quishing',
+        body_intro: bodyIntro,
+        discrepancy_note: discrepancyNote,
+        action_required: actionRequired,
+        cta_label: 'Confirm I Did Not Authorize',
+        secondary_cta_label: 'Report False Alarm',
+        tx_id: txId,
+        timestamp: now,
+        worm_hash: wormHash,
+        html_body: `<p><strong>${headline}</strong></p><p>${bodyIntro}</p><pre>${discrepancyNote}</pre><p>${actionRequired}</p>`
+      },
+      soc_email: {
+        recipient: 'soc-fraud-ops@propay.bank',
+        sender: 'ProPay Multi-Agent Mesh <orchestrator@agent.propay.bank>',
+        subject: `[CRITICAL SOC ESCALATION] ${enforcement} on ${payee} (${txId})`,
+        tx_id: txId,
+        timestamp: now,
+        is_safe: false,
+        threat_type: 'PHYSICAL_QUISHING_OR_FRAUD_VPA',
+        inline_rule: 'PAYEE_AUTHORITY_MISMATCH / KNOWN_FRAUD_IDENTIFIER',
+        ollama_dossier: socDossier,
+        sar_status: 'ESCALATED · SEALED IN SHA-256 AUDIT LEDGER',
+        dispatch_status: 'DISPATCHED_SMTP_TLS',
+        worm_hash: wormHash,
+        body_intro: socIntro,
+        html_body: `<p><strong>CRITICAL SOC ESCALATION (${txId})</strong></p><p>${socDossier}</p>`
+      }
+    };
+  }
+
+  generateFallbackEmailData(type, customEmail = '') {
+    return this.buildEmailAlertBundle({
+      type,
+      isSafe: type === 'clean',
+      recipientEmail: customEmail,
+      sourceLabel: 'Phone Simulator'
+    });
   }
 
   buildJuspaySheetHTML(orderData) {
@@ -1259,8 +1412,21 @@ class ProPayApp {
     const inline = data.inline_fast_path || {};
     const ollama = data.ollama_sector_2 || {};
     const action = data.action_sector_3 || {};
-    const email = data.email_sector_4 || this.generateFallbackEmailData(action.is_fraud ? (edge.threat_type || 'quishing') : 'clean', this.simState.recipientEmail);
+    const email = data.email_sector_4 || this.buildEmailAlertBundle({
+      type: action.is_fraud ? (edge.threat_type === 'smishing' || edge.threat_type === 'unsolicited_link' ? 'smishing' : 'quishing') : 'clean',
+      isSafe: !action.is_fraud,
+      txId: data.transaction_id,
+      payee: edge.pa || edge.resolved_url || edge.raw,
+      claimedMerchant: edge.pn,
+      amount: edge.am,
+      channel: edge.threat_type === 'smishing' ? 'SMS Link Ingress' : 'UPI / FedNow Rail',
+      sla: `${inline.latency_ms || 0.04}ms`,
+      recipientEmail: this.simState.recipientEmail,
+      sourceLabel: 'Phone Simulator (Live API)'
+    });
     this.simState.emailData = email;
+    this.activeEmailData = email;
+    this.activeEmailSource = 'simulator';
 
     const isSafe = !action.is_fraud;
     const modelData = {
@@ -1289,15 +1455,31 @@ class ProPayApp {
     if (!container) return;
 
     const type = this.simState.resultType;
-    const email = this.generateFallbackEmailData(type, this.simState.recipientEmail);
-    this.simState.emailData = email;
-
     const isSafe = type === 'clean';
     const isSmishing = type === 'smishing';
 
     const merchantName = isSafe ? 'Ramesh Tea Stall' : (isSmishing ? 'Electricity Bill Security Notice' : 'Starbucks Coffee Official');
     const payee = isSafe ? 'ramesh.tea@axisbank' : (isSmishing ? 'https://bit.ly/bank-urgent-security-refund' : 'scammer_wallet@paytm');
     const amount = isSafe ? '30.00' : (isSmishing ? '4,999.00' : '350.00');
+    const txId = `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const email = this.buildEmailAlertBundle({
+      type,
+      isSafe,
+      txId,
+      payee,
+      claimedMerchant: merchantName,
+      amount,
+      channel: isSmishing ? 'SMS Link Ingress' : 'Mobile QR Scan',
+      sla: isSafe ? '18.0ms' : '22.4ms',
+      ollamaStatus: isSafe ? 'Bypassed (Safe)' : 'Ollama Flagged',
+      enforcement: isSafe ? 'ALLOW' : (isSmishing ? 'INTERCEPTED' : 'BLOCK & WARN'),
+      recipientEmail: this.simState.recipientEmail,
+      sourceLabel: 'Phone Simulator'
+    });
+    this.simState.emailData = email;
+    this.activeEmailData = email;
+    this.activeEmailSource = 'simulator';
 
     const fallbackStages = [
       { stage: "PAYMENT_INITIATED", status: "OK", latency_ms: 0.2 },
@@ -1317,7 +1499,7 @@ class ProPayApp {
       threatType: type,
       latency_ms: isSafe ? 0.041 : 0.048,
       ruleMatched: isSafe ? 'INSTITUTIONAL_WHITELIST_MATCH' : (isSmishing ? 'DECEPTIVE_SHORT_LINK_XYZ' : 'PAYEE_AUTHORITY_MISMATCH'),
-      txId: `TX-SEC-${Math.floor(100000 + Math.random() * 900000)}`,
+      txId: txId,
       record_hash: `SHA256-${Math.random().toString(16).substr(2, 10).toUpperCase()}`,
       stages: fallbackStages
     };
@@ -1389,7 +1571,7 @@ class ProPayApp {
       if (input) input.value = email;
     }
 
-    const data = this.simState.emailData || this.generateFallbackEmailData(this.simState.resultType, email);
+    const data = this.activeEmailData || this.simState.emailData || this.generateFallbackEmailData(this.simState.resultType, email);
     const isCustomer = this.simState.activeEmailTab === 'customer';
     const msg = isCustomer ? data.customer_email : data.soc_email;
 
@@ -1422,7 +1604,37 @@ class ProPayApp {
 
   openEmailModal() {
     this.openModal('modal-email-alert');
-    this.renderEmailModalContent();
+  }
+
+  openFeedEmailAlert(txId) {
+    const row = this.feedRecords.get(txId);
+    if (!row) {
+      this.showToast(`Telemetry record ${txId} not found.`);
+      return;
+    }
+
+    if (!row.emailData) {
+      row.emailData = this.buildEmailAlertBundle({
+        type: row.threatType,
+        isSafe: row.safe,
+        txId: row.id,
+        payee: row.payee,
+        claimedMerchant: row.claimedMerchant,
+        amount: row.amount,
+        channel: row.channel,
+        sla: row.sla,
+        ollamaStatus: row.ollama,
+        enforcement: row.action,
+        timestamp: row.timestamp,
+        wormHash: row.wormHash,
+        recipientEmail: this.simState.recipientEmail,
+        sourceLabel: 'Real-Time Ingress & Ledger Ticker'
+      });
+    }
+
+    this.activeEmailData = row.emailData;
+    this.activeEmailSource = 'ticker';
+    this.openModal('modal-email-alert', { preserveActiveEmail: true });
   }
 
   switchEmailView(viewType) {
@@ -1444,87 +1656,164 @@ class ProPayApp {
       this.simState.emailData = this.generateFallbackEmailData(this.simState.resultType, this.simState.recipientEmail);
     }
 
-    const data = this.simState.emailData;
+    const data = this.activeEmailData || this.simState.emailData;
+    const em = data.customer_email || {};
+    const soc = data.soc_email || {};
+    const isSafe = em.is_safe !== undefined
+      ? Boolean(em.is_safe)
+      : (String(em.severity || '').toUpperCase() === 'SAFE');
+    const isSmishing = !isSafe && ((em.threat_type || data.threat_type || '').toLowerCase() === 'smishing');
+    const bannerClass = isSafe ? 'safe' : (isSmishing ? 'warning' : 'danger');
+    const sourceLabel = this.escapeHtml(data.source_label || (this.activeEmailSource === 'ticker' ? 'Real-Time Ingress & Ledger Ticker' : 'Phone Simulator'));
+    const txId = this.escapeHtml(em.tx_id || data.tx_id || 'N/A');
+    const channel = this.escapeHtml(data.channel || 'UPI / FedNow Rail');
+    const enforcement = this.escapeHtml(data.enforcement || (isSafe ? 'ALLOW' : 'BLOCK & WARN'));
+    const contextHeadline = isSafe
+      ? `SAFE CLEARANCE COMMUNICATION (${txId}) — FINALIZED`
+      : `SECURITY THREAT ALERT (${txId}) — PAYMENT BLOCKED (${enforcement})`;
+    const contextBadge = isSafe
+      ? 'SAFE · CUSTOMER RECEIPT + CLEAN LOG'
+      : `${this.escapeHtml(em.severity || 'CRITICAL')} THREAT · WARNING + SOC ESCALATION`;
+
+    const contextBannerHTML = `
+      <div class="email-context-banner ${bannerClass}">
+        <div>
+          <div class="email-context-title">${contextHeadline}</div>
+          <div class="email-context-meta">Source: ${sourceLabel} · Channel: ${channel} · Communication Path: ${isSafe ? 'Standard Clearance Receipt' : 'Fraud Block Notification & SOC Escalation'}</div>
+        </div>
+        <span class="email-context-pill ${bannerClass}">${contextBadge}</span>
+      </div>
+    `;
+
     const isCustomer = this.simState.activeEmailTab === 'customer';
 
     if (isCustomer) {
-      const em = data.customer_email;
+      const primaryBtnStyle = isSafe
+        ? ''
+        : `style="background:${isSmishing ? '#D97706' : '#EF4444'}; color:#FFFFFF;"`;
+      const secondaryLabel = this.escapeHtml(
+        em.secondary_cta_label || (isSafe ? 'Report Unauthorized Activity' : 'Report False Alarm')
+      );
+      const secondaryToast = isSafe
+        ? 'Unauthorized activity report opened with Fraud Desk.'
+        : 'False alarm feedback logged for SOC tuning.';
+
       container.innerHTML = `
+        ${contextBannerHTML}
         <div class="email-meta-header">
-          <div class="email-meta-line"><strong>From:</strong> <span>${em.sender}</span></div>
-          <div class="email-meta-line"><strong>To:</strong> <span>${em.recipient}</span></div>
-          <div class="email-meta-line"><strong>Subject:</strong> <span style="font-weight:700;">${em.subject}</span></div>
-          <div class="email-meta-line"><strong>Security:</strong> <span style="color:#10B981; font-family:var(--font-mono); font-size:11px;">✓ TLS 1.3 · SPF Pass · DKIM Verified · ${em.worm_hash}</span></div>
+          <div class="email-meta-line"><strong>From:</strong> <span>${this.escapeHtml(em.sender)}</span></div>
+          <div class="email-meta-line"><strong>To:</strong> <span>${this.escapeHtml(em.recipient)}</span></div>
+          <div class="email-meta-line"><strong>Subject:</strong> <span style="font-weight:700; color:${isSafe ? 'var(--text-main)' : (isSmishing ? '#D97706' : '#EF4444')};">${this.escapeHtml(em.subject)}</span></div>
+          <div class="email-meta-line"><strong>Security:</strong> <span style="color:#10B981; font-family:var(--font-mono); font-size:11px;">✓ TLS 1.3 · SPF Pass · DKIM Verified · ${this.escapeHtml(em.worm_hash)}</span></div>
         </div>
         <div class="email-body-sheet">
           <div class="email-brand-title">
             <span style="font-weight:800; font-size:16px;">PROPAY BANKING SECURITY</span>
-            <span class="email-badge-status" style="background:${em.badge_color}22; color:${em.badge_color}; border:1px solid ${em.badge_color};">
-              ${em.severity} PRIORITY
+            <span class="email-badge-status" style="background:${this.escapeHtml(em.badge_color)}22; color:${this.escapeHtml(em.badge_color)}; border:1px solid ${this.escapeHtml(em.badge_color)};">
+              ${this.escapeHtml(em.severity)} PRIORITY
             </span>
           </div>
 
-          <h3 class="email-subject-headline">${em.headline}</h3>
-          <p class="email-narrative-intro">${em.body_intro}</p>
+          <h3 class="email-subject-headline">${this.escapeHtml(em.headline)}</h3>
+          <p class="email-narrative-intro">${this.escapeHtml(em.body_intro)}</p>
 
-          <div class="email-details-card">${em.discrepancy_note}</div>
+          <div class="email-details-card">${this.escapeHtml(em.discrepancy_note)}</div>
 
-          <p style="font-size:13px; font-weight:600; margin-bottom:18px; color:var(--text-main);">${em.action_required}</p>
+          <p style="font-size:13px; font-weight:600; margin-bottom:18px; color:${isSafe ? 'var(--text-main)' : '#EF4444'};">${this.escapeHtml(em.action_required)}</p>
 
           <div class="email-action-row">
-            <button class="btn-email-action-primary" onclick="window.proPayApp.showToast('Security action registered in immutable audit log.')">${em.cta_label}</button>
-            <button class="btn-email-action-secondary" onclick="window.proPayApp.showToast('Reported to Fraud Desk.')">Report False Alarm</button>
+            <button class="btn-email-action-primary" ${primaryBtnStyle} onclick="window.proPayApp.showToast('Security action registered in immutable audit log.')">${this.escapeHtml(em.cta_label)}</button>
+            <button class="btn-email-action-secondary" onclick="window.proPayApp.showToast('${secondaryToast}')">${secondaryLabel}</button>
             <button class="btn-email-action-primary" style="background:var(--accent-primary); margin-left:auto;" onclick="window.proPayApp.sendCurrentModalEmail()">Dispatch to My Inbox ↗</button>
           </div>
 
           <div class="email-legal-footer">
-            Transaction ID: <code>${em.tx_id}</code> | Timestamp: ${em.timestamp}<br/>
+            Transaction ID: <code>${txId}</code> | Timestamp: ${this.escapeHtml(em.timestamp)}<br/>
             This is an automated security notification synthesized by ProPay Module 05 (Email Alert Dispatcher) and recorded in the SHA-256 chained audit ledger.
           </div>
         </div>
       `;
     } else {
-      const soc = data.soc_email;
+      const socIsSafe = soc.is_safe !== undefined
+        ? Boolean(soc.is_safe)
+        : (isSafe || String(soc.sar_status || '').toUpperCase().includes('CLEAN'));
+      const socAccent = socIsSafe ? '#10B981' : '#EF4444';
+      const socTitle = socIsSafe ? 'BANK SOC CLEAN TRANSACTION AUDIT RECORD' : 'BANK SOC INCIDENT ESCALATION TICKET';
+      const socPrimaryBtn = socIsSafe
+        ? `<button class="btn-email-action-primary" style="background:#10B981; color:#FFFFFF;" onclick="window.proPayApp.showToast('Clean audit record verified in SHA-256 ledger.')">Archive Clean Audit Log</button>`
+        : `<button class="btn-email-action-primary" style="background:#EF4444; color:#FFFFFF;" onclick="window.proPayApp.showToast('Terminal blacklisted across all banking switches.')">${isSmishing ? 'Blacklist Domain &amp; Quarantine' : 'Lock Terminal &amp; Freeze Payee VPA'}</button>`;
+      const socSecondaryBtn = socIsSafe
+        ? `<button class="btn-email-action-secondary" onclick="window.proPayApp.showToast('SHA-256 hash chain verified: 100% intact.')">Verify Hash Chain</button>`
+        : `<button class="btn-email-action-secondary" onclick="window.proPayApp.showToast('Incident acknowledged and logged in cryptographically chained ledger.')">Acknowledge SOC Ticket</button>`;
+      const socHash = this.escapeHtml(soc.worm_hash || em.worm_hash || `SHA256-${txId}`);
+
       container.innerHTML = `
+        ${contextBannerHTML}
         <div class="email-meta-header">
-          <div class="email-meta-line"><strong>From:</strong> <span>${soc.sender}</span></div>
-          <div class="email-meta-line"><strong>To:</strong> <span>${soc.recipient}</span></div>
-          <div class="email-meta-line"><strong>Subject:</strong> <span style="font-weight:700; color:#EF4444;">${soc.subject}</span></div>
+          <div class="email-meta-line"><strong>From:</strong> <span>${this.escapeHtml(soc.sender)}</span></div>
+          <div class="email-meta-line"><strong>To:</strong> <span>${this.escapeHtml(soc.recipient)}</span></div>
+          <div class="email-meta-line"><strong>Subject:</strong> <span style="font-weight:700; color:${socAccent};">${this.escapeHtml(soc.subject)}</span></div>
           <div class="email-meta-line"><strong>Routing:</strong> <span style="font-family:var(--font-mono); font-size:11px;">INTERNAL SOC ENCLAVE · SHA-256 AUDIT ACTIVE</span></div>
         </div>
         <div class="email-body-sheet">
           <div class="email-brand-title">
-            <span style="font-weight:800; font-size:16px;">BANK SOC INCIDENT ESCALATION TICKET</span>
-            <span class="email-badge-status" style="background:#EF444422; color:#EF4444; border:1px solid #EF4444;">
-              ${soc.sar_status}
+            <span style="font-weight:800; font-size:16px;">${socTitle}</span>
+            <span class="email-badge-status" style="background:${socAccent}22; color:${socAccent}; border:1px solid ${socAccent};">
+              ${this.escapeHtml(soc.sar_status)}
             </span>
           </div>
 
-          <div class="email-details-card" style="background:var(--bg-card); border-left:4px solid var(--accent-purple);">
+          <div class="email-details-card" style="background:var(--bg-card); border-left:4px solid ${socIsSafe ? '#10B981' : 'var(--accent-purple)'};">
 INCIDENT METRICS &amp; MULTI-AGENT TELEMETRY:
-• Incident Reference: ${soc.tx_id}
-• Threat Classification: ${soc.threat_type}
-• Fast-Path Trigger Rule: ${soc.inline_rule}
-• Dispatch Protocol: ${soc.dispatch_status}
-• Ledger Status: ${soc.sar_status}
+• Incident Reference: ${this.escapeHtml(soc.tx_id)}
+• Threat Classification: ${this.escapeHtml(soc.threat_type)}
+• Fast-Path Trigger Rule: ${this.escapeHtml(soc.inline_rule)}
+• Dispatch Protocol: ${this.escapeHtml(soc.dispatch_status)}
+• Ledger Status: ${this.escapeHtml(soc.sar_status)}
 
 OLLAMA COGNITIVE DOSSIER (Llama 3 On-Prem VPC):
-${soc.ollama_dossier}
+${this.escapeHtml(soc.ollama_dossier)}
           </div>
 
           <div class="email-action-row">
-            <button class="btn-email-action-primary" style="background:#EF4444;" onclick="window.proPayApp.showToast('Terminal blacklisted across all banking switches.')">Lock Terminal &amp; Freeze Payee VPA</button>
-            <button class="btn-email-action-secondary" onclick="window.proPayApp.showToast('Incident logged in cryptographically chained ledger.')">Acknowledge SOC Ticket</button>
-            <button class="btn-email-action-primary" style="background:var(--accent-primary); margin-left:auto;" onclick="window.proPayApp.sendCurrentModalEmail()">Dispatch Ticket ↗</button>
+            ${socPrimaryBtn}
+            ${socSecondaryBtn}
+            <button class="btn-email-action-primary" style="background:var(--accent-primary); margin-left:auto;" onclick="window.proPayApp.sendCurrentModalEmail()">${socIsSafe ? 'Dispatch Audit Copy ↗' : 'Dispatch Ticket ↗'}</button>
           </div>
 
           <div class="email-legal-footer">
-            Immutable Audit Trail Hash: <code>SHA256-${Math.random().toString(16).substr(2, 10).toUpperCase()}</code><br/>
-            Escalated to Tier-2 Security Analyst Pool. SLA resolution target &lt; 2 minutes.
+            Immutable Audit Trail Hash: <code>${socHash}</code><br/>
+            ${socIsSafe ? 'Cleared via synchronous fast-path rule engine. No analyst escalation needed.' : 'Escalated to Tier-2 Security Analyst Pool. SLA resolution target &lt; 2 minutes.'}
           </div>
         </div>
       `;
     }
+  }
+
+  registerFeedRow(row) {
+    if (!row.threatType) {
+      row.threatType = row.safe ? 'clean' : this.classifyPayload(row.payee);
+    }
+    if (!row.timestamp) {
+      row.timestamp = new Date().toISOString().replace('T', ' ').substr(0, 19) + ' UTC';
+    }
+    if (!row.wormHash) {
+      row.wormHash = `SHA256-${Math.random().toString(16).substr(2, 12).toUpperCase()}`;
+    }
+    if (!row.amount) {
+      row.amount = row.safe ? '50,000' : (row.threatType === 'smishing' ? '4,999' : '3,500');
+    }
+    if (!row.claimedMerchant) {
+      row.claimedMerchant = row.safe
+        ? row.payee.split('@')[0].replace(/[._]/g, ' ').toUpperCase()
+        : (row.threatType === 'smishing' ? 'Bank Security & KYC Portal' : 'POS Merchant Counter (Spoofed QR)');
+    }
+    this.feedRecords.set(row.id, row);
+    if (this.feedRecords.size > 40) {
+      const oldestKey = this.feedRecords.keys().next().value;
+      this.feedRecords.delete(oldestKey);
+    }
+    return row;
   }
 
   startFeedTicker() {
@@ -1532,12 +1821,12 @@ ${soc.ollama_dossier}
     if (!tbody) return;
 
     const initialFeed = [
-      { id: 'TX-84021', channel: 'Mobile QR Scan', payee: 'amazon.pay@axisbank', sla: '19.4ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true },
-      { id: 'TX-84022', channel: 'FedNow Wire', payee: 'jpmorgan.corp@fednow', sla: '24.1ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true },
-      { id: 'TX-84023', channel: 'POS Terminal QR', payee: 'tampered_qr4@paytm', sla: '38.2ms', ollama: 'Ollama Flaggable', email: 'ALERT SENT', action: 'BLOCK & WARN', safe: false },
-      { id: 'TX-84024', channel: 'SMS Link Ingress', payee: 'bit.ly/kyc-urgent-update', sla: '31.5ms', ollama: 'Ollama Intercept', email: 'ALERT SENT', action: 'INTERCEPTED', safe: false },
-      { id: 'TX-84025', channel: 'Card Rails (SWIFT)', payee: 'apple.store@chase', sla: '17.8ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true }
-    ];
+      { id: 'TX-84021', channel: 'Mobile QR Scan', payee: 'amazon.pay@axisbank', sla: '19.4ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true, threatType: 'clean', amount: '2,499', claimedMerchant: 'Amazon Pay India' },
+      { id: 'TX-84022', channel: 'FedNow Wire', payee: 'jpmorgan.corp@fednow', sla: '24.1ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true, threatType: 'clean', amount: '50,000', claimedMerchant: 'JPMorgan Corporate Treasury' },
+      { id: 'TX-84023', channel: 'POS Terminal QR', payee: 'tampered_qr4@paytm', sla: '38.2ms', ollama: 'Ollama Flagged', email: 'ALERT SENT', action: 'BLOCK & WARN', safe: false, threatType: 'quishing', amount: '3,500', claimedMerchant: 'HDFC Official Merchant POS' },
+      { id: 'TX-84024', channel: 'SMS Link Ingress', payee: 'bit.ly/kyc-urgent-update', sla: '31.5ms', ollama: 'Ollama Intercept', email: 'ALERT SENT', action: 'INTERCEPTED', safe: false, threatType: 'smishing', amount: '4,999', claimedMerchant: 'Bank KYC Urgent Verification' },
+      { id: 'TX-84025', channel: 'Card Rails (SWIFT)', payee: 'apple.store@chase', sla: '17.8ms', ollama: 'Bypassed (Safe)', email: 'DISPATCHED', action: 'ALLOW', safe: true, threatType: 'clean', amount: '18,900', claimedMerchant: 'Apple Store Online' }
+    ].map(r => this.registerFeedRow(r));
 
     tbody.innerHTML = initialFeed.map(r => this.buildFeedRowHTML(r)).join('');
 
@@ -1551,12 +1840,13 @@ ${soc.ollama_dossier}
 
       const channel = channels[Math.floor(Math.random() * channels.length)];
       const payee = isRisk ? payeesRisk[Math.floor(Math.random() * payeesRisk.length)] : payeesSafe[Math.floor(Math.random() * payeesSafe.length)];
+      const threatType = isRisk ? (payee.includes('bit.ly') ? 'smishing' : 'quishing') : 'clean';
       const sla = `${(15 + Math.random() * 20).toFixed(1)}ms`;
-      const ollama = isRisk ? 'Ollama Flagged' : 'Bypassed (Safe)';
-      const action = isRisk ? 'BLOCK & WARN' : 'ALLOW';
+      const ollama = isRisk ? (threatType === 'smishing' ? 'Ollama Intercept' : 'Ollama Flagged') : 'Bypassed (Safe)';
+      const action = isRisk ? (threatType === 'smishing' ? 'INTERCEPTED' : 'BLOCK & WARN') : 'ALLOW';
       const email = isRisk ? 'ALERT SENT' : 'DISPATCHED';
 
-      const row = {
+      const row = this.registerFeedRow({
         id: `TX-${this.txCounter}`,
         channel,
         payee,
@@ -1564,8 +1854,9 @@ ${soc.ollama_dossier}
         ollama,
         email,
         action,
-        safe: !isRisk
-      };
+        safe: !isRisk,
+        threatType
+      });
 
       const tr = document.createElement('tr');
       tr.innerHTML = this.buildFeedRowHTML(row, false);
@@ -1583,27 +1874,35 @@ ${soc.ollama_dossier}
   }
 
   buildFeedRowHTML(row, wrapTr = true) {
+    const safeId = this.escapeHtml(row.id);
+    const titleText = row.safe
+      ? `Inspect Safe Clearance Receipt for ${safeId}`
+      : `Inspect Fraud Security Alert for ${safeId}`;
     const inner = `
-      <td style="font-weight: 700; color: var(--text-main);">${row.id}</td>
-      <td>${row.channel}</td>
-      <td><code>${row.payee}</code></td>
-      <td style="font-weight: 600; color: var(--accent-primary);">${row.sla}</td>
-      <td style="color: ${row.safe ? 'var(--text-muted)' : 'var(--accent-purple)'}; font-weight: 600;">${row.ollama}</td>
-      <td><span class="badge-pill ${row.safe ? 'lime' : 'danger'}" style="cursor:pointer;" onclick="window.proPayApp.openModal('modal-email-alert')">${row.email}</span></td>
+      <td style="font-weight: 700; color: var(--text-main);">${safeId}</td>
+      <td>${this.escapeHtml(row.channel)}</td>
+      <td><code>${this.escapeHtml(row.payee)}</code></td>
+      <td style="font-weight: 600; color: var(--accent-primary);">${this.escapeHtml(row.sla)}</td>
+      <td style="color: ${row.safe ? 'var(--text-muted)' : 'var(--accent-purple)'}; font-weight: 600;">${this.escapeHtml(row.ollama)}</td>
+      <td><button type="button" class="badge-pill feed-email-btn ${row.safe ? 'lime' : 'danger'}" title="${titleText}" onclick="window.proPayApp.openFeedEmailAlert('${safeId}')">${this.escapeHtml(row.email)}</button></td>
       <td>
         <span class="badge-pill ${row.safe ? 'safe' : 'danger'}">
-          ${row.action}
+          ${this.escapeHtml(row.action)}
         </span>
       </td>
     `;
     return wrapTr ? `<tr>${inner}</tr>` : inner;
   }
 
-  openModal(id) {
+  openModal(id, options = {}) {
     this.closeMobileMenu();
     const m = document.getElementById(id);
     if (m) m.classList.add('active');
     if (id === 'modal-email-alert') {
+      if (!options.preserveActiveEmail) {
+        this.activeEmailData = this.simState.emailData;
+        this.activeEmailSource = 'simulator';
+      }
       this.renderEmailModalContent();
     }
     if (id === 'modal-smtp-config') {

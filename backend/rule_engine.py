@@ -22,7 +22,7 @@ class RuleEngine:
 
         # Explicit known fraudulent identifiers
         self.blacklist_indicators = [
-            "scammer", "fraud", "attacker", "phish", "fake-refund", "prize-winner"
+            "scammer", "scam_", "fraud", "attacker", "phish", "fake-refund", "fake_qr", "tampered", "prize-winner"
         ]
 
         # Suspicious domain extensions often used in disposable phishing campaigns

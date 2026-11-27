@@ -431,6 +431,8 @@ class OllamaEmailAgent:
             "headline": headline,
             "severity": severity,
             "badge_color": badge_color,
+            "is_safe": not is_fraud,
+            "threat_type": threat_type,
             "body_intro": body_intro,
             "discrepancy_note": discrepancy_note,
             "action_required": action_required,
@@ -442,17 +444,42 @@ class OllamaEmailAgent:
         }
 
         # Compliance / SOC Alert Email
+        soc_subject = f"[{severity} SOC ESCALATION] {subject}" if is_fraud else f"[CLEAN AUDIT LOG] {subject}"
+        soc_dossier = ollama_eval.get("forensic_dossier", "N/A")
+        soc_intro = (
+            f"Automated SOC escalation for {threat_type.upper()} incident {tx_id}. Immediate analyst review recommended."
+            if is_fraud
+            else f"Clean transaction audit record for {tx_id}. Fast-path rules passed; no SOC action required."
+        )
+        soc_html = self._build_html_email(
+            title="ProPay Bank SOC Operations",
+            headline="Bank SOC Incident Escalation Ticket" if is_fraud else "Clean Transaction Audit Record",
+            body_intro=soc_intro,
+            discrepancy_note=f"Rule Matched: {inline_eval.get('rule_matched', 'N/A')}\n\nOllama Dossier:\n{soc_dossier}",
+            action_required="Lock terminal and freeze suspect payee VPA if confirmed unauthorized." if is_fraud else "Archived automatically. Zero SOC escalation required.",
+            tx_id=tx_id,
+            timestamp=timestamp,
+            worm_hash=worm_hash,
+            is_safe=not is_fraud,
+            amount=am or ("50,000" if not is_fraud else "3,500"),
+            payee=pn or pa
+        )
+
         soc_email = {
             "recipient": "soc-fraud-ops@propay.bank",
             "sender": "ProPay Multi-Agent Mesh <orchestrator@agent.propay.bank>",
-            "subject": f"[{severity} SOC ESCALATION] {subject}",
+            "subject": soc_subject,
             "tx_id": tx_id,
             "timestamp": timestamp,
+            "is_safe": not is_fraud,
             "threat_type": threat_type.upper(),
             "inline_rule": inline_eval.get("rule_matched", "N/A"),
-            "ollama_dossier": ollama_eval.get("forensic_dossier", "N/A"),
+            "ollama_dossier": soc_dossier,
             "sar_status": "AUTO-FILED (FINCEN COMPLIANT)" if is_fraud else "NOT REQUIRED (CLEAN)",
-            "dispatch_status": "DISPATCHED_SMTP_TLS"
+            "dispatch_status": "DISPATCHED_SMTP_TLS",
+            "body_intro": soc_intro,
+            "worm_hash": worm_hash,
+            "html_body": soc_html
         }
 
         # Execute SMTP delivery dispatch
