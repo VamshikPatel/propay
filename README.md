@@ -1,145 +1,54 @@
-# ProPay: Real-Time Banking Fraud & Dual-Speed Quishing Defense Engine
+# ProPay
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Architecture: Dual--Speed](https://img.shields.io/badge/Architecture-Dual--Speed%20Pipeline-A3E635.svg)]()
-[![Clearance SLA: <30ms](https://img.shields.io/badge/Sync%20SLA-%3C30ms-brightgreen.svg)]()
+**Real-time pre-PIN fraud & quishing shield for UPI and digital payments.**
 
-**ProPay** is a production-grade, dual-speed payment risk engine engineered to detect zero-day digital banking attacks—specifically **Physical QR Code Tampering (Quishing)** and **Deceptive Smishing Links**—before funds clear modern instant payment rails (UPI, FedNow).
-
-Designed with fintech engineering principles (inspired by PayPal, Slice, and Stripe risk infrastructure), ProPay strictly decouples **sub-30ms synchronous deterministic clearance** from **asynchronous on-premise LLM cognitive reasoning** and **cryptographically chained audit logging**.
+ProPay inspects scanned QR intents and payment links in real time, catching fake QR sticker swaps and smishing URLs before funds leave the user's account.
 
 ---
 
-## 1. The Core Engineering Problem
+## Architecture Overview
 
-In modern instant payment networks (such as India's **UPI** or the US **FedNow** rail), transactions settle in real time with an end-to-end SLA target of **< 50 milliseconds**.
+ProPay decouples synchronous sub-30ms clearance from asynchronous AI forensics:
 
-Traditional banking risk architectures fail in two distinct ways:
-1. **Legacy Batch Analysis:** Processing fraud signals hours or days after settlement is useless against irreversible instant transfers.
-2. **The Inline LLM Bottleneck:** Placing modern Large Language Models (LLMs) in the critical clearance path introduces **1,000ms – 2,000ms of latency**, causing network timeouts, dropped transactions, and complete throughput collapse.
-3. **Physical QR Code Tampering (Quishing):** Attackers physically paste replacement QR stickers over legitimate merchant stands. The customer scans what appears to be a legitimate merchant, but the underlying payment routes to an attacker's personal VPA. Traditional network firewalls cannot inspect the physical QR payload.
+- **Edge URI & Intent Parser (`backend/rule_engine.py`)** — Parses NPCI UPI parameters (`pa`, `pn`, `am`, `mc`) and unwraps shortened phishing URLs.
+- **Payee Authority Heuristic (`backend/rule_engine.py`)** — Flags corporate/bank brand names masquerading on unverified consumer wallets (anti-quishing).
+- **Sliding-Window Velocity Guard (`backend/rule_engine.py`)** — Tracks per-VPA bursts in memory (`O(1)`) to stop rapid account-draining attempts.
+- **Async Forensic Worker (`backend/ollama_agent.py`)** — Runs local Ollama (Llama 3 / Mistral) strictly off the payment path to draft threat explanations with zero cloud PII exposure.
+- **Tamper-Evident Audit Ledger (`backend/event_ledger.py`)** — Seals every decision in an append-only SHA-256 hash-chained ledger (`backend/audit_ledger.jsonl`).
+- **SMTP Alert Dispatcher (`backend/email_agent.py`)** — Sends customer warnings and Bank SOC incident notifications over TLS.
 
 ---
 
-## 2. The Dual-Speed Architectural Solution
+## Quick Start
 
-ProPay resolves the latency-versus-accuracy dilemma through a decoupled **Dual-Speed Pipeline**:
-
+### Local Server
+```bash
+git clone https://github.com/VamshikPatel/propay.git
+cd propay
+python server.py
 ```
-                         INCOMING TRANSACTION INTENT
-                       (UPI QR Code / Deep-Link URI)
-                                     │
-                                     ▼
-                ┌──────────────────────────────────────────┐
-                │   Stage 1: Synchronous Fast-Path Gate    │
-                │   • NPCI Intent URI Normalizer           │
-                │   • Payee Authority Mismatch Heuristic   │
-                │   • In-Memory Sliding-Window Velocity    │
-                │   • Whitelist & Sanctions Check          │
-                └────────────────────┬─────────────────────┘
-                                     │
-                        Clearance SLA: < 30ms
-                                     │
-                    ┌────────────────┴────────────────┐
-                    │                                 │
-              [Risk <= 0.20]                    [Risk >= 0.70]
-                    │                                 │
-                    ▼                                 ▼
-         ALLOW & INSTANT CLEAR               INTERCEPT & FREEZE
-        (Zero Customer Friction)           (Dynamic Mobile Warning)
-                    │                                 │
-                    └────────────────┬────────────────┘
-                                     │
-                       Asynchronous Event Decoupling
-                                     │
-                                     ▼
-                ┌──────────────────────────────────────────┐
-                │   Stage 2: Asynchronous Forensic Worker  │
-                │   • Local Ollama (Llama 3 / Mistral)     │
-                │   • Deceptive Linguistic Analysis        │
-                │   • Plain-English Forensic Dossier       │
-                │   • Real-Time SMTP TLS Alert Dispatch    │
-                └────────────────────┬─────────────────────┘
-                                     │
-                                     ▼
-                ┌──────────────────────────────────────────┐
-                │   Stage 3: Cryptographic Audit Ledger    │
-                │   • Append-Only JSONL Event Stream       │
-                │   • SHA-256 Chained Hash Verification    │
-                │   • Tamper-Evident Incident History      │
-                └──────────────────────────────────────────┘
-```
+Open `http://localhost:5055` in your browser *(or run `run_propay.bat` on Windows)*.
+
+### Static / Offline Demo
+Open `frontend/index.html` directly in any modern browser to run interactive client-side scenarios.
 
 ---
 
-## 3. Core Modules & Technical Implementation
+## API Endpoints
 
-### Module 1: NPCI Intent URI Normalizer & Edge Parser
-- Conforms strictly to the **NPCI UPI Intent Specification**.
-- Parses URI parameters: `pa` (Payee VPA), `pn` (Payee Name), `am` (Amount), `mc` (Merchant Category Code), `cu` (Currency).
-- Detects and resolves shortened redirect links (`bit.ly`, `tinyurl.com`) and flags high-risk TLDs (`.xyz`, `.top`, `.click`).
-
-### Module 2: Payee Authority vs. Settlement Mismatch (Anti-Quishing)
-- Analyzes discrepancies between the merchant claim in `pn` and the settlement handle in `pa`.
-- **Attack Signature:** A QR sticker display claiming *"HDFC Official Merchant"* but routing settlement to `scammer_wallet@paytm` or an unverified personal handle.
-- Evaluated in **< 0.1ms** using deterministic lookup tables.
-
-### Module 3: In-Memory Sliding-Window Velocity Rate Limiter
-- Implements a sliding-window timestamp counter per user/VPA/IP using Python in-memory storage.
-- Automatically flags velocity anomalies (e.g., **> 3 transactions within a 60-second window**), preventing automated bot drainage in $O(1)$ time without database overhead.
-
-### Module 4: Asynchronous Cognitive LLM (Ollama Llama 3)
-- Strictly isolated from the sub-30ms wire clearance path.
-- Triggered only for flagged anomalies to evaluate deceptive social engineering context.
-- Generates structured, plain-English case dossiers for security operations and bank fraud analysts.
-- **Data Sovereignty:** Hosted on-premises with zero banking customer data leaving the local VPC.
-
-### Module 5: Tamper-Evident SHA-256 Chained Ledger
-- Appends every transaction verdict to `backend/audit_ledger.jsonl`.
-- Each entry contains a cryptographic `record_hash` computed over the record's payload concatenated with the `prev_hash` of the preceding record.
-- Provides a mathematical integrity verification function (`verify_ledger_integrity()`) that instantly detects if any historical audit entry has been modified or deleted.
-
----
-
-## 4. Quick Start (Zero Setup Required)
-
-### Option A: Instant Browser Demo (Offline-Ready)
-Simply open `index.html` in any browser (Chrome, Edge, Brave, Firefox). All presets, telemetry traces, and UI components are fully interactive offline.
-
-### Option B: Local Python Server
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/VamshikPatel/propay.git
-   cd propay
-   ```
-2. Start the server:
-   ```bash
-   python server.py
-   ```
-   *(Or double-click `run_propay.bat` on Windows)*.
-3. Access the dashboard at **`http://localhost:5055`**.
-
----
-
-## 5. API Reference
-
-| Endpoint | Method | Description |
+| Endpoint | Method | Purpose |
 | :--- | :--- | :--- |
-| `/api/simulate` | `POST` | Executes the dual-speed risk pipeline on a given UPI intent or URL. |
-| `/api/health` | `GET` | Returns system diagnostics, active SLA targets, and ledger status. |
-| `/api/ledger/status` | `GET` | Returns cryptographic audit trail statistics and latest SHA-256 hash. |
-| `/api/ledger/verify` | `GET` | Mathematically verifies the entire SHA-256 hash chain from genesis. |
-| `/api/email/config` | `GET / POST` | Retrieves or saves outbound SMTP TLS alert credentials. |
-| `/api/email/test` | `POST` | Dispatches a live test security alert to the specified inbox. |
+| `/api/simulate` | `POST` | Run the dual-speed risk check on a UPI URI or URL |
+| `/api/health` | `GET` | Check backend health and ledger status |
+| `/api/ledger/status` | `GET` | View audit trail metrics and latest SHA-256 hash |
+| `/api/ledger/verify` | `GET` | Verify the full SHA-256 hash chain integrity |
+| `/api/email/config` | `GET` / `POST` | Get or configure outbound SMTP settings |
+| `/api/email/test` | `POST` | Send a live test security alert email |
 
 ---
 
-## 6. Tech Stack & Engineering Standards
+## Stack
 
-- **Backend:** Python 3.10+, Flask, Standard Library (`urllib.parse`, `hashlib`, `collections`, `time`)
-- **Memory Store:** In-memory sliding-window velocity tracker
-- **AI & Forensics:** Local Ollama (Llama 3 / Mistral) REST client
-- **Cryptographic Audit:** SHA-256 Hash Chaining
-- **Alerting:** Python `smtplib` over TLS
-- **Frontend:** Vanilla JavaScript (ES6+), Modern HTML5, Responsive CSS (Dodo Payments design system)
+- **Backend:** Python 3.10+, Flask, `urllib.parse`, `hashlib`, `smtplib`
+- **AI Forensics:** Local Ollama REST API (optional, falls back gracefully offline)
+- **Frontend:** Vanilla JavaScript (ES6+), HTML5, CSS3 (`frontend/`)
