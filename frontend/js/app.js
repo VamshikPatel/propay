@@ -68,6 +68,7 @@ class ProPayApp {
     this.startFeedTicker();
     this.bindEvents();
     this.initScrollSpy();
+    this.startHeroBracketTicker();
     this.checkBackendHealth();
     this.checkSmtpStatus();
   }
@@ -96,20 +97,25 @@ class ProPayApp {
   }
 
   bindEvents() {
-    // Escape key closes modals and mobile menu
+    // Escape key closes modals, dropdowns and mobile menu
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
         this.closeMobileMenu();
+        this.closeMoreDropdown();
         this.updateActiveNavFromScroll();
       }
     });
 
-    // Click outside modal dialog closes it; click outside header closes mobile menu
+    // Click outside header closes mobile menu and MORE dropdown
     document.addEventListener('click', (e) => {
       const header = document.querySelector('.dodo-header');
+      const moreWrap = document.getElementById('nav-more-wrap');
       if (header && !header.contains(e.target)) {
         this.closeMobileMenu();
+      }
+      if (moreWrap && !moreWrap.contains(e.target)) {
+        this.closeMoreDropdown();
       }
     });
 
@@ -498,6 +504,7 @@ class ProPayApp {
   scrollTo(sectionId) {
     document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
     this.closeMobileMenu();
+    this.closeMoreDropdown();
 
     const el = document.getElementById(sectionId) || document.getElementById(`section-${sectionId}`);
     if (el) {
@@ -514,9 +521,92 @@ class ProPayApp {
   resetView() {
     document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
     this.closeMobileMenu();
+    this.closeMoreDropdown();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     this.setActiveNav('section-hero');
     this.showToast('ProPay view reset to top.');
+  }
+
+  toggleMoreDropdown(event) {
+    if (event) event.stopPropagation();
+    const wrap = document.getElementById('nav-more-wrap');
+    const btn = document.getElementById('btn-nav-more');
+    if (!wrap) return;
+    const isOpen = wrap.classList.toggle('open');
+    if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  closeMoreDropdown() {
+    const wrap = document.getElementById('nav-more-wrap');
+    const btn = document.getElementById('btn-nav-more');
+    if (wrap) wrap.classList.remove('open');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+
+  toggleAccordion(triggerBtn) {
+    const item = triggerBtn ? triggerBtn.closest('.cp-accordion-item') : null;
+    if (!item) return;
+    const wasOpen = item.classList.contains('open');
+
+    document.querySelectorAll('.cp-accordion-item').forEach(el => {
+      el.classList.remove('open');
+      const icon = el.querySelector('.cp-acc-icon');
+      if (icon) icon.textContent = '+';
+    });
+
+    if (!wasOpen) {
+      item.classList.add('open');
+      const icon = item.querySelector('.cp-acc-icon');
+      if (icon) icon.textContent = '−';
+    }
+  }
+
+  startHeroBracketTicker() {
+    const el = document.getElementById('hero-rotating-vector');
+    if (!el) return;
+    const vectors = ['Quishing', 'Smishing', 'VPA Spoofing', 'Drain Bursts'];
+    let idx = 0;
+    setInterval(() => {
+      idx = (idx + 1) % vectors.length;
+      el.textContent = vectors[idx];
+    }, 2600);
+  }
+
+  dispatchFromBottomForm() {
+    const emailEl = document.getElementById('quick-alert-email');
+    const presetEl = document.getElementById('quick-alert-preset');
+    const noteEl = document.getElementById('quick-alert-note');
+
+    const simEmail = document.getElementById('sim-email-input');
+    const simInput = document.getElementById('sim-input');
+
+    const email = emailEl ? emailEl.value.trim() : '';
+    const preset = presetEl ? presetEl.value : 'quishing';
+    const customNote = noteEl ? noteEl.value.trim() : '';
+
+    if (simEmail && email) simEmail.value = email;
+    this.simState.recipientEmail = email || this.simState.recipientEmail;
+
+    this.loadPreset(preset);
+    if (customNote && simInput) {
+      simInput.value = customNote;
+    }
+
+    this.scrollTo('section-simulator');
+    this.executeSimulation();
+  }
+
+  sendFooterQuickEmail() {
+    const footerEmailEl = document.getElementById('footer-email-input');
+    const simEmailEl = document.getElementById('sim-email-input');
+    const email = footerEmailEl ? footerEmailEl.value.trim() : '';
+    if (!email) {
+      this.showToast('Please enter a valid email address.');
+      return;
+    }
+    if (simEmailEl) simEmailEl.value = email;
+    this.simState.recipientEmail = email;
+    this.sendLiveTestEmail();
   }
 
   setActiveNav(targetId) {
@@ -542,7 +632,7 @@ class ProPayApp {
 
   updateActiveNavFromScroll() {
     if (document.querySelector('.modal-backdrop.active')) return;
-    const sections = ['section-hero', 'section-simulator', 'section-defense', 'section-feed'];
+    const sections = ['section-hero', 'section-problem', 'section-simulator', 'section-defense', 'section-feed'];
     const scrollPos = window.scrollY + 140;
     let activeId = 'section-hero';
 
@@ -1896,6 +1986,7 @@ ${this.escapeHtml(soc.ollama_dossier)}
 
   openModal(id, options = {}) {
     this.closeMobileMenu();
+    this.closeMoreDropdown();
     const m = document.getElementById(id);
     if (m) m.classList.add('active');
     if (id === 'modal-email-alert') {
